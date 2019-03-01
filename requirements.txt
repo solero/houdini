@@ -1,0 +1,11 @@
+asyncio
+aioredis
+gino
+aiologger==0.4.0rc1
+aiologger[aiofiles]
+aiocache
+ujson
+watchdog
+defusedxml
+zope.interface
+uvloop; sys_platform == 'linux2' or sys_platform == 'darwin'
