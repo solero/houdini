@@ -20,7 +20,7 @@ import aioredis
 from aiocache import SimpleMemoryCache
 from watchdog.observers import Observer
 
-from gino import Gino
+from Houdini.Data import db
 
 try:
     import uvloop
@@ -40,7 +40,7 @@ class HoudiniFactory:
         self.redis = None
         self.config = None
         self.cache = None
-        self.db = Gino()
+        self.db = db
         self.peers_by_ip = {}
 
         self.server_name = kwargs['server']
