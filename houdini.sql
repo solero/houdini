@@ -1,5 +1,3 @@
-BEGIN;
-
 DROP TABLE IF EXISTS item;
 CREATE TABLE item (
   "ID" INT NOT NULL,
@@ -11305,7 +11303,7 @@ INSERT INTO penguin ("Username", "Nickname", "ApprovalEn", "Password", "Email", 
   ('Basil', 'Basil', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', 'basil@solero.me', 1);
   
 INSERT INTO penguin_item ("PenguinID", "ItemID") VALUES
-  (101, 1)
+  (101, 1);
   
 INSERT INTO penguin_item ("PenguinID", "ItemID") VALUES 
  (1, 5), (1, 1692), (1, 4712), (1, 442), (1, 1476), (1, 3194), (1, 4946), (1, 1521), (1, 1753), (1, 24016), (1, 161), (1, 152), (1, 5020),
@@ -11328,5 +11326,3 @@ INSERT INTO penguin_item ("PenguinID", "ItemID") VALUES
  (26, 15), (26, 5168), (26, 1458), (26, 3130), (26, 4690), (26, 6127),
  (27, 7), (27, 5169), (27, 1459), (27, 3131), (27, 4691), (27, 6128),
  (28, 1), (28, 1964);
-  
-COMMIT;
