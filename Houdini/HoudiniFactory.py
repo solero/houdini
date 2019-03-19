@@ -81,7 +81,7 @@ class HoudiniFactory:
             os.mkdir(errors_log_directory)
 
         if sys.platform != 'win32':
-            self.logger = Logger.with_default_handlers(name='Houdini')
+            self.logger = Logger(name='Houdini')
             universal_handler = AsyncTimedRotatingFileHandler(
                 filename=self.server_config['Logging']['General'],
                 backup_count=3,
