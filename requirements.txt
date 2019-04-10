@@ -8,6 +8,5 @@ aiocache
 ujson
 watchdog
 defusedxml
-zope.interface
 msgpack
 uvloop; sys_platform == 'linux2' or sys_platform == 'darwin'
