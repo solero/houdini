@@ -34,3 +34,8 @@ class Penguin(Spheniscidae):
 
     async def add_inbox(self, postcard):
         pass
+
+    def __repr__(self):
+        if self.data is not None:
+            return '<Penguin ID=\'{}\' Username=\'{}\'>'.format(self.data.ID, self.data.Username)
+        return super().__repr__()
