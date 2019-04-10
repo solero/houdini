@@ -79,8 +79,8 @@ class Spheniscidae:
         self.__writer.close()
 
     async def __handle_xt_data(self, data):
-        self.logger.debug("Received XT data: {0}".format(data))
-        parsed_data = data.split("%")[1:-1]
+        self.logger.debug('Received XT data: %s', data)
+        parsed_data = data.split('%')[1:-1]
 
         packet_id = parsed_data[2]
         packet = XTPacket(packet_id)
@@ -93,22 +93,22 @@ class Spheniscidae:
                 await listener(self, packet_data)
             self.received_packets.add(packet)
         else:
-            self.logger.debug("Handler for {0} doesn't exist!".format(packet_id))
+            self.logger.debug('Handler for %s doesn\'t exist!', packet_id)
 
     async def __handle_xml_data(self, data):
-        self.logger.debug("Received XML data: {0}".format(data))
+        self.logger.debug('Received XML data: %s', data)
 
         element_tree = Et.fromstring(data)
 
-        if element_tree.tag == "policy-file-request":
+        if element_tree.tag == 'policy-file-request':
             await self.send_policy_file()
 
-        elif element_tree.tag == "msg":
-            self.logger.debug("Received valid XML data")
+        elif element_tree.tag == 'msg':
+            self.logger.debug('Received valid XML data')
 
             try:
                 body_tag = element_tree[0]
-                action = body_tag.get("action")
+                action = body_tag.get('action')
                 packet = XMLPacket(action)
 
                 if Handlers.listener_exists(self.server.xt_listeners, self.server.xml_listeners, packet):
@@ -119,12 +119,12 @@ class Spheniscidae:
 
                     self.received_packets.add(packet)
                 else:
-                    self.logger.warn("Packet did not contain a valid action attribute!")
+                    self.logger.warn('Packet did not contain a valid action attribute!')
 
             except IndexError:
-                self.logger.warn("Received invalid XML data (didn't contain a body tag)")
+                self.logger.warn('Received invalid XML data (didn\'t contain a body tag)')
         else:
-            self.logger.warn("Received invalid XML data!")
+            self.logger.warn('Received invalid XML data!')
 
     async def __client_connected(self):
         self.logger.info('Client %s connected', self.peer_name)
@@ -157,3 +157,6 @@ class Spheniscidae:
             except ConnectionResetError:
                 self.__writer.close()
         await self.__client_disconnected()
+
+    def __repr__(self):
+        return '<Spheniscidae {}>'.format(self.peer_name)
