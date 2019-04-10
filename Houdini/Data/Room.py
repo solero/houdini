@@ -16,6 +16,33 @@ class Room(db.Model):
     Spawn = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     StampGroup = db.Column(db.ForeignKey('stamp_group.ID', ondelete='CASCADE', onupdate='CASCADE'))
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.penguins = []
+
+    def add_penguin(self, p):
+        if p.room:
+            p.room.remove_penguin(p)
+        self.penguins.append(p)
+
+        p.room = self
+
+        p.send_xt('jr', self.get_string)
+        self.send_xt('ap', p.server.penguin_string_compiler.compile(p))
+
+    def remove_penguin(self, p):
+        self.send_xt('rp', p.data.ID)
+
+        self.penguins.remove(p)
+        p.room = None
+
+    def get_string(self):
+        return '%'.join([p.server.penguin_string_compiler.compile(p) for p in self.penguins])
+
+    def send_xt(self, *data):
+        for penguin in self.penguins:
+            penguin.send_xt(*data)
+
 
 class RoomTable(db.Model):
     __tablename__ = 'room_table'
