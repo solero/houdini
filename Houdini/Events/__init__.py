@@ -36,19 +36,3 @@ def evaluate_plugin_file_event(plugin_file_event):
         return handler_module_path, ".".join(handler_module_tokens)
 
     return False
-
-
-def remove_handlers_by_module(xt_listeners, xml_listeners, handler_module_path):
-    def remove_handlers(remove_handler_items):
-        for handler_id, handler_listeners in remove_handler_items:
-            for handler_listener in handler_listeners:
-                if handler_listener.handler_file == handler_module_path:
-                    handler_listeners.remove(handler_listener)
-
-    xt_handler_collection = copy.copy(xt_listeners)
-    remove_handlers(xt_listeners.items())
-
-    xml_handler_collection = copy.copy(xml_listeners)
-    remove_handlers(xml_listeners.items())
-
-    return xt_handler_collection, xml_handler_collection

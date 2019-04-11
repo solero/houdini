@@ -241,9 +241,19 @@ def listeners_from_module(xt_listeners, xml_listeners, module):
             listener_collection[override.packet].remove(override)
 
 
-def cooldown(per=1.0, rate=1, bucket_type=BucketType.Default):
+def remove_handlers_by_module(xt_listeners, xml_listeners, handler_module_path):
+    def remove_handlers(remove_handler_items):
+        for handler_id, handler_listeners in remove_handler_items:
+            for handler_listener in handler_listeners:
+                if handler_listener.handler_file == handler_module_path:
+                    handler_listeners.remove(handler_listener)
+    remove_handlers(xt_listeners.items())
+    remove_handlers(xml_listeners.items())
+
+
+def cooldown(per=1.0, rate=1, bucket_type=BucketType.Default, callback=None):
     def decorator(handler_function):
-        handler_function.cooldown = _CooldownMapping(_Cooldown(per, rate, bucket_type))
+        handler_function.__cooldown = _CooldownMapping(callback, _Cooldown(per, rate, bucket_type))
         return handler_function
     return decorator
 
