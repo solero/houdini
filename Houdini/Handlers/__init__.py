@@ -69,7 +69,7 @@ class _Listener:
 
     __slots__ = ['packet', 'components', 'handler', 'priority',
                  'cooldown', 'pass_packet', 'handler_file',
-                 'overrides', 'pre_login', 'checklist', 'instance']
+                 'overrides', 'pre_login', 'checklist', 'plugin']
 
     def __init__(self, packet, components, handler_function, **kwargs):
         self.packet = packet
@@ -82,7 +82,7 @@ class _Listener:
         self.pass_packet = kwargs.get('pass_packet', False)
         self.checklist = kwargs.get('checklist', [])
 
-        self.instance = None
+        self.plugin = None
 
         if type(self.overrides) is not list:
             self.overrides = [self.overrides]
@@ -168,7 +168,7 @@ class _XMLListener(_Listener):
     async def __call__(self, p, packet_data):
         super().__call__(p, packet_data)
 
-        handler_call_arguments = [self.instance] if self.instance is not None else []
+        handler_call_arguments = [self.plugin] if self.plugin is not None else []
         handler_call_arguments += [self.packet, p] if self.pass_packet else [p]
 
         for index, component in enumerate(self.components):
