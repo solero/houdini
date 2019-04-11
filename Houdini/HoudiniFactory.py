@@ -31,8 +31,10 @@ except ImportError:
     uvloop = None
 
 import Houdini.Handlers
-from Houdini.Handlers import listeners_from_module
+from Houdini.Handlers import listeners_from_module, remove_handlers_by_module
 from Houdini.Events.HandlerFileEvent import HandlerFileEventHandler
+from Houdini.Events.PluginFileEvent import PluginFileEventHandler
+import Houdini.Plugins as Plugins
 
 
 class HoudiniFactory:
@@ -143,12 +145,45 @@ class HoudiniFactory:
 
         handlers_path = './Houdini{}Handlers'.format(os.path.sep)
         plugins_path = './Houdini{}Plugins'.format(os.path.sep)
-        self.configure_obvservers([handlers_path, HandlerFileEventHandler])
+        self.configure_obvservers([handlers_path, HandlerFileEventHandler],
+                                  [plugins_path, PluginFileEventHandler])
 
         self.logger.info('Listening on {}:{}'.format(self.server_config['Address'], self.server_config['Port']))
 
+        await self.load_plugins()
+
         async with self.server:
             await self.server.serve_forever()
+
+    async def load_plugins(self):
+        for plugin_package in self.get_package_modules(Plugins):
+            await self.load_plugin(plugin_package)
+
+    async def load_plugin(self, plugin):
+        plugin_module, plugin_class = plugin
+
+        if plugin_class not in self.server_config['Plugins']:
+            return
+
+        plugin_object = getattr(plugin_module, plugin_class)(self)
+
+        if isinstance(plugin_object, Plugins.IPlugin):
+            self.plugins[plugin_class] = plugin_object
+
+            listeners_from_module(self.xt_listeners, self.xml_listeners, plugin_object)
+
+            await plugin_object.ready()
+        else:
+            self.logger.warn('{0} plugin object doesn\'t provide the plugin interface'.format(plugin_class))
+
+    def unload_plugin(self, plugin):
+        plugin_module, plugin_class = plugin
+
+        if plugin_class in self.plugins:
+            plugin_module_path = plugin_module.__file__
+            del self.plugins[plugin_class]
+
+            remove_handlers_by_module(self.xt_listeners, self.xml_listeners, plugin_module_path)
 
     async def client_connected(self, reader, writer):
         client_object = self.client_class(self, reader, writer)
@@ -161,19 +196,19 @@ class HoudiniFactory:
                     module = importlib.import_module(handler_module)
                     listeners_from_module(self.xt_listeners, self.xml_listeners, module)
 
-        self.logger.info("Handler modules loaded")
+        self.logger.info('Handler modules loaded')
 
     def get_package_modules(self, package):
         package_modules = []
 
         for importer, module_name, is_package in pkgutil.iter_modules(package.__path__):
-            full_module_name = "{0}.{1}".format(package.__name__, module_name)
+            full_module_name = '{0}.{1}'.format(package.__name__, module_name)
 
             if is_package:
                 subpackage_object = importlib.import_module(full_module_name, package=package.__path__)
                 subpackage_object_directory = dir(subpackage_object)
 
-                if "Plugin" in subpackage_object_directory:
+                if Plugins.IPlugin.__name__ in subpackage_object_directory:
                     package_modules.append((subpackage_object, module_name))
                     continue
 
