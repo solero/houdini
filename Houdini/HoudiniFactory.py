@@ -21,6 +21,8 @@ from aiocache import SimpleMemoryCache
 from watchdog.observers import Observer
 
 from Houdini.Data import db
+from Houdini.Data.Stamp import Stamp
+from Houdini.Data.Room import Room
 
 try:
     import uvloop
@@ -55,6 +57,10 @@ class HoudiniFactory:
         self.penguins_by_username = {}
 
         self.xt_listeners, self.xml_listeners = {}, {}
+        self.plugins = {}
+
+        self.stamps = []
+        self.rooms = []
 
     async def start(self):
         self.config = config
@@ -129,6 +135,11 @@ class HoudiniFactory:
         else:
             self.load_handler_modules("Houdini.Handlers.Login.Login")
             self.logger.info('Login server started')
+
+        self.stamps = await db.all(Stamp.query)
+        self.rooms = await Room.query.gino.all()
+        self.logger.info('Loaded %d stamps', len(self.stamps))
+        self.logger.info('Loaded %d rooms', len(self.rooms))
 
         handlers_path = './Houdini{}Handlers'.format(os.path.sep)
         plugins_path = './Houdini{}Plugins'.format(os.path.sep)
