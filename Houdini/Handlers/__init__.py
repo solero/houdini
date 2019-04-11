@@ -110,39 +110,53 @@ class _Listener:
 
 class _XTListener(_Listener):
 
-    __slots__ = ['pre_login']
+    __slots__ = ['pre_login', 'rest_raw', 'keywords']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.pre_login = kwargs.get('pre_login')
+        self.rest_raw = kwargs.get('rest_raw', False)
+
+        self.keywords = len(inspect.getfullargspec(self.handler).kwonlyargs)
+
+        if self.rest_raw:
+            self.components = self.components[:-1]
 
     async def __call__(self, p, packet_data):
-        if not self.pre_login and not p.joined_world:
-            p.logger.warn('{} tried sending XT packet before authentication!'.format(p.peer_name))
-            await p.close()
-            return
+        await super().__call__(p, packet_data)
 
-        super().__call__(p, packet_data)
-
-        handler_call_arguments = [self.instance] if self.instance is not None else []
+        handler_call_arguments = [self.plugin] if self.plugin is not None else []
         handler_call_arguments += [self.packet, p] if self.pass_packet else [p]
+        handler_call_keywords = {}
 
-        arguments = iter(packet_data)
-        for index, component in enumerate(self.components):
-            if component.default is not component.empty:
-                handler_call_arguments.append(component.default)
-                next(arguments)
-            elif component.kind == component.POSITIONAL_OR_KEYWORD:
-                component_data = next(arguments)
-                converter = get_converter(component)
-                handler_call_arguments.append(await do_conversion(converter, p, component_data))
-            elif component.kind == component.VAR_POSITIONAL:
-                for component_data in arguments:
-                    converter = get_converter(component)
-                    handler_call_arguments.append(await do_conversion(converter, p, component_data))
-                break
-        return await self.handler(*handler_call_arguments)
+        arguments = iter(packet_data[:-self.keywords])
+        ctx = _ConverterContext(None, arguments, None, p)
+        for ctx.component in self.components:
+            if ctx.component.annotation is ctx.component.empty and ctx.component.default is not ctx.component.empty:
+                handler_call_arguments.append(ctx.component.default)
+                next(ctx.arguments)
+            elif ctx.component.kind == ctx.component.POSITIONAL_OR_KEYWORD:
+                ctx.argument = next(ctx.arguments)
+                converter = get_converter(ctx.component)
+
+                handler_call_arguments.append(await do_conversion(converter, ctx))
+            elif ctx.component.kind == ctx.component.VAR_POSITIONAL:
+                for argument in ctx.arguments:
+                    ctx.argument = argument
+                    converter = get_converter(ctx.component)
+
+                    handler_call_arguments.append(await do_conversion(converter, ctx))
+            elif ctx.component.kind == ctx.component.KEYWORD_ONLY:
+                ctx.argument = packet_data[-self.keywords:][len(handler_call_keywords)]
+                converter = get_converter(ctx.component)
+                handler_call_keywords[ctx.component.name] = await do_conversion(converter, ctx)
+
+        if self.rest_raw:
+            handler_call_arguments.append(list(ctx.arguments))
+            return await self.handler(*handler_call_arguments, **handler_call_keywords)
+        elif not len(list(ctx.arguments)):
+            return await self.handler(*handler_call_arguments, **handler_call_keywords)
 
 
 class _XMLListener(_Listener):
