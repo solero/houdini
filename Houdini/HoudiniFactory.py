@@ -122,8 +122,8 @@ class HoudiniFactory:
                 self.config.redis['Address'], self.redis['Port']),
                 minsize=5, maxsize=10)
 
-            await self.redis.delete('{}.players'.format(self.server_name))
-            await self.redis.delete('{}.population'.format(self.server_name))
+            self.redis.delete('{}.players'.format(self.server_name))
+            self.redis.delete('{}.population'.format(self.server_name))
 
             self.cache = SimpleMemoryCache(namespace='houdini', ttl=self.server_config['CacheExpiry'])
 
