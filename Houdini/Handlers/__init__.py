@@ -16,19 +16,12 @@ def get_relative_function_path(function_obj):
     return rel_function_file
 
 
-def get_converter(component):
-    if component.annotation is component.empty:
-        return str
-    return component.annotation
+class ChecklistError(Exception):
+    """Raised when a checklist fails"""
 
 
-async def do_conversion(converter, p, component_data):
-    if IConverter.implementedBy(converter):
-        converter_instance = converter(p, component_data)
-        if asyncio.iscoroutinefunction(converter_instance.convert):
-            return await converter_instance.convert()
-        return converter_instance.convert()
-    return converter(component_data)
+class AuthorityError(Exception):
+    """Raised when a packet is received but user has not yet authenticated"""
 
 
 class _Packet:
@@ -98,14 +91,21 @@ class _Listener:
     def __name__(self):
         return "{}.{}".format(self.handler.__module__, self.handler.__name__)
 
-    def __call__(self, p, packet_data):
+    async def __call__(self, p, packet_data):
+        if isinstance(self.packet, XTPacket) and not self.pre_login and not p.joined_world:
+            await p.close()
+            raise AuthorityError('{} tried sending XT packet before authentication!'.format(p))
+
         if self.cooldown is not None:
             bucket = self.cooldown.get_bucket(p)
             if bucket.is_cooling:
-                raise RuntimeError('{} sent packet during cooldown'.format(p.peer_name))
+                if self.cooldown.callback is not None:
+                    await self.cooldown.callback(*[self.plugin, p] if self.plugin is not None else p)
+                else:
+                    raise CooldownError('{} sent packet during cooldown'.format(p))
 
         if not self._can_run(p):
-            raise RuntimeError('Could not handle packet due to checklist failure')
+            raise ChecklistError('Could not handle packet due to checklist failure')
 
 
 class _XTListener(_Listener):
