@@ -1,13 +1,14 @@
 import inspect
-import time
 import enum
 import os
 import asyncio
 from types import FunctionType
 
-from Houdini.Converters import IConverter
+from Houdini.Converters import get_converter, do_conversion, _ConverterContext
 
 from Houdini.Cooldown import _Cooldown, _CooldownMapping, BucketType, CooldownError
+from Houdini import Plugins
+
 
 def get_relative_function_path(function_obj):
     abs_function_file = inspect.getfile(function_obj)
@@ -166,7 +167,7 @@ class _XMLListener(_Listener):
         super().__init__(*args, **kwargs)
 
     async def __call__(self, p, packet_data):
-        super().__call__(p, packet_data)
+        await super().__call__(p, packet_data)
 
         handler_call_arguments = [self.plugin] if self.plugin is not None else []
         handler_call_arguments += [self.packet, p] if self.pass_packet else [p]
@@ -176,7 +177,8 @@ class _XMLListener(_Listener):
                 handler_call_arguments.append(component.default)
             elif component.kind == component.POSITIONAL_OR_KEYWORD:
                 converter = get_converter(component)
-                handler_call_arguments.append(await do_conversion(converter, p, packet_data))
+                ctx = _ConverterContext(component, None, packet_data, p)
+                handler_call_arguments.append(await do_conversion(converter, ctx))
         return await self.handler(*handler_call_arguments)
 
 
@@ -185,7 +187,8 @@ def handler(packet, **kwargs):
         if not asyncio.iscoroutinefunction(handler_function):
             raise TypeError('All handlers must be a coroutine.')
 
-        components = list(inspect.signature(handler_function).parameters.values())[1:]
+        components = list(inspect.signature(handler_function).parameters.values())
+        components = components[2:] if str(components[0]) == 'self' else components[1:]
 
         if not issubclass(type(packet), _Packet):
             raise TypeError('All handlers can only listen for either XMLPacket or XTPacket.')
@@ -223,6 +226,9 @@ def is_listener(listener):
 def listeners_from_module(xt_listeners, xml_listeners, module):
     listener_objects = inspect.getmembers(module, is_listener)
     for listener_name, listener_object in listener_objects:
+        if isinstance(module, Plugins.IPlugin):
+            listener_object.plugin = module
+
         listener_collection = xt_listeners if type(listener_object) == _XTListener else xml_listeners
         if listener_object.packet not in listener_collection:
             listener_collection[listener_object.packet] = []
