@@ -57,6 +57,7 @@ class HoudiniFactory:
 
         self.client_class = Spheniscidae
         self.penguin_string_compiler = None
+        self.anonymous_penguin_string_compiler = None
 
         self.penguins_by_id = {}
         self.penguins_by_username = {}
@@ -135,6 +136,10 @@ class HoudiniFactory:
 
             self.client_class = Penguin
             self.penguin_string_compiler = PenguinStringCompiler()
+            self.anonymous_penguin_string_compiler = PenguinStringCompiler()
+
+            PenguinStringCompiler.setup_default_builder(self.penguin_string_compiler)
+            PenguinStringCompiler.setup_anonymous_default_builder(self.anonymous_penguin_string_compiler)
 
             self.load_handler_modules(exclude_load="Houdini.Handlers.Login.Login")
             self.logger.info('World server started')

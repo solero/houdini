@@ -3,7 +3,8 @@ from Houdini.Spheniscidae import Spheniscidae
 
 class Penguin(Spheniscidae):
 
-    __slots__ = ['x', 'y', 'room', 'waddle', 'table', 'data']
+    __slots__ = ['x', 'y', 'room', 'waddle', 'table', 'data', 'member',
+                 'membership_days', 'avatar', 'walking_puffle']
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -15,7 +16,26 @@ class Penguin(Spheniscidae):
 
         self.data = None
 
+        self.member = None
+        self.membership_days = 0
+
+        self.avatar = None
+
+        self.walking_puffle = None
+
         self.logger.debug('New penguin created')
+
+    @property
+    def party_state(self):
+        return str()
+
+    @property
+    def puffle_state(self):
+        return str()
+
+    @property
+    def penguin_state(self):
+        return str()
 
     async def add_inventory(self, item):
         pass
