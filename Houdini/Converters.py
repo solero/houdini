@@ -2,6 +2,159 @@ from abc import ABC
 from abc import abstractmethod
 
 import asyncio
+import itertools
+import inspect
+
+
+from Houdini.Cooldown import CooldownError
+
+
+class ChecklistError(Exception):
+    """Raised when a checklist fails"""
+
+
+class _ArgumentDeserializer:
+    __slots__ = ['name', 'components', 'callback', 'parent', 'pass_raw', 'cooldown',
+                 'checklist', 'instance', 'alias', 'rest_raw', 'string_delimiter',
+                 'string_separator', '_signature', '_arguments', '_exception_callback',
+                 '_exception_class']
+
+    def __init__(self, name, callback, **kwargs):
+        self.callback = callback
+
+        self.name = callback.__name__ if name is None else name
+        self.cooldown = kwargs.get('cooldown')
+        self.checklist = kwargs.get('checklist', [])
+        self.rest_raw = kwargs.get('rest_raw', False)
+        self.string_delimiter = kwargs.get('string_delimiter', [])
+        self.string_separator = kwargs.get('string_separator', str())
+
+        self.instance = None
+
+        self._signature = list(inspect.signature(self.callback).parameters.values())
+        self._arguments = inspect.getfullargspec(self.callback)
+
+        self._exception_callback = None
+        self._exception_class = Exception
+
+        if self.rest_raw:
+            self._signature = self._signature[:-1]
+
+    def _can_run(self, p):
+        return True if not self.checklist else all(predicate(self, p) for predicate in self.checklist)
+
+    async def _check_cooldown(self, p):
+        if self.cooldown is not None:
+            bucket = self.cooldown.get_bucket(p)
+            if bucket.is_cooling:
+                if self.cooldown.callback is not None:
+                    if self.instance:
+                        await self.cooldown.callback(self.instance, p)
+                    else:
+                        await self.cooldown.callback(p)
+                else:
+                    raise CooldownError('{} invoked listener during cooldown'.format(p))
+
+    def _check_list(self, p):
+        if not self._can_run(p):
+            raise ChecklistError('Could not invoke listener due to checklist failure')
+
+    def _consume_separated_string(self, ctx):
+        if ctx.argument[0] in self.string_delimiter:
+            while not ctx.argument.endswith(ctx.argument[0]):
+                ctx.argument += self.string_separator + next(ctx.arguments)
+            ctx.argument = ctx.argument[1:-1]
+
+    def error(self, exception_class=Exception):
+        def decorator(exception_callback):
+            self._exception_callback = exception_callback
+            self._exception_class = exception_class
+        return decorator
+
+    async def _deserialize(self, p, data):
+        handler_call_arguments = [self.instance, p] if self.instance is not None else [p]
+        handler_call_keywords = {}
+
+        arguments = itertools.islice(data, len(data) - len(self._arguments.kwonlyargs))
+        keyword_arguments = itertools.islice(data, len(data) - len(self._arguments.kwonlyargs), len(data))
+
+        ctx = _ConverterContext(None, arguments, None, p)
+        for ctx.component in itertools.islice(self._signature, len(handler_call_arguments), len(self._signature)):
+            if ctx.component.annotation is ctx.component.empty and ctx.component.default is not ctx.component.empty:
+                handler_call_arguments.append(ctx.component.default)
+            elif ctx.component.kind == ctx.component.POSITIONAL_OR_KEYWORD:
+                ctx.argument = next(ctx.arguments)
+                converter = get_converter(ctx.component)
+
+                if converter == str:
+                    self._consume_separated_string(ctx)
+
+                handler_call_arguments.append(await do_conversion(converter, ctx))
+            elif ctx.component.kind == ctx.component.VAR_POSITIONAL:
+                for argument in ctx.arguments:
+                    ctx.argument = argument
+                    converter = get_converter(ctx.component)
+
+                    if converter == str:
+                        self._consume_separated_string(ctx)
+
+                    handler_call_arguments.append(await do_conversion(converter, ctx))
+            elif ctx.component.kind == ctx.component.KEYWORD_ONLY:
+                ctx.arguments = keyword_arguments
+                ctx.argument = next(keyword_arguments)
+                converter = get_converter(ctx.component)
+
+                if converter == str:
+                    self._consume_separated_string(ctx)
+
+                handler_call_keywords[ctx.component.name] = await do_conversion(converter, ctx)
+
+        if self.rest_raw:
+            handler_call_arguments.append(list(ctx.arguments))
+
+        return handler_call_arguments, handler_call_keywords
+
+    async def __call__(self, p, data):
+        try:
+            handler_call_arguments, handler_call_keywords = await self._deserialize(p, data)
+
+            return await self.callback(*handler_call_arguments, **handler_call_keywords)
+        except Exception as e:
+            if self._exception_callback and isinstance(e, self._exception_class):
+                if self.instance:
+                    await self._exception_callback(self.instance, e)
+                else:
+                    await self._exception_callback(e)
+            else:
+                raise e
+
+    def __hash__(self):
+        return hash(self.__name__())
+
+    def __name__(self):
+        return "{}.{}".format(self.callback.__module__, self.callback.__name__)
+
+
+def _listener(cls, name, **kwargs):
+    def decorator(callback):
+        if not asyncio.iscoroutinefunction(callback):
+            raise TypeError('All listeners must be a coroutine.')
+
+        try:
+            cooldown_object = callback.__cooldown
+            del callback.__cooldown
+        except AttributeError:
+            cooldown_object = None
+
+        try:
+            checklist = callback.__checks
+            del callback.__checks
+        except AttributeError:
+            checklist = []
+
+        listener_object = cls(name, callback, cooldown=cooldown_object, checklist=checklist, **kwargs)
+        return listener_object
+    return decorator
 
 
 class IConverter(ABC):
@@ -212,7 +365,7 @@ def get_converter(component):
 
 
 async def do_conversion(converter, ctx):
-    if issubclass(type(converter), IConverter) and not isinstance(converter, IConverter):
+    if issubclass(converter, IConverter) and not isinstance(converter, IConverter):
         converter = converter()
     if isinstance(converter, IConverter):
         if asyncio.iscoroutinefunction(converter.convert):
