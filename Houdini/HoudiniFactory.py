@@ -225,7 +225,7 @@ class HoudiniFactory:
 
         return package_modules
 
-    def configure_obvservers(self, *observer_settings):
+    def configure_observers(self, *observer_settings):
         for observer_path, observer_class in observer_settings:
             event_observer = Observer()
             event_observer.schedule(observer_class(self), observer_path, recursive=True)
