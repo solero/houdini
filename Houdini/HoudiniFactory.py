@@ -34,6 +34,9 @@ import Houdini.Handlers
 from Houdini.Handlers import listeners_from_module, remove_handlers_by_module
 from Houdini.Events.HandlerFileEvent import HandlerFileEventHandler
 from Houdini.Events.PluginFileEvent import PluginFileEventHandler
+
+from Houdini.Commands import commands_from_plugin, invoke_command_string
+
 import Houdini.Plugins as Plugins
 
 
@@ -59,6 +62,7 @@ class HoudiniFactory:
         self.penguins_by_username = {}
 
         self.xt_listeners, self.xml_listeners = {}, {}
+        self.commands = {}
         self.plugins = {}
 
         self.stamps = []
@@ -145,8 +149,8 @@ class HoudiniFactory:
 
         handlers_path = './Houdini{}Handlers'.format(os.path.sep)
         plugins_path = './Houdini{}Plugins'.format(os.path.sep)
-        self.configure_obvservers([handlers_path, HandlerFileEventHandler],
-                                  [plugins_path, PluginFileEventHandler])
+        self.configure_observers([handlers_path, HandlerFileEventHandler],
+                                 [plugins_path, PluginFileEventHandler])
 
         self.logger.info('Listening on {}:{}'.format(self.server_config['Address'], self.server_config['Port']))
 
@@ -171,6 +175,7 @@ class HoudiniFactory:
             self.plugins[plugin_class] = plugin_object
 
             listeners_from_module(self.xt_listeners, self.xml_listeners, plugin_object)
+            commands_from_plugin(self.commands, plugin_object)
 
             await plugin_object.ready()
         else:
