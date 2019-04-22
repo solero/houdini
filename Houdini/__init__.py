@@ -2,6 +2,13 @@ from collections import OrderedDict
 from aiocache import cached
 from types import FunctionType
 import asyncio
+import enum
+
+
+class ConflictResolution(enum.Enum):
+    Silent = 0
+    Append = 1
+    Exception = 2
 
 
 class PenguinStringCompiler(OrderedDict):
