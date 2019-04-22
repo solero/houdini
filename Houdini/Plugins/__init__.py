@@ -27,3 +27,7 @@ class IPlugin(ABC):
         """
         Called when the plugin is ready to function.
         """
+
+    @abstractmethod
+    def __init__(self, server):
+        self.server = server
