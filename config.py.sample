@@ -1,3 +1,5 @@
+from Houdini import ConflictResolution
+
 database = {
     'Address': 'localhost',
     'Username': 'postgres',
@@ -9,6 +11,14 @@ redis = {
     'Address': '127.0.0.1',
     'Port': 6379
 }
+
+
+commands = {
+    'Prefix': ['!', '?', '.'],
+    'StringDelimiters': ['"', "'"],
+    'ConflictMode': ConflictResolution.Silent
+}
+
 
 servers = {
     'Login': {
