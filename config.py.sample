@@ -12,13 +12,11 @@ redis = {
     'Port': 6379
 }
 
-
 commands = {
     'Prefix': ['!', '?', '.'],
     'StringDelimiters': ['"', "'"],
     'ConflictMode': ConflictResolution.Silent
 }
-
 
 servers = {
     'Login': {
