@@ -21,8 +21,14 @@ from aiocache import SimpleMemoryCache
 from watchdog.observers import Observer
 
 from Houdini.Data import db
-from Houdini.Data.Stamp import Stamp
-from Houdini.Data.Room import Room
+from Houdini.Data.Item import ItemCrumbsCollection
+from Houdini.Data.Igloo import IglooCrumbsCollection, FurnitureCrumbsCollection, \
+    LocationCrumbsCollection, FlooringCrumbsCollection
+from Houdini.Data.Room import RoomCrumbsCollection
+from Houdini.Data.Stamp import StampCrumbsCollection
+from Houdini.Data.Ninja import CardCrumbsCollection
+from Houdini.Data.Mail import PostcardCrumbsCollection
+from Houdini.Data.Pet import PuffleCrumbsCollection, PuffleItemCrumbsCollection
 
 try:
     import uvloop
@@ -35,7 +41,7 @@ from Houdini.Handlers import listeners_from_module, remove_handlers_by_module
 from Houdini.Events.HandlerFileEvent import HandlerFileEventHandler
 from Houdini.Events.PluginFileEvent import PluginFileEventHandler
 
-from Houdini.Commands import commands_from_plugin, invoke_command_string
+from Houdini.Commands import commands_from_plugin
 
 import Houdini.Plugins as Plugins
 
@@ -66,23 +72,24 @@ class HoudiniFactory:
         self.commands = {}
         self.plugins = {}
 
-        self.stamps = []
-        self.rooms = []
+        self.items = None
+        self.igloos = None
+        self.furniture = None
+        self.locations = None
+        self.flooring = None
+        self.rooms = None
+        self.stamps = None
+        self.cards = None
+        self.postcards = None
+        self.puffles = None
+        self.puffle_items = None
+
+        self.spawn_rooms = None
 
     async def start(self):
         self.config = config
 
         self.server_config = self.config.servers[self.server_name]
-
-        self.server = await asyncio.start_server(
-            self.client_connected, self.server_config['Address'],
-            self.server_config['Port']
-        )
-
-        await self.db.set_bind('postgresql://{}:{}@{}/{}'.format(
-            self.config.database['Username'], self.config.database['Password'],
-            self.config.database['Address'],
-            self.config.database['Name']))
 
         general_log_directory = os.path.dirname(self.server_config["Logging"]["General"])
         errors_log_directory = os.path.dirname(self.server_config["Logging"]["Errors"])
@@ -100,7 +107,7 @@ class HoudiniFactory:
                 backup_count=3,
                 when=RolloverInterval.HOURS
             )
-            error_handler = AsyncFileHandler(filename=self.server_config['Logging']['General'])
+            error_handler = AsyncFileHandler(filename=self.server_config['Logging']['Errors'])
             console_handler = AsyncStreamHandler(stream=sys.stdout)
         else:
             self.logger = logging.getLogger('Houdini')
@@ -118,19 +125,30 @@ class HoudiniFactory:
 
         self.logger.addHandler(universal_handler)
         self.logger.addHandler(console_handler)
+        self.logger.addHandler(error_handler)
 
         level = logging.getLevelName(self.server_config['Logging']['Level'])
         self.logger.setLevel(level)
 
+        self.server = await asyncio.start_server(
+            self.client_connected, self.server_config['Address'],
+            self.server_config['Port']
+        )
+
+        await self.db.set_bind('postgresql://{}:{}@{}/{}'.format(
+            self.config.database['Username'], self.config.database['Password'],
+            self.config.database['Address'],
+            self.config.database['Name']))
+
         self.logger.info('Houdini module instantiated')
 
-        if self.server_config['World']:
-            self.redis = await aioredis.create_redis_pool('redis://{}:{}'.format(
-                self.config.redis['Address'], self.redis['Port']),
-                minsize=5, maxsize=10)
+        self.redis = await aioredis.create_redis_pool('redis://{}:{}'.format(
+            self.config.redis['Address'], self.config.redis['Port']),
+            minsize=5, maxsize=10)
 
-            self.redis.delete('{}.players'.format(self.server_name))
-            self.redis.delete('{}.population'.format(self.server_name))
+        if self.server_config['World']:
+            await self.redis.delete('{}.players'.format(self.server_name))
+            await self.redis.delete('{}.population'.format(self.server_name))
 
             self.cache = SimpleMemoryCache(namespace='houdini', ttl=self.server_config['CacheExpiry'])
 
@@ -147,10 +165,41 @@ class HoudiniFactory:
             self.load_handler_modules("Houdini.Handlers.Login.Login")
             self.logger.info('Login server started')
 
-        self.stamps = await db.all(Stamp.query)
-        self.rooms = await Room.query.gino.all()
-        self.logger.info('Loaded %d stamps', len(self.stamps))
-        self.logger.info('Loaded %d rooms', len(self.rooms))
+        self.items = await ItemCrumbsCollection.get_collection()
+        self.logger.info('Loaded {} clothing items'.format(len(self.items)))
+
+        self.igloos = await IglooCrumbsCollection.get_collection()
+        self.logger.info('Loaded {} igloos'.format(len(self.igloos)))
+
+        self.furniture = await FurnitureCrumbsCollection.get_collection()
+        self.logger.info('Loaded {} furniture items'.format(len(self.furniture)))
+
+        self.locations = await LocationCrumbsCollection.get_collection()
+        self.logger.info('Loaded {} igloo locations'.format(len(self.locations)))
+
+        self.flooring = await FlooringCrumbsCollection.get_collection()
+        self.logger.info('Loaded {} igloo flooring'.format(len(self.flooring)))
+
+        self.rooms = await RoomCrumbsCollection.get_collection()
+        self.spawn_rooms = self.rooms.get_spawn_rooms()
+        await self.rooms.setup_tables()
+        await self.rooms.setup_waddles()
+        self.logger.info('Loaded {} rooms ({} spawn)'.format(len(self.rooms), len(self.spawn_rooms)))
+
+        self.postcards = await PostcardCrumbsCollection.get_collection()
+        self.logger.info('Loaded {} postcards'.format(len(self.postcards)))
+
+        self.stamps = await StampCrumbsCollection.get_collection()
+        self.logger.info('Loaded {} stamps'.format(len(self.stamps)))
+
+        self.cards = await CardCrumbsCollection.get_collection()
+        self.logger.info('Loaded {} ninja cards'.format(len(self.cards)))
+
+        self.puffles = await PuffleCrumbsCollection.get_collection()
+        self.logger.info('Loaded {} puffles'.format(len(self.puffles)))
+
+        self.puffle_items = await PuffleItemCrumbsCollection.get_collection()
+        self.logger.info('Loaded {} puffle care items'.format(len(self.puffle_items)))
 
         handlers_path = './Houdini{}Handlers'.format(os.path.sep)
         plugins_path = './Houdini{}Plugins'.format(os.path.sep)
