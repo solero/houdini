@@ -1,4 +1,5 @@
-from Houdini.Data import db
+from Houdini.Data import db, BaseCrumbsCollection
+from Houdini.Data.Penguin import PenguinIgloo, PenguinLocation, PenguinFurniture
 
 
 class Flooring(db.Model):
@@ -66,3 +67,30 @@ class Location(db.Model):
     Name = db.Column(db.String(50), nullable=False)
     Cost = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
     Patched = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+
+
+class IglooCrumbsCollection(BaseCrumbsCollection):
+
+    def __init__(self, inventory_id=None):
+        super().__init__(model=Igloo, key='ID', inventory_model=PenguinIgloo,
+                         inventory_id=inventory_id)
+
+
+class LocationCrumbsCollection(BaseCrumbsCollection):
+
+    def __init__(self, inventory_id=None):
+        super().__init__(model=Location, key='ID', inventory_model=PenguinLocation,
+                         inventory_id=inventory_id)
+
+
+class FurnitureCrumbsCollection(BaseCrumbsCollection):
+
+    def __init__(self, inventory_id=None):
+        super().__init__(model=Furniture, key='ID', inventory_model=PenguinFurniture,
+                         inventory_id=inventory_id)
+
+
+class FlooringCrumbsCollection(BaseCrumbsCollection):
+
+    def __init__(self):
+        super().__init__(model=Flooring, key='ID')

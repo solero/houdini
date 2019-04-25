@@ -1,4 +1,5 @@
-from Houdini.Data import db
+from Houdini.Data import db, BaseCrumbsCollection
+from Houdini.Data.Penguin import PenguinPuffle, PenguinPuffleItem
 
 
 class Puffle(db.Model):
@@ -32,28 +33,42 @@ class PuffleItem(db.Model):
     CleanEffect = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
 
 
-t_puffle_treasure_furniture = db.Table(
-    'puffle_treasure_furniture', db,
-    db.Column('PuffleID', db.ForeignKey('puffle.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False),
-    db.Column('FurnitureID', db.ForeignKey('furniture.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False)
-)
+class PuffleTreasureFurniture(db.Model):
+    __tablename__ = 'puffle_treasure_furniture'
+
+    PuffleID = db.Column(db.ForeignKey('puffle.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                         nullable=False)
+    FurnitureID = db.Column(db.ForeignKey('furniture.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                            nullable=False)
 
 
-t_puffle_treasure_item = db.Table(
-    'puffle_treasure_item', db,
-    db.Column('PuffleID', db.ForeignKey('puffle.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False),
-    db.Column('ItemID', db.ForeignKey('item.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False)
-)
+class PuffleTreasureItem(db.Model):
+    __tablename__ = 'puffle_treasure_item'
+
+    PuffleID = db.Column(db.ForeignKey('puffle.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                         nullable=False)
+    ItemID = db.Column(db.ForeignKey('item.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                       nullable=False)
 
 
-t_puffle_treasure_puffle_item = db.Table(
-    'puffle_treasure_puffle_item', db,
-    db.Column('PuffleID', db.ForeignKey('puffle.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False),
-    db.Column('PuffleItemID', db.ForeignKey('puffle_item.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False)
-)
+class PuffleTreasurePuffleItem(db.Model):
+    __tablename__ = 'puffle_treasure_puffle_item'
+
+    PuffleID = db.Column(db.ForeignKey('puffle.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                         nullable=False)
+    PuffleItemID = db.Column(db.ForeignKey('puffle_item.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                             nullable=False)
+
+
+class PuffleCrumbsCollection(BaseCrumbsCollection):
+
+    def __init__(self, inventory_id=None):
+        super().__init__(model=Puffle, key='ID', inventory_model=PenguinPuffle,
+                         inventory_id=inventory_id)
+
+
+class PuffleItemCrumbsCollection(BaseCrumbsCollection):
+
+    def __init__(self, inventory_id=None):
+        super().__init__(model=PuffleItem, key='ID', inventory_model=PenguinPuffleItem,
+                         inventory_id=inventory_id)

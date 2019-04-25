@@ -86,31 +86,31 @@ class PuffleQuest(db.Model):
     CoinsCollected = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
 
 
-t_penguin_igloo = db.Table(
-    'penguin_igloo', db,
-    db.Column('PenguinID', db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False),
-    db.Column('IglooID', db.ForeignKey('igloo.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False)
-)
+class PenguinIgloo(db.Model):
+    __tablename__ = 'penguin_igloo'
+
+    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                          nullable=False)
+    IglooID = db.Column(db.ForeignKey('igloo.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
 
 
-t_penguin_item = db.Table(
-    'penguin_item', db,
-    db.Column('PenguinID', db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False),
-    db.Column('ItemID', db.ForeignKey('item.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False)
-)
+class PenguinItem(db.Model):
+    __tablename__ = 'penguin_item'
+
+    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'),
+                          primary_key=True, nullable=False)
+    ItemID = db.Column(db.ForeignKey('item.ID', ondelete='CASCADE', onupdate='CASCADE'),
+                       primary_key=True, nullable=False)
 
 
-t_penguin_location = db.Table(
-    'penguin_location', db,
-    db.Column('PenguinID', db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False),
-    db.Column('LocationID', db.ForeignKey('location.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False)
-)
+class PenguinLocation(db.Model):
+    __tablename__ = 'penguin_location'
+
+    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                          nullable=False)
+    LocationID = db.Column(db.ForeignKey('location.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
 
 
 class PenguinStamp(db.Model):

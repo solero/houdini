@@ -1,4 +1,5 @@
-from Houdini.Data import db
+from Houdini.Data import db, BaseCrumbsCollection
+from Houdini.Data.Penguin import PenguinPostcard
 
 
 class Postcard(db.Model):
@@ -10,3 +11,8 @@ class Postcard(db.Model):
     Enabled = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
 
 
+class PostcardCrumbsCollection(BaseCrumbsCollection):
+
+    def __init__(self, inventory_id=None):
+        super().__init__(model=Postcard, key='ID', inventory_model=PenguinPostcard,
+                         inventory_id=inventory_id)

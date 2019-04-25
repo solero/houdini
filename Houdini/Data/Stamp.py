@@ -1,4 +1,5 @@
-from Houdini.Data import db
+from Houdini.Data import db, BaseCrumbsCollection
+from Houdini.Data.Penguin import PenguinStamp
 
 
 class Stamp(db.Model):
@@ -33,3 +34,10 @@ class CoverStamp(db.Model):
     Type = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
     Rotation = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
     Depth = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+
+
+class StampCrumbsCollection(BaseCrumbsCollection):
+
+    def __init__(self, inventory_id=None):
+        super().__init__(model=Stamp, key='ID', inventory_model=PenguinStamp,
+                         inventory_id=inventory_id)
