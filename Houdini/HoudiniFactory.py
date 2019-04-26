@@ -159,10 +159,10 @@ class HoudiniFactory:
             PenguinStringCompiler.setup_default_builder(self.penguin_string_compiler)
             PenguinStringCompiler.setup_anonymous_default_builder(self.anonymous_penguin_string_compiler)
 
-            self.load_handler_modules(exclude_load="Houdini.Handlers.Login.Login")
+            self.load_handler_modules(exclude_load='Houdini.Handlers.Login.Login')
             self.logger.info('World server started')
         else:
-            self.load_handler_modules("Houdini.Handlers.Login.Login")
+            self.load_handler_modules('Houdini.Handlers.Login.Login')
             self.logger.info('Login server started')
 
         self.items = await ItemCrumbsCollection.get_collection()
