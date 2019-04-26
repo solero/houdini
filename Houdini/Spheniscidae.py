@@ -57,11 +57,11 @@ class Spheniscidae:
         data_root.set('t', 'sys')
 
         sub_element_parent = data_root
-        for sub_element, sub_element_attribute in xml_dict.iteritems():
+        for sub_element, sub_element_attribute in xml_dict.items():
             sub_element_object = SubElement(sub_element_parent, sub_element)
 
             if type(xml_dict[sub_element]) is dict:
-                for sub_element_attribute_key, sub_element_attribute_value in xml_dict[sub_element].iteritems():
+                for sub_element_attribute_key, sub_element_attribute_value in xml_dict[sub_element].items():
                     sub_element_object.set(sub_element_attribute_key, sub_element_attribute_value)
             else:
                 sub_element_object.text = xml_dict[sub_element]
