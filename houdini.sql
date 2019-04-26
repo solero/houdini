@@ -378,7 +378,7 @@ CREATE TABLE penguin (
   "ID" SERIAL,
   "Username" VARCHAR(12) NOT NULL,
   "Nickname" VARCHAR(30) NOT NULL,
-  "Password" CHAR(255) NOT NULL,
+  "Password" CHAR(60) NOT NULL,
   "Email" VARCHAR(255) NOT NULL,
   "RegistrationDate" TIMESTAMP NOT NULL,
   "Active" BOOLEAN NOT NULL DEFAULT FALSE,

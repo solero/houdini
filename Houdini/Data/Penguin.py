@@ -7,7 +7,7 @@ class Penguin(db.Model):
     ID = db.Column(db.Integer, primary_key=True, server_default=db.text("nextval('\"penguin_ID_seq\"'::regclass)"))
     Username = db.Column(db.String(12), nullable=False, unique=True)
     Nickname = db.Column(db.String(30), nullable=False)
-    Password = db.Column(db.CHAR(255), nullable=False)
+    Password = db.Column(db.CHAR(60), nullable=False)
     Email = db.Column(db.String(255), nullable=False, index=True)
     RegistrationDate = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
     Active = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
