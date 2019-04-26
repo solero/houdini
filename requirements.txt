@@ -9,4 +9,5 @@ ujson
 watchdog
 defusedxml
 msgpack
+bcrypt
 uvloop; sys_platform == 'linux2' or sys_platform == 'darwin'
