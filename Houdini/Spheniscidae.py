@@ -69,11 +69,11 @@ class Spheniscidae:
             sub_element_parent = sub_element_object
 
         xml_data = tostring(data_root)
-        await self.send_line(xml_data)
+        await self.send_line(xml_data.decode('utf-8'))
 
     async def send_line(self, data):
         self.logger.debug('Outgoing data: %s', data)
-        self.__writer.write(data.encode() + Spheniscidae.Delimiter)
+        self.__writer.write(data.encode('utf-8') + Spheniscidae.Delimiter)
 
     async def close(self):
         self.__writer.close()
