@@ -28,12 +28,12 @@ class Spheniscidae:
 
         self.received_packets = set()
 
-    async def send_error_and_disconnect(self, error):
-        await self.send_xt('e', error)
+    async def send_error_and_disconnect(self, error, *args):
+        await self.send_xt('e', error, *args)
         await self.close()
 
-    async def send_error(self, error):
-        await self.send_xt('e', error)
+    async def send_error(self, error, *args):
+        await self.send_xt('e', error, *args)
 
     async def send_policy_file(self):
         await self.send_line('<cross-domain-policy><allow-access-from domain="*" to-ports="{}" /></cross-domain-policy>'
