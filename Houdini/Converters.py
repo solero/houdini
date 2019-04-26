@@ -184,7 +184,7 @@ class VersionChkConverter(IConverter):
     description = """Used for checking the verChk version number"""
 
     async def convert(self, ctx):
-        return ctx.argument[0].get('v')
+        return int(ctx.argument[0].get('v'))
 
 
 class ConnectedPenguinConverter(IConverter):

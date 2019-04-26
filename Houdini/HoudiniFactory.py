@@ -68,6 +68,8 @@ class HoudiniFactory:
         self.penguins_by_id = {}
         self.penguins_by_username = {}
 
+        self.login_attempts = {}
+
         self.xt_listeners, self.xml_listeners = {}, {}
         self.commands = {}
         self.plugins = {}

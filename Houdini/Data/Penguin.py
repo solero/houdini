@@ -66,6 +66,11 @@ class Penguin(db.Model):
     RejectionDe = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     RejectionRu = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
 
+    @property
+    def approval(self):
+        return int('{}{}0{}{}{}{}'.format(self.ApprovalRu * 1, self.ApprovalDe * 1, self.ApprovalEs * 1,
+                                          self.ApprovalFr * 1, self.ApprovalPt * 1, self.ApprovalEn * 1), 2)
+
 
 class ActivationKey(db.Model):
     __tablename__ = 'activation_key'
