@@ -16,6 +16,7 @@ from datetime import datetime
 
 
 @Handlers.handler(XMLPacket('login'))
+@Handlers.allow_once()
 async def handle_login(p, credentials: CredentialsConverter):
     loop = asyncio.get_event_loop()
 

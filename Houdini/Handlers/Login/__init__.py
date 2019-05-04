@@ -4,6 +4,7 @@ from Houdini.Converters import VersionChkConverter
 
 
 @Handlers.handler(XMLPacket('verChk'))
+@Handlers.allow_once()
 async def handle_version_check(p, version: VersionChkConverter):
     if not version == 153:
         await p.send_xml({'body': {'action': 'apiKO', 'r': '0'}})
@@ -13,5 +14,6 @@ async def handle_version_check(p, version: VersionChkConverter):
 
 
 @Handlers.handler(XMLPacket('rndK'))
+@Handlers.allow_once()
 async def handle_random_key(p, data):
     await p.send_xml({'body': {'action': 'rndK', 'r': '-1'}, 'k': 'houdini'})
