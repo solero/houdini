@@ -32,9 +32,10 @@ servers = {
             'Level': 'DEBUG'
         },
         'LoginFailureLimit': 5,
-        'LoginFailureTimer': 3600
+        'LoginFailureTimer': 3600,
+        'KeyTTL': 3000
     },
-    'Wind': {
+    'Blizzard': {
         'Id': '100',
         'Address': '0.0.0.0',
         'Port': 9875,
@@ -42,9 +43,6 @@ servers = {
         'Capacity': 200,
         'CacheExpiry': 3600,
         'Plugins': [
-            'Commands',
-            'Bot',
-            'Rank'
         ],
         'Logging': {
             'General': 'logs/wind.log',
