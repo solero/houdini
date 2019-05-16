@@ -47,7 +47,7 @@ servers = {
         'Logging': {
             'General': 'logs/wind.log',
             'Errors': 'logs/wind-errors.log',
-            'Level': 'INFO'
+            'Level': 'DEBUG'
         }
     }
 }
