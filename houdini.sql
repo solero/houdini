@@ -1,3 +1,5 @@
+-- noinspection SqlDialectInspectionForFile
+
 DROP TABLE IF EXISTS item;
 CREATE TABLE item (
   "ID" INT NOT NULL,
@@ -527,6 +529,35 @@ COMMENT ON TABLE activation_key IS 'Penguin activation keys';
 
 COMMENT ON COLUMN activation_key."PenguinID" IS 'Penguin ID';
 COMMENT ON COLUMN activation_key."ActivationKey" IS 'Penguin activation key';
+
+DROP TABLE IF EXISTS permission;
+CREATE TABLE permission (
+  "ID" SERIAL NOT NULL,
+  "Name" VARCHAR(50) NOT NULL,
+  "Enabled" BOOLEAN NOT NULL DEFAULT TRUE,
+  PRIMARY KEY ("ID")
+);
+
+CREATE UNIQUE INDEX "Name" ON permission("Name");
+
+COMMENT ON TABLE permission IS 'Registered server permissions';
+
+COMMENT ON COLUMN permission."ID" IS 'Unique permission ID';
+COMMENT ON COLUMN permission."Name" IS 'Unique permission identifier';
+
+DROP TABLE IF EXISTS penguin_permission;
+CREATE TABLE penguin_permission (
+  "PenguinID" INT NOT NULL,
+  "PermissionID" INT NOT NULL,
+  PRIMARY KEY ("PenguinID"),
+  CONSTRAINT penguin_permission_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin("ID") ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_permission_ibfk_2 FOREIGN KEY ("PermissionID") REFERENCES permission("ID") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+COMMENT ON TABLE penguin_permission IS 'Penguin permissions';
+
+COMMENT ON COLUMN penguin_permission."PenguinID" IS 'Penguin ID';
+COMMENT ON COLUMN penguin_permission."PermissionID" IS 'Penguin permission ID';
 
 DROP TABLE IF EXISTS report;
 CREATE TABLE report (
