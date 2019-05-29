@@ -43,6 +43,9 @@ class Penguin(Spheniscidae):
     def penguin_state(self):
         return str()
 
+    @property
+    def nickname(self):
+        return self.data.nickname if self.data.approval else "P" + self.data.id
 
     async def load(self):
         if self.data:
