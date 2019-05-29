@@ -1,10 +1,12 @@
 from houdini.spheniscidae import Spheniscidae
 
+from houdini.data.permission import PermissionCrumbsCollection
 
 class Penguin(Spheniscidae):
 
     __slots__ = ['x', 'y', 'room', 'waddle', 'table', 'data', 'member',
                  'membership_days', 'avatar', 'walking_puffle']
+                 'walking_puffle', 'permissions']
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -23,6 +25,8 @@ class Penguin(Spheniscidae):
 
         self.walking_puffle = None
 
+        self.permissions = None
+
         self.logger.debug('New penguin created')
 
     @property
@@ -36,6 +40,11 @@ class Penguin(Spheniscidae):
     @property
     def penguin_state(self):
         return str()
+
+
+    async def load(self):
+        if self.data:
+            self.permissions = await PermissionCrumbsCollection.get_collection(self.data.id)
 
     async def add_inventory(self, item):
         pass

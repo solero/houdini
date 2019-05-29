@@ -29,7 +29,6 @@ from houdini.data.stamp import StampCrumbsCollection
 from houdini.data.ninja import CardCrumbsCollection
 from houdini.data.mail import PostcardCrumbsCollection
 from houdini.data.pet import PuffleCrumbsCollection, PuffleItemCrumbsCollection
-
 from houdini.data.permission import PermissionCrumbsCollection
 
 try:
@@ -77,6 +76,7 @@ class HoudiniFactory:
         self.commands = CommandManager(self)
         self.plugins = PluginManager(self)
 
+        self.permissions = None
 
         self.items = None
         self.igloos = None
@@ -207,6 +207,8 @@ class HoudiniFactory:
 
         self.puffle_items = await PuffleItemCrumbsCollection.get_collection()
         self.logger.info('Loaded {} puffle care items'.format(len(self.puffle_items)))
+
+        self.permissions = await PermissionCrumbsCollection.get_collection()
 
         handlers_path = './houdini{}handlers'.format(os.path.sep)
         plugins_path = './houdini{}plugins'.format(os.path.sep)

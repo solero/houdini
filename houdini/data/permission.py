@@ -19,3 +19,10 @@ class PermissionCrumbsCollection(BaseCrumbsCollection):
                          inventory_key='penguin_id',
                          inventory_value='permission_id',
                          inventory_id=inventory_id)
+
+    async def register(self, permission_name):
+        try:
+            permission = await self.get(permission_name)
+        except KeyError:
+            permission = await self.set(name=permission_name)
+        return permission
