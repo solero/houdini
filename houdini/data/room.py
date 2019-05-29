@@ -30,11 +30,11 @@ class Room(db.Model):
 
         p.room = self
 
-        await p.send_xt('jr', await self.get_string())
+        await p.send_xt('jr', self.id, await self.get_string())
         await self.send_xt('ap', await p.server.penguin_string_compiler.compile(p))
 
     async def remove_penguin(self, p):
-        await self.send_xt('rp', p.data.ID)
+        await self.send_xt('rp', p.data.id)
 
         self.penguins.remove(p)
         p.room = None
@@ -69,8 +69,8 @@ class RoomTable(db.Model):
 
         seat_id = len(self.penguins) - 1
 
-        await p.send_xt("jt", self.ID, seat_id + 1)
-        await p.room.send_xt("ut", self.ID, len(self.penguins))
+        await p.send_xt("jt", self.id, seat_id + 1)
+        await p.room.send_xt("ut", self.id, len(self.penguins))
         p.table = self
 
         return seat_id
@@ -79,7 +79,7 @@ class RoomTable(db.Model):
         self.penguins.remove(p)
 
         await p.send_xt("lt")
-        await p.room.send_xt("ut", self.ID, len(self.penguins))
+        await p.room.send_xt("ut", self.id, len(self.penguins))
         p.table = None
 
     async def reset(self):
@@ -87,7 +87,7 @@ class RoomTable(db.Model):
             penguin.table = None
 
         self.penguins = []
-        await self.room.send_xt("ut", self.ID, 0)
+        await self.room.send_xt("ut", self.id, 0)
 
     def get_seat_id(self, p):
         return self.penguins.index(p)
@@ -97,11 +97,11 @@ class RoomTable(db.Model):
             return str()
         elif len(self.penguins) == 1:
             player_one, = self.penguins
-            return "%".join([player_one.Nickname, str(), self.game.get_string()])
+            return "%".join([player_one.nickname, str(), self.game.get_string()])
         player_one, player_two = self.penguins[:2]
         if len(self.penguins) == 2:
-            return "%".join([player_one.Nickname, player_two.Nickname, self.game.get_string()])
-        return "%".join([player_one.Nickname, player_two.Nickname, self.game.get_string(), "1"])
+            return "%".join([player_one.nickname, player_two.nickname, self.game.get_string()])
+        return "%".join([player_one.nickname, player_two.nickname, self.game.get_string(), "1"])
 
     async def send_xt(self, *data):
         for penguin in self.penguins:
@@ -133,7 +133,7 @@ class RoomWaddle(db.Model):
         seat_id = self.penguins.index(None)
         self.penguins[seat_id] = p
         await p.send_xt("jw", seat_id)
-        await p.room.send_xt("uw", self.ID, seat_id, p.Nickname)
+        await p.room.send_xt("uw", self.id, seat_id, p.Nickname)
 
         p.waddle = self
 
@@ -143,7 +143,7 @@ class RoomWaddle(db.Model):
     async def remove(self, p):
         seat_id = self.get_seat_id(p)
         self.penguins[seat_id] = None
-        await self.room.send_xt("uw", self.ID, seat_id)
+        await self.room.send_xt("uw", self.id, seat_id)
 
         p.waddle = None
 
@@ -151,7 +151,7 @@ class RoomWaddle(db.Model):
         for seat_id, penguin in enumerate(self.penguins):
             if penguin:
                 self.penguins[seat_id] = None
-                await penguin.room.send_xt("uw", self.ID, seat_id)
+                await penguin.room.send_xt("uw", self.id, seat_id)
 
     def get_seat_id(self, p):
         return self.penguins.index(p)
@@ -160,17 +160,18 @@ class RoomWaddle(db.Model):
 class RoomCrumbsCollection(BaseCrumbsCollection):
 
     def __init__(self):
-        super().__init__(model=Room, key='ID')
+        super().__init__(model=Room,
+                         key='id')
 
     def get_spawn_rooms(self):
-        return [room for room in self.values() if room.Spawn]
+        return [room for room in self.values() if room.spawn]
 
     async def setup_tables(self):
         async with self._db.transaction():
             async for table in RoomTable.query.gino.iterate():
-                self[table.RoomID].tables[table.ID] = table
+                self[table.room_id].tables[table.id] = table
 
     async def setup_waddles(self):
         async with self._db.transaction():
             async for waddle in RoomWaddle.query.gino.iterate():
-                self[waddle.RoomID].waddles[waddle.ID] = waddle
+                self[waddle.room_id].waddles[waddle.id] = waddle
