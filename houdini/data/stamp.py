@@ -39,5 +39,9 @@ class CoverStamp(db.Model):
 class StampCrumbsCollection(BaseCrumbsCollection):
 
     def __init__(self, inventory_id=None):
-        super().__init__(model=Stamp, key='ID', inventory_model=PenguinStamp,
+        super().__init__(model=Stamp,
+                         key='id',
+                         inventory_model=PenguinStamp,
+                         inventory_key='penguin_id',
+                         inventory_value='stamp_id',
                          inventory_id=inventory_id)

@@ -63,12 +63,20 @@ class PuffleTreasurePuffleItem(db.Model):
 class PuffleCrumbsCollection(BaseCrumbsCollection):
 
     def __init__(self, inventory_id=None):
-        super().__init__(model=Puffle, key='ID', inventory_model=PenguinPuffle,
+        super().__init__(model=Puffle,
+                         key='id',
+                         inventory_model=PenguinPuffle,
+                         inventory_key='penguin_id',
+                         inventory_value='puffle_id',
                          inventory_id=inventory_id)
 
 
 class PuffleItemCrumbsCollection(BaseCrumbsCollection):
 
     def __init__(self, inventory_id=None):
-        super().__init__(model=PuffleItem, key='ID', inventory_model=PenguinPuffleItem,
+        super().__init__(model=PuffleItem,
+                         key='id',
+                         inventory_model=PenguinPuffleItem,
+                         inventory_key='penguin_id',
+                         inventory_value='item_id',
                          inventory_id=inventory_id)

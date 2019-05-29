@@ -20,5 +20,9 @@ class Item(db.Model):
 class ItemCrumbsCollection(BaseCrumbsCollection):
 
     def __init__(self, inventory_id=None):
-        super().__init__(model=Item, key='ID', inventory_model=PenguinItem,
+        super().__init__(model=Item,
+                         key='id',
+                         inventory_model=PenguinItem,
+                         inventory_key='penguin_id',
+                         inventory_value='item_id',
                          inventory_id=inventory_id)

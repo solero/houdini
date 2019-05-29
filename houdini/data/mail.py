@@ -14,5 +14,9 @@ class Postcard(db.Model):
 class PostcardCrumbsCollection(BaseCrumbsCollection):
 
     def __init__(self, inventory_id=None):
-        super().__init__(model=Postcard, key='ID', inventory_model=PenguinPostcard,
+        super().__init__(model=Postcard,
+                         key='id',
+                         inventory_model=PenguinPostcard,
+                         inventory_key='recipient_id',
+                         inventory_value='postcard_id',
                          inventory_id=inventory_id)

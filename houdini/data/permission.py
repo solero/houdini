@@ -13,5 +13,9 @@ class Permission(db.Model):
 class PermissionCrumbsCollection(BaseCrumbsCollection):
 
     def __init__(self, inventory_id=None):
-        super().__init__(model=Permission, key='ID', inventory_model=PenguinPermission,
+        super().__init__(model=Permission,
+                         key='name',
+                         inventory_model=PenguinPermission,
+                         inventory_key='penguin_id',
+                         inventory_value='permission_id',
                          inventory_id=inventory_id)

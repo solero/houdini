@@ -18,5 +18,7 @@ class Card(db.Model):
 class CardCrumbsCollection(BaseCrumbsCollection):
 
     def __init__(self, inventory_id=None):
-        super().__init__(model=Card, key='ID', inventory_model=PenguinCard,
+        super().__init__(model=Card,
+                         key='id',
+                         inventory_model=PenguinCard,
                          inventory_id=inventory_id)

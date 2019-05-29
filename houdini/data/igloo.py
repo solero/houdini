@@ -72,25 +72,42 @@ class Location(db.Model):
 class IglooCrumbsCollection(BaseCrumbsCollection):
 
     def __init__(self, inventory_id=None):
-        super().__init__(model=Igloo, key='ID', inventory_model=PenguinIgloo,
+        super().__init__(model=Igloo,
+                         key='id',
+                         inventory_model=PenguinIgloo,
+                         inventory_key='penguin_id',
+                         inventory_value='igloo_id',
                          inventory_id=inventory_id)
 
 
 class LocationCrumbsCollection(BaseCrumbsCollection):
 
     def __init__(self, inventory_id=None):
-        super().__init__(model=Location, key='ID', inventory_model=PenguinLocation,
+        super().__init__(model=Location,
+                         key='id',
+                         inventory_model=PenguinLocation,
+                         inventory_key='penguin_id',
+                         inventory_value='location_id',
                          inventory_id=inventory_id)
 
 
 class FurnitureCrumbsCollection(BaseCrumbsCollection):
 
     def __init__(self, inventory_id=None):
-        super().__init__(model=Furniture, key='ID', inventory_model=PenguinFurniture,
+        super().__init__(model=Furniture,
+                         key='id',
+                         inventory_model=PenguinFurniture,
+                         inventory_key='penguin_id',
+                         inventory_value='furniture_id',
                          inventory_id=inventory_id)
 
 
 class FlooringCrumbsCollection(BaseCrumbsCollection):
 
-    def __init__(self):
-        super().__init__(model=Flooring, key='ID')
+    def __init__(self, inventory_id=None):
+        super().__init__(model=Flooring,
+                         key='id',
+                         inventory_model=PenguinFlooring,
+                         inventory_key='penguin_id',
+                         inventory_value='flooring_id',
+                         inventory_id=inventory_id)
