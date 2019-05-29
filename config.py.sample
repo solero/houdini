@@ -45,9 +45,9 @@ servers = {
         'Plugins': [
         ],
         'Logging': {
-            'General': 'logs/wind.log',
-            'Errors': 'logs/wind-errors.log',
-            'Level': 'DEBUG'
+            'General': 'logs/blizzard.log',
+            'Errors': 'logs/blizzard-errors.log',
+            'Level': 'INFO'
         }
     }
 }
