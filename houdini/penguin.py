@@ -4,7 +4,7 @@ from houdini.data.permission import PermissionCrumbsCollection
 
 class Penguin(Spheniscidae):
 
-    __slots__ = ['x', 'y', 'room', 'waddle', 'table', 'data', 'member',
+    __slots__ = ['x', 'y', 'frame','room', 'waddle', 'table', 'data',
                  'membership_days', 'avatar', 'walking_puffle']
                  'walking_puffle', 'permissions']
 
@@ -12,6 +12,7 @@ class Penguin(Spheniscidae):
         super().__init__(*args)
 
         self.x, self.y = (0, 0)
+        self.frame = 1
         self.room = None
         self.waddle = None
         self.table = None
