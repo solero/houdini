@@ -1,5 +1,6 @@
 import asyncio
 import sys
+import logging
 from houdini.houdini import HoudiniFactory
 
 if __name__ == '__main__':
@@ -7,5 +8,9 @@ if __name__ == '__main__':
         loop = asyncio.ProactorEventLoop()
         asyncio.set_event_loop(loop)
 
+    logger = logging.getLogger('houdini')
     factory_instance = HoudiniFactory(server='Login')
-    asyncio.run(factory_instance.start())
+    try:
+        asyncio.run(factory_instance.start())
+    except KeyboardInterrupt:
+        logger.info('Shutting down...')
