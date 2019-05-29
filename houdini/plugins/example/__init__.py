@@ -1,7 +1,10 @@
-from Houdini import Handlers
-from Houdini.Handlers import XTPacket
+from houdini import handlers
+from houdini.handlers import XTPacket
 
-from Houdini.Plugins import IPlugin
+from houdini.plugins import IPlugin
+from houdini import commands
+
+from houdini import permissions
 
 
 class Example(IPlugin):
@@ -10,28 +13,21 @@ class Example(IPlugin):
     version = "1.0.0"
 
     def __init__(self, server):
-        self.server = server
+        super().__init__(server)
 
     async def ready(self):
         self.server.logger.info('Example.ready()')
+        await self.server.permissions.register('houdini.ping')
 
     async def message_cooling(self, p):
         print("{}, Message was sent during cooldown".format(p))
 
-    @Handlers.handler(XTPacket('s', 'sm'))
-    @Handlers.cooldown(1, callback=message_cooling)
+    @handlers.handler(XTPacket('m', 'sm'))
+    @handlers.cooldown(1, callback=message_cooling)
     async def handle_send_message(self, p, message: str):
         print('Do stuff with {}'.format(message))
 
-    # @Commands.command('ping')
+    @commands.command('ping')
+    @permissions.has('houdini.ping')
     async def ping(self, p):
         p.send_xt('cprompt', 'Pong')
-
-    # @Events.on('connected')
-    async def on_connected(self, client):
-        print(client)
-
-    # @Events.on('disconnected')
-    async def on_disconnect(self, client):
-        print(client)
-
