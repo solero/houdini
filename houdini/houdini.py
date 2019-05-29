@@ -39,13 +39,13 @@ except ImportError:
     uvloop = None
 
 import houdini.handlers
-from houdini.handlers import listeners_from_module, remove_handlers_by_module
-from houdini.events.handler_file_event import HandlerFileEventHandler
+import houdini.plugins
+from houdini.events.listener_file_event import ListenerFileEventHandler
 from houdini.events.plugin_file_event import PluginFileEventHandler
 
-from houdini.commands import commands_from_plugin
-
-import houdini.plugins as plugins
+from houdini.handlers import XTListenerManager, XMLListenerManager
+from houdini.plugins import PluginManager
+from houdini.commands import CommandManager
 
 
 class HoudiniFactory:
@@ -72,9 +72,11 @@ class HoudiniFactory:
 
         self.login_attempts = {}
 
-        self.xt_listeners, self.xml_listeners = {}, {}
-        self.commands = {}
-        self.plugins = {}
+        self.xt_listeners = XTListenerManager(self)
+        self.xml_listeners = XMLListenerManager(self)
+        self.commands = CommandManager(self)
+        self.plugins = PluginManager(self)
+
 
         self.items = None
         self.igloos = None
@@ -144,7 +146,7 @@ class HoudiniFactory:
             self.config.database['Address'],
             self.config.database['Name']))
 
-        self.logger.info('houdini module instantiated')
+        self.logger.info('Houdini module instantiated')
 
         self.redis = await aioredis.create_redis_pool('redis://{}:{}'.format(
             self.config.redis['Address'], self.config.redis['Port']),
@@ -163,10 +165,11 @@ class HoudiniFactory:
             PenguinStringCompiler.setup_default_builder(self.penguin_string_compiler)
             PenguinStringCompiler.setup_anonymous_default_builder(self.anonymous_penguin_string_compiler)
 
-            self.load_handler_modules(exclude_load='houdini.Handlers.Login.Login')
+            self.xml_listeners.setup(houdini.handlers, exclude_load='houdini.handlers.login.login')
+            self.xt_listeners.setup(houdini.handlers)
             self.logger.info('World server started')
         else:
-            self.load_handler_modules('houdini.Handlers.Login.Login')
+            self.xml_listeners.setup(houdini.handlers, 'houdini.handlers.login.login')
             self.logger.info('Login server started')
 
         self.items = await ItemCrumbsCollection.get_collection()
@@ -207,59 +210,19 @@ class HoudiniFactory:
 
         handlers_path = './houdini{}handlers'.format(os.path.sep)
         plugins_path = './houdini{}plugins'.format(os.path.sep)
-        self.configure_observers([handlers_path, HandlerFileEventHandler],
+        self.configure_observers([handlers_path, ListenerFileEventHandler],
                                  [plugins_path, PluginFileEventHandler])
 
         self.logger.info('Listening on {}:{}'.format(self.server_config['Address'], self.server_config['Port']))
 
-        await self.load_plugins()
+        self.plugins.setup(houdini.plugins)
 
         async with self.server:
             await self.server.serve_forever()
 
-    async def load_plugins(self):
-        for plugin_package in self.get_package_modules(plugins):
-            await self.load_plugin(plugin_package)
-
-    async def load_plugin(self, plugin):
-        plugin_module, plugin_class = plugin
-
-        if plugin_class not in self.server_config['Plugins']:
-            return
-
-        plugin_object = getattr(plugin_module, plugin_class)(self)
-
-        if isinstance(plugin_object, plugins.IPlugin):
-            self.plugins[plugin_class] = plugin_object
-
-            listeners_from_module(self.xt_listeners, self.xml_listeners, plugin_object)
-            commands_from_plugin(self.commands, plugin_object)
-
-            await plugin_object.ready()
-        else:
-            self.logger.warn('{0} plugin object doesn\'t provide the plugin interface'.format(plugin_class))
-
-    def unload_plugin(self, plugin):
-        plugin_module, plugin_class = plugin
-
-        if plugin_class in self.plugins:
-            plugin_module_path = plugin_module.__file__
-            del self.plugins[plugin_class]
-
-            remove_handlers_by_module(self.xt_listeners, self.xml_listeners, plugin_module_path)
-
     async def client_connected(self, reader, writer):
         client_object = self.client_class(self, reader, writer)
         await client_object.run()
-
-    def load_handler_modules(self, strict_load=None, exclude_load=None):
-        for handler_module in self.get_package_modules(houdini.handlers):
-            if not (strict_load and handler_module not in strict_load or exclude_load and handler_module in exclude_load):
-                if handler_module not in sys.modules.keys():
-                    module = importlib.import_module(handler_module)
-                    listeners_from_module(self.xt_listeners, self.xml_listeners, module)
-
-        self.logger.info('Handler modules loaded')
 
     def get_package_modules(self, package):
         package_modules = []
@@ -271,8 +234,8 @@ class HoudiniFactory:
                 subpackage_object = importlib.import_module(full_module_name, package=package.__path__)
                 subpackage_object_directory = dir(subpackage_object)
 
-                if plugins.IPlugin.__name__ in subpackage_object_directory:
-                    package_modules.append((subpackage_object, module_name))
+                if houdini.plugins.IPlugin.__name__ in subpackage_object_directory:
+                    package_modules.append(subpackage_object)
                     continue
 
                 sub_package_modules = self.get_package_modules(subpackage_object)

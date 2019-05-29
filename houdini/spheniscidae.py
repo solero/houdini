@@ -85,7 +85,7 @@ class Spheniscidae:
         packet_id = parsed_data[2]
         packet = XTPacket(packet_id)
 
-        if handlers.listener_exists(self.server.xt_listeners, self.server.xml_listeners, packet):
+        if packet in self.server.xt_listeners:
             xt_listeners = self.server.xt_listeners[packet]
             packet_data = parsed_data[4:]
 
@@ -111,7 +111,7 @@ class Spheniscidae:
                 action = body_tag.get('action')
                 packet = XMLPacket(action)
 
-                if handlers.listener_exists(self.server.xt_listeners, self.server.xml_listeners, packet):
+                if packet in self.server.xml_listeners:
                     xml_listeners = self.server.xml_listeners[packet]
 
                     for listener in xml_listeners:

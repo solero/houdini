@@ -1,8 +1,12 @@
 from collections import OrderedDict
 from aiocache import cached
 from types import FunctionType
+from abc import abstractmethod
+
 import asyncio
 import enum
+import logging
+import copy
 
 
 class ConflictResolution(enum.Enum):
@@ -18,6 +22,33 @@ class Language(enum.Enum):
     Es = 8
     De = 32
     Ru = 64
+
+
+class _AbstractManager(dict):
+    def __init__(self, server):
+        self.server = server
+        self.logger = logging.getLogger('houdini')
+
+        self.__backup = None
+        super().__init__()
+
+    @abstractmethod
+    def load(self, module):
+        """Loads entries from module"""
+
+    @abstractmethod
+    def remove(self, module):
+        """Removes all entries by module"""
+
+    def backup(self):
+        self.__backup = copy.copy(self)
+
+    def restore(self):
+        if self.__backup is not None:
+            self.update(self.__backup)
+            self.__backup = None
+
+
 class PenguinStringCompiler(OrderedDict):
 
     def __init__(self, *args, **kwargs):

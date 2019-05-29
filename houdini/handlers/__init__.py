@@ -2,12 +2,16 @@ import inspect
 import enum
 import os
 import itertools
+import importlib
+import sys
+import logging
+import copy
 from types import FunctionType
 
 from houdini.converters import _listener, _ArgumentDeserializer, get_converter, do_conversion, _ConverterContext
 
 from houdini.cooldown import _Cooldown, _CooldownMapping, BucketType
-from houdini import plugins
+from houdini import plugins, _AbstractManager
 
 
 class AuthorityError(Exception):
@@ -105,11 +109,59 @@ class _XMLListener(_Listener):
         return await self.callback(*handler_call_arguments)
 
 
-def get_relative_function_path(function_obj):
-    abs_function_file = inspect.getfile(function_obj)
-    rel_function_file = os.path.relpath(abs_function_file)
+class _ListenerManager(_AbstractManager):
+    def setup(self, module, strict_load=None, exclude_load=None):
+        for handler_module in self.server.get_package_modules(module):
+            if not (strict_load and handler_module not in strict_load or exclude_load
+                    and handler_module in exclude_load):
+                module = sys.modules[handler_module] if handler_module in sys.modules.keys() \
+                    else importlib.import_module(handler_module)
+                self.load(module)
 
-    return rel_function_file
+        self.logger.info('Handler modules loaded')
+
+    def load(self, module):
+        listener_objects = inspect.getmembers(module, self.is_listener)
+        for listener_name, listener_object in listener_objects:
+            if isinstance(module, plugins.IPlugin):
+                listener_object.instance = module
+
+            if listener_object.packet not in self:
+                self[listener_object.packet] = []
+
+            if listener_object not in self[listener_object.packet]:
+                if listener_object.priority == Priority.High:
+                    self[listener_object.packet].insert(0, listener_object)
+                elif listener_object.priority == Priority.Override:
+                    self[listener_object.packet] = [listener_object]
+                else:
+                    self[listener_object.packet].append(listener_object)
+
+        for listener_name, listener_object in listener_objects:
+            for override in listener_object.overrides:
+                self[override.packet].remove(override)
+
+    def remove(self, module):
+        for handler_id, handler_listeners in self.items():
+            for handler_listener in handler_listeners:
+                if module.__name__ == handler_listener.callback.__module__:
+                    handler_listeners.remove(handler_listener)
+
+    @classmethod
+    def is_listener(cls, listener):
+        return issubclass(type(listener), _Listener)
+
+
+class XTListenerManager(_ListenerManager):
+    @classmethod
+    def is_listener(cls, listener):
+        return issubclass(type(listener), _XTListener)
+
+
+class XMLListenerManager(_ListenerManager):
+    @classmethod
+    def is_listener(cls, listener):
+        return issubclass(type(listener), _XMLListener)
 
 
 def handler(packet, **kwargs):
@@ -118,50 +170,6 @@ def handler(packet, **kwargs):
 
     listener_class = _XTListener if isinstance(packet, XTPacket) else _XMLListener
     return _listener(listener_class, packet, **kwargs)
-
-
-def listener_exists(xt_listeners, xml_listeners, packet):
-    listener_collection = xt_listeners if isinstance(packet, XTPacket) else xml_listeners
-    return packet in listener_collection
-
-
-def is_listener(listener):
-    return issubclass(type(listener), _Listener)
-
-
-def listeners_from_module(xt_listeners, xml_listeners, module):
-    listener_objects = inspect.getmembers(module, is_listener)
-    for listener_name, listener_object in listener_objects:
-        if isinstance(module, plugins.IPlugin):
-            listener_object.instance = module
-
-        listener_collection = xt_listeners if type(listener_object) == _XTListener else xml_listeners
-        if listener_object.packet not in listener_collection:
-            listener_collection[listener_object.packet] = []
-
-        if listener_object not in listener_collection[listener_object.packet]:
-            if listener_object.priority == Priority.High:
-                listener_collection[listener_object.packet].insert(0, listener_object)
-            elif listener_object.priority == Priority.Override:
-                listener_collection[listener_object.packet] = [listener_object]
-            else:
-                listener_collection[listener_object.packet].append(listener_object)
-
-    for listener_name, listener_object in listener_objects:
-        listener_collection = xt_listeners if type(listener_object) == _XTListener else xml_listeners
-        for override in listener_object.overrides:
-            listener_collection[override.packet].remove(override)
-
-
-def remove_handlers_by_module(xt_listeners, xml_listeners, handler_module_path):
-    def remove_handlers(remove_handler_items):
-        for handler_id, handler_listeners in remove_handler_items:
-            for handler_listener in handler_listeners:
-                handler_file = get_relative_function_path(handler_listener.callback)
-                if handler_file == handler_module_path:
-                    handler_listeners.remove(handler_listener)
-    remove_handlers(xt_listeners.items())
-    remove_handlers(xml_listeners.items())
 
 
 def cooldown(per=1.0, rate=1, bucket_type=BucketType.Default, callback=None):
