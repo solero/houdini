@@ -57,5 +57,5 @@ class Penguin(Spheniscidae):
 
     def __repr__(self):
         if self.data is not None:
-            return '<Penguin ID=\'{}\' Username=\'{}\'>'.format(self.data.ID, self.data.Username)
+            return '<Penguin ID=\'{}\' Username=\'{}\'>'.format(self.data.id, self.data.username)
         return super().__repr__()

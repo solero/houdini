@@ -5,35 +5,35 @@ from houdini.data.penguin import PenguinStamp
 class Stamp(db.Model):
     __tablename__ = 'stamp'
 
-    ID = db.Column(db.Integer, primary_key=True)
-    Name = db.Column(db.String(50), nullable=False)
-    GroupID = db.Column(db.ForeignKey('stamp_group.ID', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
-    Member = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    Rank = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
-    Description = db.Column(db.String(255), nullable=False, server_default=db.text("''::character varying"))
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    group_id = db.Column(db.ForeignKey('stamp_group.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    member = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    rank = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
+    description = db.Column(db.String(255), nullable=False, server_default=db.text("''::character varying"))
 
 
 class StampGroup(db.Model):
     __tablename__ = 'stamp_group'
 
-    ID = db.Column(db.Integer, primary_key=True)
-    Name = db.Column(db.String(50), nullable=False)
-    ParentID = db.Column(db.ForeignKey('stamp_group.ID', ondelete='CASCADE', onupdate='CASCADE'))
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    parent_id = db.Column(db.ForeignKey('stamp_group.id', ondelete='CASCADE', onupdate='CASCADE'))
 
 
 class CoverStamp(db.Model):
     __tablename__ = 'cover_stamp'
 
-    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                          nullable=False)
-    StampID = db.Column(db.ForeignKey('stamp.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                        nullable=False)
-    ItemID = db.Column(db.ForeignKey('item.ID', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
-    X = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    Y = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    Type = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    Rotation = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    Depth = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    stamp_id = db.Column(db.ForeignKey('stamp.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                         nullable=False)
+    item_id = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    x = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    y = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    type = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    rotation = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    depth = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
 
 
 class StampCrumbsCollection(BaseCrumbsCollection):

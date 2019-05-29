@@ -4,251 +4,260 @@ from houdini.data import db
 class Penguin(db.Model):
     __tablename__ = 'penguin'
 
-    ID = db.Column(db.Integer, primary_key=True, server_default=db.text("nextval('\"penguin_ID_seq\"'::regclass)"))
-    Username = db.Column(db.String(12), nullable=False, unique=True)
-    Nickname = db.Column(db.String(30), nullable=False)
-    Password = db.Column(db.CHAR(60), nullable=False)
-    Email = db.Column(db.String(255), nullable=False, index=True)
-    RegistrationDate = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
-    Active = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    SafeChat = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    LastPaycheck = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
-    MinutesPlayed = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
-    Moderator = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    Character = db.Column(db.ForeignKey('character.ID', ondelete='CASCADE', onupdate='CASCADE'))
-    Igloo = db.Column(db.ForeignKey('penguin_igloo_room.ID', ondelete='CASCADE', onupdate='CASCADE'))
-    Coins = db.Column(db.Integer, nullable=False, server_default=db.text("500"))
-    Color = db.Column(db.ForeignKey('item.ID', ondelete='CASCADE', onupdate='CASCADE'))
-    Head = db.Column(db.ForeignKey('item.ID', ondelete='CASCADE', onupdate='CASCADE'))
-    Face = db.Column(db.ForeignKey('item.ID', ondelete='CASCADE', onupdate='CASCADE'))
-    Neck = db.Column(db.ForeignKey('item.ID', ondelete='CASCADE', onupdate='CASCADE'))
-    Body = db.Column(db.ForeignKey('item.ID', ondelete='CASCADE', onupdate='CASCADE'))
-    Hand = db.Column(db.ForeignKey('item.ID', ondelete='CASCADE', onupdate='CASCADE'))
-    Feet = db.Column(db.ForeignKey('item.ID', ondelete='CASCADE', onupdate='CASCADE'))
-    Photo = db.Column(db.ForeignKey('item.ID', ondelete='CASCADE', onupdate='CASCADE'))
-    Flag = db.Column(db.ForeignKey('item.ID', ondelete='CASCADE', onupdate='CASCADE'))
-    Permaban = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    BookModified = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    BookColor = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
-    BookHighlight = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
-    BookPattern = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    BookIcon = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
-    AgentStatus = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    FieldOpStatus = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    CareerMedals = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
-    AgentMedals = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
-    LastFieldOp = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
-    NinjaRank = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    NinjaProgress = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    FireNinjaRank = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    FireNinjaProgress = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    WaterNinjaRank = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    WaterNinjaProgress = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    NinjaMatchesWon = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
-    FireMatchesWon = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
-    WaterMatchesWon = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
-    RainbowAdoptability = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    HasDug = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    Nuggets = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    TimerActive = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    TimerStart = db.Column(db.Time, nullable=False, server_default=db.text("'00:00:00'::time without time zone"))
-    TimerEnd = db.Column(db.Time, nullable=False, server_default=db.text("'23:59:59'::time without time zone"))
-    ApprovalEn = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    ApprovalPt = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    ApprovalFr = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    ApprovalEs = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    ApprovalDe = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    ApprovalRu = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    RejectionEn = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    RejectionPt = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    RejectionFr = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    RejectionEs = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    RejectionDe = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    RejectionRu = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    id = db.Column(db.Integer, primary_key=True, server_default=db.text("nextval('\"penguin_id_seq\"'::regclass)"))
+    username = db.Column(db.String(12), nullable=False, unique=True)
+    nickname = db.Column(db.String(30), nullable=False)
+    password = db.Column(db.CHAR(60), nullable=False)
+    email = db.Column(db.String(255), nullable=False, index=True)
+    registration_date = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
+    active = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    safe_chat = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    last_paycheck = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
+    minutes_played = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
+    moderator = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    character = db.Column(db.ForeignKey('character.id', ondelete='CASCADE', onupdate='CASCADE'))
+    igloo = db.Column(db.ForeignKey('penguin_igloo_room.id', ondelete='CASCADE', onupdate='CASCADE'))
+    coins = db.Column(db.Integer, nullable=False, server_default=db.text("500"))
+    color = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'))
+    head = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'))
+    face = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'))
+    neck = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'))
+    body = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'))
+    hand = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'))
+    feet = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'))
+    photo = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'))
+    flag = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'))
+    permaban = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    book_modified = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    book_color = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
+    book_highlight = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
+    book_pattern = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    book_icon = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
+    agent_status = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    field_op_status = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    career_medals = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
+    agent_medals = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
+    last_field_op = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
+    ninja_rank = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    ninja_progress = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    fire_ninja_rank = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    fire_ninja_progress = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    water_ninja_rank = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    water_ninja_progress = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    ninja_matches_won = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
+    fire_matches_won = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
+    water_matches_won = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
+    rainbow_adoptability = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    has_dug = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    nuggets = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    timer_active = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    timer_start = db.Column(db.Time, nullable=False, server_default=db.text("'00:00:00'::time without time zone"))
+    timer_end = db.Column(db.Time, nullable=False, server_default=db.text("'23:59:59'::time without time zone"))
+    approval_en = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    approval_pt = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    approval_fr = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    approval_es = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    approval_de = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    approval_ru = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    rejection_en = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    rejection_pt = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    rejection_fr = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    rejection_es = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    rejection_de = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    rejection_ru = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
 
     @property
     def approval(self):
-        return int('{}{}0{}{}{}{}'.format(self.ApprovalRu * 1, self.ApprovalDe * 1, self.ApprovalEs * 1,
-                                          self.ApprovalFr * 1, self.ApprovalPt * 1, self.ApprovalEn * 1), 2)
+        return int('{}{}0{}{}{}{}'.format(self.approval_ru * 1, self.approval_de * 1, self.approval_es * 1,
+                                          self.approval_fr * 1, self.approval_pt * 1, self.approval_en * 1), 2)
 
     @property
     def rejection(self):
-        return int('{}{}0{}{}{}{}'.format(self.RejectionRu * 1, self.RejectionDe * 1, self.RejectionEs * 1,
-                                          self.RejectionFr * 1, self.RejectionPt * 1, self.RejectionEn * 1), 2)
+        return int('{}{}0{}{}{}{}'.format(self.rejection_ru * 1, self.rejection_de * 1, self.rejection_es * 1,
+                                          self.rejection_fr * 1, self.rejection_pt * 1, self.rejection_en * 1), 2)
 
 
 class ActivationKey(db.Model):
     __tablename__ = 'activation_key'
 
-    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                          nullable=False)
-    ActivationKey = db.Column(db.CHAR(255), primary_key=True, nullable=False)
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    activation_key = db.Column(db.CHAR(255), primary_key=True, nullable=False)
 
 
 class PuffleQuest(db.Model):
     __tablename__ = 'puffle_quest'
 
-    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                          nullable=False)
-    TaskID = db.Column(db.SmallInteger, primary_key=True, nullable=False)
-    CompletionDate = db.Column(db.DateTime)
-    ItemCollected = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    CoinsCollected = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    task_id = db.Column(db.SmallInteger, primary_key=True, nullable=False)
+    completion_date = db.Column(db.DateTime)
+    item_collected = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    coins_collected = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
 
 
 class PenguinIgloo(db.Model):
     __tablename__ = 'penguin_igloo'
 
-    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                          nullable=False)
-    IglooID = db.Column(db.ForeignKey('igloo.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                        nullable=False)
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    igloo_id = db.Column(db.ForeignKey('igloo.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                         nullable=False)
 
 
 class PenguinItem(db.Model):
     __tablename__ = 'penguin_item'
 
-    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'),
-                          primary_key=True, nullable=False)
-    ItemID = db.Column(db.ForeignKey('item.ID', ondelete='CASCADE', onupdate='CASCADE'),
-                       primary_key=True, nullable=False)
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'),
+                           primary_key=True, nullable=False)
+    item_id = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'),
+                        primary_key=True, nullable=False)
 
 
 class PenguinLocation(db.Model):
     __tablename__ = 'penguin_location'
 
-    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                          nullable=False)
-    LocationID = db.Column(db.ForeignKey('location.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
                            nullable=False)
+    location_id = db.Column(db.ForeignKey('location.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                            nullable=False)
 
 
 class PenguinStamp(db.Model):
     __tablename__ = 'penguin_stamp'
 
-    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                          nullable=False)
-    StampID = db.Column(db.ForeignKey('stamp.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                        nullable=False)
-    Recent = db.Column(db.Boolean, nullable=False, server_default=db.text("true"))
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    stamp_id = db.Column(db.ForeignKey('stamp.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                         nullable=False)
+    recent = db.Column(db.Boolean, nullable=False, server_default=db.text("true"))
 
 
 class PenguinRedemption(db.Model):
     __tablename__ = 'penguin_redemption'
 
-    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                          nullable=False)
-    CodeID = db.Column(db.ForeignKey('redemption_code.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                       nullable=False, index=True)
-    BookID = db.Column(db.ForeignKey('redemption_book.ID', ondelete='CASCADE', onupdate='CASCADE'), index=True)
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    code_id = db.Column(db.ForeignKey('redemption_code.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False, index=True)
+    book_id = db.Column(db.ForeignKey('redemption_book.id', ondelete='CASCADE', onupdate='CASCADE'), index=True)
 
 
 class PenguinMembership(db.Model):
     __tablename__ = 'penguin_membership'
 
-    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                          nullable=False)
-    Start = db.Column(db.DateTime, primary_key=True, nullable=False)
-    End = db.Column(db.DateTime, primary_key=True, nullable=False)
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    start = db.Column(db.DateTime, primary_key=True, nullable=False)
+    expires = db.Column(db.DateTime, primary_key=True, nullable=False)
 
 
 class PenguinPostcard(db.Model):
     __tablename__ = 'penguin_postcard'
 
-    ID = db.Column(db.Integer, primary_key=True,
-                   server_default=db.text("nextval('\"penguin_postcard_ID_seq\"'::regclass)"))
-    SenderID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), index=True)
-    RecipientID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), nullable=False,
-                            index=True)
-    PostcardID = db.Column(db.ForeignKey('postcard.ID', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
-    SendDate = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
-    Details = db.Column(db.String(255), nullable=False, server_default=db.text("''::character varying"))
-    HasRead = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    id = db.Column(db.Integer, primary_key=True,
+                   server_default=db.text("nextval('\"penguin_postcard_id_seq\"'::regclass)"))
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False,
+                           index=True)
+    sender_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), index=True)
+    postcard_id = db.Column(db.ForeignKey('postcard.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    send_date = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
+    details = db.Column(db.String(255), nullable=False, server_default=db.text("''::character varying"))
+    has_read = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
 
 
 class PenguinIglooRoom(db.Model):
     __tablename__ = 'penguin_igloo_room'
 
-    ID = db.Column(db.Integer, primary_key=True,
-                   server_default=db.text("nextval('\"penguin_igloo_room_ID_seq\"'::regclass)"))
-    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
-    Type = db.Column(db.ForeignKey('igloo.ID', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
-    Flooring = db.Column(db.ForeignKey('flooring.ID', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
-    Music = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    Location = db.Column(db.ForeignKey('location.ID', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
-    Locked = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    id = db.Column(db.Integer, primary_key=True,
+                   server_default=db.text("nextval('\"penguin_igloo_room_id_seq\"'::regclass)"))
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    type = db.Column(db.ForeignKey('igloo.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    flooring = db.Column(db.ForeignKey('flooring.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    music = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    location = db.Column(db.ForeignKey('location.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    locked = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
 
 
 class PenguinLaunchGame(db.Model):
     __tablename__ = 'penguin_launch_game'
 
-    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                          nullable=False)
-    Level = db.Column(db.SmallInteger, primary_key=True, nullable=False, server_default=db.text("0"))
-    PuffleOs = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    BestTime = db.Column(db.SmallInteger, nullable=False, server_default=db.text("600"))
-    Turbo = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    level = db.Column(db.SmallInteger, primary_key=True, nullable=False, server_default=db.text("0"))
+    puffle_os = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    best_time = db.Column(db.SmallInteger, nullable=False, server_default=db.text("600"))
+    turbo = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
 
 
 class PenguinCard(db.Model):
     __tablename__ = 'penguin_card'
 
-    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                          nullable=False, index=True)
-    CardID = db.Column(db.ForeignKey('card.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                       nullable=False)
-    Quantity = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False, index=True)
+    card_id = db.Column(db.ForeignKey('card.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
+    quantity = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
 
 
 class PenguinFurniture(db.Model):
     __tablename__ = 'penguin_furniture'
 
-    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                          nullable=False)
-    FurnitureID = db.Column(db.ForeignKey('furniture.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    furniture_id = db.Column(db.ForeignKey('furniture.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                             nullable=False)
+    quantity = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
+
+
+class PenguinFlooring(db.Model):
+    __tablename__ = 'penguin_flooring'
+
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    flooring_id = db.Column(db.ForeignKey('flooring.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
                             nullable=False)
-    Quantity = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
 
 
 class PenguinPuffle(db.Model):
     __tablename__ = 'penguin_puffle'
 
-    ID = db.Column(db.Integer, primary_key=True,
-                   server_default=db.text("nextval('\"penguin_puffle_ID_seq\"'::regclass)"))
-    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
-    Name = db.Column(db.String(16), nullable=False)
-    AdoptionDate = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
-    Type = db.Column(db.ForeignKey('puffle.ID', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
-    Food = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
-    Play = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
-    Rest = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
-    Clean = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
-    Walking = db.Column(db.Boolean, server_default=db.text("false"))
-    Hat = db.Column(db.ForeignKey('puffle_item.ID', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
-    Backyard = db.Column(db.Boolean, server_default=db.text("false"))
-    HasDug = db.Column(db.Boolean, server_default=db.text("false"))
+    id = db.Column(db.Integer, primary_key=True,
+                   server_default=db.text("nextval('\"penguin_puffle_id_seq\"'::regclass)"))
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    puffle_id = db.Column(db.ForeignKey('puffle.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    name = db.Column(db.String(16), nullable=False)
+    adoption_date = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
+    food = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
+    play = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
+    rest = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
+    clean = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
+    walking = db.Column(db.Boolean, server_default=db.text("false"))
+    hat = db.Column(db.ForeignKey('puffle_item.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    backyard = db.Column(db.Boolean, server_default=db.text("false"))
+    has_dug = db.Column(db.Boolean, server_default=db.text("false"))
 
 
 class PenguinPuffleItem(db.Model):
     __tablename__ = 'penguin_puffle_item'
 
-    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                          nullable=False)
-    ItemID = db.Column(db.Integer, primary_key=True, nullable=False)
-    Quantity = db.Column(db.SmallInteger, nullable=False)
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    item_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    quantity = db.Column(db.SmallInteger, nullable=False)
 
 
 class PenguinPermission(db.Model):
     __tablename__ = 'penguin_permission'
 
-    PenguinID = db.Column(db.ForeignKey(u'penguin.ID', ondelete=u'CASCADE', onupdate=u'CASCADE'), primary_key=True)
-    PermissionID = db.Column(db.ForeignKey(u'permission.ID', ondelete=u'CASCADE', onupdate=u'CASCADE'), nullable=False)
+    penguin_id = db.Column(db.ForeignKey(u'penguin.id', ondelete=u'CASCADE', onupdate=u'CASCADE'), primary_key=True)
+    permission_id = db.Column(db.ForeignKey(u'permission.id', ondelete=u'CASCADE', onupdate=u'CASCADE'), nullable=False)
 
 
 class Login(db.Model):
     __tablename__ = 'login'
 
-    ID = db.Column(db.Integer, primary_key=True, server_default=db.text("nextval('\"login_ID_seq\"'::regclass)"))
-    PenguinID = db.Column(db.ForeignKey('penguin.ID', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
-    Date = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
-    IPAddress = db.Column(db.CHAR(255), nullable=False)
+    id = db.Column(db.Integer, primary_key=True, server_default=db.text("nextval('\"login_id_seq\"'::regclass)"))
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    date = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
+    i_p_address = db.Column(db.CHAR(255), nullable=False)

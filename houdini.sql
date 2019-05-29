@@ -1,1245 +1,1257 @@
--- noinspection SqlDialectInspectionForFile
-
 DROP TABLE IF EXISTS item;
 CREATE TABLE item (
-  "ID" INT NOT NULL,
-  "Name" VARCHAR(50),
-  "Type" SMALLINT NOT NULL DEFAULT 1,
-  "Cost" INT NOT NULL DEFAULT 0,
-  "Member" BOOLEAN NOT NULL DEFAULT FALSE,
-  "Bait" BOOLEAN NOT NULL DEFAULT FALSE,
-  "Patched" BOOLEAN NOT NULL DEFAULT FALSE,
-  "EPF" BOOLEAN NOT NULL DEFAULT FALSE,
-  "Tour" BOOLEAN NOT NULL DEFAULT FALSE,
-  "ReleaseDate" DATE NOT NULL,
-  PRIMARY KEY ("ID")
+  id INT NOT NULL,
+  name VARCHAR(50),
+  type SMALLINT NOT NULL DEFAULT 1,
+  cost INT NOT NULL DEFAULT 0,
+  member BOOLEAN NOT NULL DEFAULT FALSE,
+  bait BOOLEAN NOT NULL DEFAULT FALSE,
+  patched BOOLEAN NOT NULL DEFAULT FALSE,
+  epf BOOLEAN NOT NULL DEFAULT FALSE,
+  tour BOOLEAN NOT NULL DEFAULT FALSE,
+  release_date DATE NOT NULL,
+  PRIMARY KEY (id)
 );
 
-ALTER TABLE item ALTER COLUMN "ReleaseDate" SET DEFAULT now();
+ALTER TABLE item ALTER COLUMN release_date SET DEFAULT now();
 
 COMMENT ON TABLE item IS 'Server item crumbs';
 
-COMMENT ON COLUMN item."ID" IS 'Unique item ID';
-COMMENT ON COLUMN item."Name" IS 'Item name';
-COMMENT ON COLUMN item."Type" IS 'Item clothing type';
-COMMENT ON COLUMN item."Cost" IS 'Cost of item';
-COMMENT ON COLUMN item."Member" IS 'Is member-only?';
-COMMENT ON COLUMN item."Bait" IS 'Is bait item?';
-COMMENT ON COLUMN item."Patched" IS 'Is item patched?';
-COMMENT ON COLUMN item."EPF" IS 'Is EPF item?';
-COMMENT ON COLUMN item."Tour" IS 'Gives tour status?';
-COMMENT ON COLUMN item."ReleaseDate" IS 'Release date of item';
+COMMENT ON COLUMN item.id IS 'Unique item ID';
+COMMENT ON COLUMN item.name IS 'Item name';
+COMMENT ON COLUMN item.type IS 'Item clothing type';
+COMMENT ON COLUMN item.cost IS 'Cost of item';
+COMMENT ON COLUMN item.member IS 'Is member-only?';
+COMMENT ON COLUMN item.bait IS 'Is bait item?';
+COMMENT ON COLUMN item.patched IS 'Is item patched?';
+COMMENT ON COLUMN item.epf IS 'Is EPF item?';
+COMMENT ON COLUMN item.tour IS 'Gives tour status?';
+COMMENT ON COLUMN item.release_date IS 'Release date of item';
 
 DROP TABLE IF EXISTS postcard;
 CREATE TABLE postcard (
-  "ID" INT NOT NULL,
-  "Name" VARCHAR (50) NOT NULL,
-  "Cost" INT NOT NULL DEFAULT 10,
-  "Enabled" BOOLEAN NOT NULL DEFAULT FALSE,
-  PRIMARY KEY ("ID")
+  id INT NOT NULL,
+  name VARCHAR (50) NOT NULL,
+  cost INT NOT NULL DEFAULT 10,
+  enabled BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (id)
 );
 
 COMMENT ON TABLE postcard IS 'Server postcard crumbs';
 
-COMMENT ON COLUMN postcard."ID" IS 'Unique postcard ID';
-COMMENT ON COLUMN postcard."Name" IS 'Postcard name';
-COMMENT ON COLUMN postcard."Cost" IS 'Cost of postcard';
-COMMENT ON COLUMN postcard."Enabled" IS 'Can send postcard?';
+COMMENT ON COLUMN postcard.id IS 'Unique postcard ID';
+COMMENT ON COLUMN postcard.name IS 'Postcard name';
+COMMENT ON COLUMN postcard.cost IS 'Cost of postcard';
+COMMENT ON COLUMN postcard.enabled IS 'Can send postcard?';
 
 DROP TABLE IF EXISTS igloo;
 CREATE TABLE igloo (
-  "ID" INT NOT NULL,
-  "Name" VARCHAR(50) NOT NULL,
-  "Cost" SMALLINT NOT NULL DEFAULT 0,
-  "Patched" BOOLEAN NOT NULL DEFAULT FALSE,
-  PRIMARY KEY("ID")
+  id INT NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  cost SMALLINT NOT NULL DEFAULT 0,
+  patched BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY(id)
 );
 
 COMMENT ON TABLE igloo IS 'Server igloo crumbs';
 
-COMMENT ON COLUMN igloo."ID" IS 'Unique igloo ID';
-COMMENT ON COLUMN igloo."Name" IS 'Igloo name';
-COMMENT ON COLUMN igloo."Cost" IS 'Cost of igloo';
+COMMENT ON COLUMN igloo.id IS 'Unique igloo ID';
+COMMENT ON COLUMN igloo.name IS 'Igloo name';
+COMMENT ON COLUMN igloo.cost IS 'Cost of igloo';
 
 DROP TABLE IF EXISTS location;
 CREATE TABLE location (
-  "ID" INT NOT NULL,
-  "Name" VARCHAR(50) NOT NULL,
-  "Cost" INT NOT NULL DEFAULT 0,
-  "Patched" BOOLEAN NOT NULL DEFAULT FALSE,
-  PRIMARY KEY ("ID")
+  id INT NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  cost INT NOT NULL DEFAULT 0,
+  patched BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (id)
 );
 
 COMMENT ON TABLE location IS 'Server location crumbs';
 
-COMMENT ON COLUMN location."ID" IS 'Unique location ID';
-COMMENT ON COLUMN location."Name" IS 'Location name';
-COMMENT ON COLUMN location."Cost" IS 'Cost of location';
+COMMENT ON COLUMN location.id IS 'Unique location ID';
+COMMENT ON COLUMN location.name IS 'Location name';
+COMMENT ON COLUMN location.cost IS 'Cost of location';
 
 DROP TABLE IF EXISTS furniture;
 CREATE TABLE furniture (
-  "ID" INT NOT NULL,
-  "Name" VARCHAR(50) NOT NULL,
-  "Type" SMALLINT NOT NULL DEFAULT 1,
-  "Sort" SMALLINT NOT NULL DEFAULT 1,
-  "Cost" INT NOT NULL DEFAULT 0,
-  "Member" BOOLEAN NOT NULL DEFAULT FALSE,
-  "Patched" BOOLEAN NOT NULL DEFAULT FALSE,
-  "Bait" BOOLEAN NOT NULL DEFAULT FALSE,
-  "MaxQuantity" SMALLINT NOT NULL DEFAULT 100,
-  PRIMARY KEY("ID")
+  id INT NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  type SMALLINT NOT NULL DEFAULT 1,
+  sort SMALLINT NOT NULL DEFAULT 1,
+  cost INT NOT NULL DEFAULT 0,
+  member BOOLEAN NOT NULL DEFAULT FALSE,
+  patched BOOLEAN NOT NULL DEFAULT FALSE,
+  bait BOOLEAN NOT NULL DEFAULT FALSE,
+  max_quantity SMALLINT NOT NULL DEFAULT 100,
+  PRIMARY KEY(id)
 );
 
 COMMENT ON TABLE furniture IS 'Server furniture crumbs';
 
-COMMENT ON COLUMN furniture."ID" IS 'Unique furniture ID';
-COMMENT ON COLUMN furniture."Type" IS 'Furniture type ID';
-COMMENT ON COLUMN furniture."Sort" IS 'Furniture sort ID';
-COMMENT ON COLUMN furniture."Cost" IS 'Cost of furniture';
-COMMENT ON COLUMN furniture."Member" IS 'Is member-only?';
-COMMENT ON COLUMN furniture."Patched" IS 'Is furniture patched?';
-COMMENT ON COLUMN furniture."Bait" IS 'Is furniture bait?';
-COMMENT ON COLUMN furniture."MaxQuantity" IS 'Max inventory quantity';
+COMMENT ON COLUMN furniture.id IS 'Unique furniture ID';
+COMMENT ON COLUMN furniture.type IS 'Furniture type ID';
+COMMENT ON COLUMN furniture.sort IS 'Furniture sort ID';
+COMMENT ON COLUMN furniture.cost IS 'Cost of furniture';
+COMMENT ON COLUMN furniture.member IS 'Is member-only?';
+COMMENT ON COLUMN furniture.patched IS 'Is furniture patched?';
+COMMENT ON COLUMN furniture.bait IS 'Is furniture bait?';
+COMMENT ON COLUMN furniture.max_quantity IS 'Max inventory quantity';
 
 DROP TABLE IF EXISTS flooring;
 CREATE TABLE flooring (
-  "ID" INT NOT NULL,
-  "Name" VARCHAR(50),
-  "Cost" INT NOT NULL DEFAULT 0,
-  "Patched" BOOLEAN NOT NULL DEFAULT FALSE,
-  PRIMARY KEY ("ID")
+  id INT NOT NULL,
+  name VARCHAR(50),
+  cost INT NOT NULL DEFAULT 0,
+  patched BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (id)
 );
 
 COMMENT ON TABLE flooring IS 'Server flooring crumbs';
 
-COMMENT ON COLUMN flooring."ID" IS 'Unique flooring ID';
-COMMENT ON COLUMN flooring."Name" IS 'Flooring name';
-COMMENT ON COLUMN flooring."Cost" IS 'Cost of flooring';
+COMMENT ON COLUMN flooring.id IS 'Unique flooring ID';
+COMMENT ON COLUMN flooring.name IS 'Flooring name';
+COMMENT ON COLUMN flooring.cost IS 'Cost of flooring';
 
 DROP TABLE IF EXISTS card;
 CREATE TABLE card (
-  "ID" INT NOT NULL,
-  "Name" VARCHAR(50) NOT NULL,
-  "SetID" SMALLINT NOT NULL DEFAULT 1,
-  "PowerID" SMALLINT NOT NULL DEFAULT 0,
-  "Element" CHAR(1) NOT NULL DEFAULT 's',
-  "Color" CHAR(1) NOT NULL DEFAULT 'b',
-  "Value" SMALLINT NOT NULL DEFAULT 2,
-  "Description" VARCHAR(255) NOT NULL DEFAULT '',
-  PRIMARY KEY ("ID")
+  id INT NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  set_id SMALLINT NOT NULL DEFAULT 1,
+  power_id SMALLINT NOT NULL DEFAULT 0,
+  element CHAR(1) NOT NULL DEFAULT 's',
+  color CHAR(1) NOT NULL DEFAULT 'b',
+  value SMALLINT NOT NULL DEFAULT 2,
+  description VARCHAR(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (id)
 );
 
 COMMENT ON TABLE card IS 'Server jitsu card crumbs';
 
-COMMENT ON COLUMN card."ID" IS 'Unique card ID';
-COMMENT ON COLUMN card."Name" IS 'Card name';
-COMMENT ON COLUMN card."SetID" IS 'Card set ID';
-COMMENT ON COLUMN card."PowerID" IS 'Card power ID';
-COMMENT ON COLUMN card."Element" IS 'Card element';
-COMMENT ON COLUMN card."Color" IS 'Card color';
-COMMENT ON COLUMN card."Value" IS 'Value of card';
-COMMENT ON COLUMN card."Description" IS 'Play description';
+COMMENT ON COLUMN card.id IS 'Unique card ID';
+COMMENT ON COLUMN card.name IS 'Card name';
+COMMENT ON COLUMN card.set_id IS 'Card set ID';
+COMMENT ON COLUMN card.power_id IS 'Card power ID';
+COMMENT ON COLUMN card.element IS 'Card element';
+COMMENT ON COLUMN card.color IS 'Card color';
+COMMENT ON COLUMN card.value IS 'Value of card';
+COMMENT ON COLUMN card.description IS 'Play description';
 
 DROP TABLE IF EXISTS stamp_group;
 CREATE TABLE stamp_group (
-  "ID" INT NOT NULL,
-  "Name" VARCHAR(50) NOT NULL,
-  "ParentID" INT DEFAULT NULL,
-  PRIMARY KEY ("ID"),
-  CONSTRAINT stamp_group_ibfk_1 FOREIGN KEY ("ParentID") REFERENCES stamp_group ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  id INT NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  parent_id INT DEFAULT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT stamp_group_ibfk_1 FOREIGN KEY (parent_id) REFERENCES stamp_group (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE stamp_group IS 'Stamp group collections';
 
-COMMENT ON COLUMN stamp_group."ID" IS 'Unique stamp group ID';
-COMMENT ON COLUMN stamp_group."Name" IS 'Name of stamp group';
-COMMENT ON COLUMN stamp_group."ParentID" IS 'Parent stamp group ID';
+COMMENT ON COLUMN stamp_group.id IS 'Unique stamp group ID';
+COMMENT ON COLUMN stamp_group.name IS 'Name of stamp group';
+COMMENT ON COLUMN stamp_group.parent_id IS 'Parent stamp group ID';
 
 DROP TABLE IF EXISTS stamp;
 CREATE TABLE stamp (
-  "ID" INT NOT NULL,
-  "Name" VARCHAR(50) NOT NULL,
-  "GroupID" SMALLINT NOT NULL,
-  "Member" BOOLEAN NOT NULL DEFAULT FALSE,
-  "Rank" SMALLINT NOT NULL DEFAULT 1,
-  "Description" VARCHAR(255) NOT NULL DEFAULT '',
-  PRIMARY KEY("ID"),
-  CONSTRAINT stamp_ibfk_1 FOREIGN KEY ("GroupID") REFERENCES stamp_group ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  id INT NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  group_id SMALLINT NOT NULL,
+  member BOOLEAN NOT NULL DEFAULT FALSE,
+  rank SMALLINT NOT NULL DEFAULT 1,
+  description VARCHAR(255) NOT NULL DEFAULT '',
+  PRIMARY KEY(id),
+  CONSTRAINT stamp_ibfk_1 FOREIGN KEY (group_id) REFERENCES stamp_group (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE stamp IS 'Server stamp crumbs';
 
-COMMENT ON COLUMN stamp."ID" IS 'Unique stamp ID';
-COMMENT ON COLUMN stamp."Name" IS 'Stamp name';
-COMMENT ON COLUMN stamp."GroupID" IS 'Stamp group ID';
-COMMENT ON COLUMN stamp."Member" IS 'Is member-only?';
-COMMENT ON COLUMN stamp."Rank" IS 'Stamp difficulty ranking';
-COMMENT ON COLUMN stamp."Description" IS 'Stamp description';
+COMMENT ON COLUMN stamp.id IS 'Unique stamp ID';
+COMMENT ON COLUMN stamp.name IS 'Stamp name';
+COMMENT ON COLUMN stamp.group_id IS 'Stamp group ID';
+COMMENT ON COLUMN stamp.member IS 'Is member-only?';
+COMMENT ON COLUMN stamp.rank IS 'Stamp difficulty ranking';
+COMMENT ON COLUMN stamp.description IS 'Stamp description';
 
 DROP TABLE IF EXISTS room;
 CREATE TABLE room (
-  "ID" INT NOT NULL,
-  "InternalID" SERIAL NOT NULL,
-  "Name" VARCHAR(50) NOT NULL,
-  "Member" BOOLEAN NOT NULL DEFAULT FALSE,
-  "MaxUsers" SMALLINT NOT NULL DEFAULT 80,
-  "RequiredItem" INT DEFAULT NULL,
-  "Game" BOOLEAN NOT NULL DEFAULT FALSE,
-  "Blackhole" BOOLEAN NOT NULL DEFAULT FALSE,
-  "Spawn" BOOLEAN NOT NULL DEFAULT FALSE,
-  "StampGroup" INT DEFAULT NULL,
-  PRIMARY KEY("ID"),
-  CONSTRAINT room_ibfk_1 FOREIGN KEY ("RequiredItem") REFERENCES item ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT room_ibfk_2 FOREIGN KEY ("StampGroup") REFERENCES stamp_group ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  id INT NOT NULL,
+  internal_id SERIAL NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  member BOOLEAN NOT NULL DEFAULT FALSE,
+  max_users SMALLINT NOT NULL DEFAULT 80,
+  required_item INT DEFAULT NULL,
+  game BOOLEAN NOT NULL DEFAULT FALSE,
+  blackhole BOOLEAN NOT NULL DEFAULT FALSE,
+  spawn BOOLEAN NOT NULL DEFAULT FALSE,
+  stamp_group INT DEFAULT NULL,
+  PRIMARY KEY(id),
+  CONSTRAINT room_ibfk_1 FOREIGN KEY (required_item) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT room_ibfk_2 FOREIGN KEY (stamp_group) REFERENCES stamp_group (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE UNIQUE INDEX "InternalID" ON room ("InternalID");
+CREATE UNIQUE INDEX room_internal_id ON room (internal_id);
 
 COMMENT ON TABLE room IS 'Server room crumbs';
 
-COMMENT ON COLUMN room."ID" IS 'Unique room ID';
-COMMENT ON COLUMN room."InternalID" IS 'Internal room key';
-COMMENT ON COLUMN room."Name" IS 'Room name';
-COMMENT ON COLUMN room."Member" IS 'Is member-only?';
-COMMENT ON COLUMN room."MaxUsers" IS 'Maximum room users';
-COMMENT ON COLUMN room."RequiredItem" IS 'Required inventory item';
-COMMENT ON COLUMN room."Game" IS 'Is game room?';
-COMMENT ON COLUMN room."Blackhole" IS 'Is blackhole game room?';
-COMMENT ON COLUMN room."Spawn" IS 'Is spawn room?';
+COMMENT ON COLUMN room.id IS 'Unique room ID';
+COMMENT ON COLUMN room.internal_id IS 'Internal room key';
+COMMENT ON COLUMN room.name IS 'Room name';
+COMMENT ON COLUMN room.member IS 'Is member-only?';
+COMMENT ON COLUMN room.max_users IS 'Maximum room users';
+COMMENT ON COLUMN room.required_item IS 'Required inventory item';
+COMMENT ON COLUMN room.game IS 'Is game room?';
+COMMENT ON COLUMN room.blackhole IS 'Is blackhole game room?';
+COMMENT ON COLUMN room.spawn IS 'Is spawn room?';
 
-DROP TABLE IF EXISTS "character";
-CREATE TABLE "character" (
-  "ID" INT NOT NULL,
-  "Name" VARCHAR (30) NOT NULL,
-  "GiftID" INT DEFAULT NULL,
-  "StampID" INT DEFAULT NULL,
-  PRIMARY KEY ("ID"),
-  CONSTRAINT character_ibfk_1 FOREIGN KEY ("GiftID") REFERENCES item ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT character_ibfk_2 FOREIGN KEY ("StampID") REFERENCES stamp ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+DROP TABLE IF EXISTS character;
+CREATE TABLE character (
+  id INT NOT NULL,
+  name VARCHAR (30) NOT NULL,
+  gift_id INT DEFAULT NULL,
+  stamp_id INT DEFAULT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT character_ibfk_1 FOREIGN KEY (gift_id) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT character_ibfk_2 FOREIGN KEY (stamp_id) REFERENCES stamp (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-COMMENT ON TABLE "character" IS 'Server character crumbs';
+COMMENT ON TABLE character IS 'Server character crumbs';
 
-COMMENT ON COLUMN "character"."ID" IS 'Unique character ID';
-COMMENT ON COLUMN "character"."Name" IS 'Character name';
-COMMENT ON COLUMN "character"."GiftID" IS 'Character gift item ID';
-COMMENT ON COLUMN "character"."StampID" IS 'Character stamp ID';
+COMMENT ON COLUMN character.id IS 'Unique character ID';
+COMMENT ON COLUMN character.name IS 'Character name';
+COMMENT ON COLUMN character.gift_id IS 'Character gift item ID';
+COMMENT ON COLUMN character.stamp_id IS 'Character stamp ID';
 
 DROP TABLE IF EXISTS puffle_item;
 CREATE TABLE puffle_item (
-  "ID" INT NOT NULL,
-  "ParentID" INT NOT NULL,
-  "Name" VARCHAR(50) NOT NULL DEFAULT '',
-  "Type" VARCHAR(10) NOT NULL DEFAULT 'care',
-  "PlayExternal" VARCHAR (10) NOT NULL DEFAULT 'none',
-  "Cost" INT NOT NULL DEFAULT 0,
-  "Quantity" SMALLINT NOT NULL DEFAULT 1,
-  "Member" BOOLEAN NOT NULL DEFAULT FALSE,
-  "FoodEffect" SMALLINT NOT NULL DEFAULT 0,
-  "RestEffect" SMALLINT NOT NULL DEFAULT 0,
-  "PlayEffect" SMALLINT NOT NULL DEFAULT 0,
-  "CleanEffect" SMALLINT NOT NULL DEFAULT 0,
-  PRIMARY KEY ("ID"),
-  CONSTRAINT puffle_item_ibfk_1 FOREIGN KEY ("ParentID") REFERENCES puffle_item ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  id INT NOT NULL,
+  parent_id INT NOT NULL,
+  name VARCHAR(50) NOT NULL DEFAULT '',
+  type VARCHAR(10) NOT NULL DEFAULT 'care',
+  play_external VARCHAR (10) NOT NULL DEFAULT 'none',
+  cost INT NOT NULL DEFAULT 0,
+  quantity SMALLINT NOT NULL DEFAULT 1,
+  member BOOLEAN NOT NULL DEFAULT FALSE,
+  food_effect SMALLINT NOT NULL DEFAULT 0,
+  rest_effect SMALLINT NOT NULL DEFAULT 0,
+  play_effect SMALLINT NOT NULL DEFAULT 0,
+  clean_effect SMALLINT NOT NULL DEFAULT 0,
+  PRIMARY KEY (id),
+  CONSTRAINT puffle_item_ibfk_1 FOREIGN KEY (parent_id) REFERENCES puffle_item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE puffle_item IS 'Server puffle care item crumbs';
 
-COMMENT ON COLUMN puffle_item."ID" IS 'Unique care item ID';
-COMMENT ON COLUMN puffle_item."ParentID" IS 'Parent care item ID';
-COMMENT ON COLUMN puffle_item."Name" IS 'Care item name';
-COMMENT ON COLUMN puffle_item."Type" IS 'Type of care item';
-COMMENT ON COLUMN puffle_item."PlayExternal" IS 'External play mode';
-COMMENT ON COLUMN puffle_item."Cost" IS 'Cost of care item';
-COMMENT ON COLUMN puffle_item."Quantity" IS 'Base quantity of purchase';
-COMMENT ON COLUMN puffle_item."Member" IS 'Is member-only?';
-COMMENT ON COLUMN puffle_item."FoodEffect" IS 'Effect on puffle food level';
-COMMENT ON COLUMN puffle_item."RestEffect" IS 'Effect on puffle rest level';
-COMMENT ON COLUMN puffle_item."PlayEffect" IS 'Effect on puffle play level';
-COMMENT ON COLUMN puffle_item."CleanEffect" IS 'Effect on puffle clean level';
+COMMENT ON COLUMN puffle_item.id IS 'Unique care item ID';
+COMMENT ON COLUMN puffle_item.parent_id IS 'Parent care item ID';
+COMMENT ON COLUMN puffle_item.name IS 'Care item name';
+COMMENT ON COLUMN puffle_item.type IS 'Type of care item';
+COMMENT ON COLUMN puffle_item.play_external IS 'External play mode';
+COMMENT ON COLUMN puffle_item.cost IS 'Cost of care item';
+COMMENT ON COLUMN puffle_item.quantity IS 'Base quantity of purchase';
+COMMENT ON COLUMN puffle_item.member IS 'Is member-only?';
+COMMENT ON COLUMN puffle_item.food_effect IS 'Effect on puffle food level';
+COMMENT ON COLUMN puffle_item.rest_effect IS 'Effect on puffle rest level';
+COMMENT ON COLUMN puffle_item.play_effect IS 'Effect on puffle play level';
+COMMENT ON COLUMN puffle_item.clean_effect IS 'Effect on puffle clean level';
 
 DROP TABLE IF EXISTS puffle;
 CREATE TABLE puffle (
-  "ID" INT NOT NULL,
-  "ParentID" SMALLINT NOT NULL,
-  "Name" VARCHAR(50) NOT NULL DEFAULT '',
-  "Member" BOOLEAN NOT NULL DEFAULT FALSE,
-  "FavouriteFood" SMALLINT NOT NULL,
-  "RunawayPostcard" SMALLINT DEFAULT NULL,
-  "MaxFood" SMALLINT NOT NULL DEFAULT 100,
-  "MaxRest" SMALLINT NOT NULL DEFAULT 100,
-  "MaxClean" SMALLINT NOT NULL DEFAULT 100,
-  PRIMARY KEY ("ID"),
-  CONSTRAINT puffle_ibfk_1 FOREIGN KEY ("ParentID") REFERENCES puffle ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT puffle_ibfk_2 FOREIGN KEY ("FavouriteFood") REFERENCES puffle_item ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT puffle_ibfk_3 FOREIGN KEY ("RunawayPostcard") REFERENCES postcard ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  id INT NOT NULL,
+  parent_id SMALLINT NOT NULL,
+  name VARCHAR(50) NOT NULL DEFAULT '',
+  member BOOLEAN NOT NULL DEFAULT FALSE,
+  favourite_food SMALLINT NOT NULL,
+  runaway_postcard SMALLINT DEFAULT NULL,
+  max_food SMALLINT NOT NULL DEFAULT 100,
+  max_rest SMALLINT NOT NULL DEFAULT 100,
+  max_clean SMALLINT NOT NULL DEFAULT 100,
+  PRIMARY KEY (id),
+  CONSTRAINT puffle_ibfk_1 FOREIGN KEY (parent_id) REFERENCES puffle (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT puffle_ibfk_2 FOREIGN KEY (favourite_food) REFERENCES puffle_item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT puffle_ibfk_3 FOREIGN KEY (runaway_postcard) REFERENCES postcard (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE puffle IS 'Server puffle crumbs';
 
-COMMENT ON COLUMN puffle."ID" IS 'Unique puffle ID';
-COMMENT ON COLUMN puffle."ParentID" IS 'Base color puffle ID';
-COMMENT ON COLUMN puffle."Name" IS 'Puffle name';
-COMMENT ON COLUMN puffle."Member" IS 'Is member-only?';
-COMMENT ON COLUMN puffle."FavouriteFood" IS 'Favourite puffle-care item';
-COMMENT ON COLUMN puffle."RunawayPostcard" IS 'Runaway postcard ID';
-COMMENT ON COLUMN puffle."MaxFood" IS 'Maximum food level';
-COMMENT ON COLUMN puffle."MaxRest" IS 'Maximum rest level';
-COMMENT ON COLUMN puffle."MaxClean" IS 'Maximum clean level';
+COMMENT ON COLUMN puffle.id IS 'Unique puffle ID';
+COMMENT ON COLUMN puffle.parent_id IS 'Base color puffle ID';
+COMMENT ON COLUMN puffle.name IS 'Puffle name';
+COMMENT ON COLUMN puffle.member IS 'Is member-only?';
+COMMENT ON COLUMN puffle.favourite_food IS 'Favourite puffle-care item';
+COMMENT ON COLUMN puffle.runaway_postcard IS 'Runaway postcard ID';
+COMMENT ON COLUMN puffle.max_food IS 'Maximum food level';
+COMMENT ON COLUMN puffle.max_rest IS 'Maximum rest level';
+COMMENT ON COLUMN puffle.max_clean IS 'Maximum clean level';
 
 DROP TABLE IF EXISTS puffle_treasure_item;
 CREATE TABLE puffle_treasure_item (
-  "PuffleID" INT NOT NULL,
-  "ItemID" INT NOT NULL,
-  PRIMARY KEY ("PuffleID", "ItemID"),
-  CONSTRAINT puffle_treasure_item_ibfk_1 FOREIGN KEY ("PuffleID") REFERENCES puffle ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT puffle_treasure_item_ibfk_2 FOREIGN KEY ("ItemID") REFERENCES item ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  puffle_id INT NOT NULL,
+  item_id INT NOT NULL,
+  PRIMARY KEY (puffle_id, item_id),
+  CONSTRAINT puffle_treasure_item_ibfk_1 FOREIGN KEY (puffle_id) REFERENCES puffle (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT puffle_treasure_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE puffle_treasure_item IS 'Puffle digging treasure clothing';
 
-COMMENT ON COLUMN puffle_treasure_item."PuffleID" IS 'Puffle type ID';
-COMMENT ON COLUMN puffle_treasure_item."ItemID" IS 'Clothing item ID';
+COMMENT ON COLUMN puffle_treasure_item.puffle_id IS 'Puffle type ID';
+COMMENT ON COLUMN puffle_treasure_item.item_id IS 'Clothing item ID';
 
 DROP TABLE IF EXISTS puffle_treasure_furniture;
 CREATE TABLE puffle_treasure_furniture (
-  "PuffleID" INT NOT NULL,
-  "FurnitureID" INT NOT NULL,
-  PRIMARY KEY ("PuffleID", "FurnitureID"),
-  CONSTRAINT puffle_treasure_furniture_ibfk_1 FOREIGN KEY ("PuffleID") REFERENCES puffle ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT puffle_treasure_furniture_ibfk_2 FOREIGN KEY ("FurnitureID") REFERENCES furniture ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  puffle_id INT NOT NULL,
+  furniture_id INT NOT NULL,
+  PRIMARY KEY (puffle_id, furniture_id),
+  CONSTRAINT puffle_treasure_furniture_ibfk_1 FOREIGN KEY (puffle_id) REFERENCES puffle (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT puffle_treasure_furniture_ibfk_2 FOREIGN KEY (furniture_id) REFERENCES furniture (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE puffle_treasure_furniture IS 'Puffle digging treasure furniture';
 
-COMMENT ON COLUMN puffle_treasure_furniture."PuffleID" IS 'Puffle type ID';
-COMMENT ON COLUMN puffle_treasure_furniture."FurnitureID" IS 'Furniture item ID';
+COMMENT ON COLUMN puffle_treasure_furniture.puffle_id IS 'Puffle type ID';
+COMMENT ON COLUMN puffle_treasure_furniture.furniture_id IS 'Furniture item ID';
 
 DROP TABLE IF EXISTS puffle_treasure_puffle_item;
 CREATE TABLE puffle_treasure_puffle_item (
-  "PuffleID" INT NOT NULL,
-  "PuffleItemID" INT NOT NULL,
-  PRIMARY KEY ("PuffleID", "PuffleItemID"),
-  CONSTRAINT puffle_treasure_puffle_item_ibfk_1 FOREIGN KEY ("PuffleID") REFERENCES puffle ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT puffle_treasure_puffle_item_ibfk_2 FOREIGN KEY ("PuffleItemID") REFERENCES puffle_item ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  puffle_id INT NOT NULL,
+  puffle_item_id INT NOT NULL,
+  PRIMARY KEY (puffle_id, puffle_item_id),
+  CONSTRAINT puffle_treasure_puffle_item_ibfk_1 FOREIGN KEY (puffle_id) REFERENCES puffle (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT puffle_treasure_puffle_item_ibfk_2 FOREIGN KEY (puffle_item_id) REFERENCES puffle_item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE puffle_treasure_puffle_item IS 'Puffle digging treasure puffle care items';
 
-COMMENT ON COLUMN puffle_treasure_puffle_item."PuffleID" IS 'Puffle type ID';
-COMMENT ON COLUMN puffle_treasure_puffle_item."PuffleItemID" IS 'Puffle care item ID';
+COMMENT ON COLUMN puffle_treasure_puffle_item.puffle_id IS 'Puffle type ID';
+COMMENT ON COLUMN puffle_treasure_puffle_item.puffle_item_id IS 'Puffle care item ID';
 
 DROP TABLE IF EXISTS dance_song;
 CREATE TABLE dance_song (
-  "ID" INT NOT NULL,
-  "Name" VARCHAR (30) NOT NULL,
-  "SongLength" INT NOT NULL DEFAULT 100000,
-  "MillisPerBar" INT NOT NULL DEFAULT 2000,
-  PRIMARY KEY ("ID")
+  id INT NOT NULL,
+  name VARCHAR (30) NOT NULL,
+  song_length INT NOT NULL DEFAULT 100000,
+  millis_per_bar INT NOT NULL DEFAULT 2000,
+  PRIMARY KEY (id)
 );
 
 COMMENT ON TABLE dance_song IS 'Dance contest multiplayer tracks';
 
-COMMENT ON COLUMN dance_song."ID" IS 'Unique song ID';
-COMMENT ON COLUMN dance_song."Name" IS 'Name of song';
-COMMENT ON COLUMN dance_song."SongLength" IS 'Length of song in milliseconds';
-COMMENT ON COLUMN dance_song."MillisPerBar" IS 'Milliseconds per song note';
+COMMENT ON COLUMN dance_song.id IS 'Unique song ID';
+COMMENT ON COLUMN dance_song.name IS 'Name of song';
+COMMENT ON COLUMN dance_song.song_length IS 'Length of song in milliseconds';
+COMMENT ON COLUMN dance_song.millis_per_bar IS 'Milliseconds per song note';
 
 CREATE TABLE room_waddle (
-  "ID" INT NOT NULL,
-  "RoomID" INT NOT NULL,
-  "Seats" SMALLINT NOT NULL DEFAULT 2,
-  "Game" VARCHAR(20) NOT NULL,
-  PRIMARY KEY ("ID", "RoomID"),
-  CONSTRAINT room_waddle_ibfk_1 FOREIGN KEY ("RoomID") REFERENCES room ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  id INT NOT NULL,
+  room_id INT NOT NULL,
+  seats SMALLINT NOT NULL DEFAULT 2,
+  game VARCHAR(20) NOT NULL,
+  PRIMARY KEY (id, room_id),
+  CONSTRAINT room_waddle_ibfk_1 FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE room_waddle IS 'Server waddle games';
 
-COMMENT ON COLUMN room_waddle."ID" IS 'Waddle ID';
-COMMENT ON COLUMN room_waddle."RoomID" IS 'Room ID of waddle';
-COMMENT ON COLUMN room_waddle."Seats" IS 'Number of seats';
-COMMENT ON COLUMN room_waddle."Game" IS 'Game of waddle';
+COMMENT ON COLUMN room_waddle.id IS 'Waddle ID';
+COMMENT ON COLUMN room_waddle.room_id IS 'Room ID of waddle';
+COMMENT ON COLUMN room_waddle.seats IS 'Number of seats';
+COMMENT ON COLUMN room_waddle.game IS 'Game of waddle';
 
 CREATE TABLE room_table (
-  "ID" INT NOT NULL,
-  "RoomID" INT NOT NULL,
-  "Game" VARCHAR(20) NOT NULL,
-  PRIMARY KEY ("ID", "RoomID"),
-  CONSTRAINT room_table_ibfk_1 FOREIGN KEY ("RoomID") REFERENCES room ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  id INT NOT NULL,
+  room_id INT NOT NULL,
+  game VARCHAR(20) NOT NULL,
+  PRIMARY KEY (id, room_id),
+  CONSTRAINT room_table_ibfk_1 FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE room_table IS 'Server table games';
 
-COMMENT ON COLUMN room_table."ID" IS 'Table ID';
-COMMENT ON COLUMN room_table."RoomID" IS 'Room ID of table';
-COMMENT ON COLUMN room_table."Game" IS 'Game of table';
+COMMENT ON COLUMN room_table.id IS 'Table ID';
+COMMENT ON COLUMN room_table.room_id IS 'Room ID of table';
+COMMENT ON COLUMN room_table.game IS 'Game of table';
 
 DROP TABLE IF EXISTS penguin;
 CREATE TABLE penguin (
-  "ID" SERIAL,
-  "Username" VARCHAR(12) NOT NULL,
-  "Nickname" VARCHAR(30) NOT NULL,
-  "Password" CHAR(60) NOT NULL,
-  "Email" VARCHAR(255) NOT NULL,
-  "RegistrationDate" TIMESTAMP NOT NULL,
-  "Active" BOOLEAN NOT NULL DEFAULT FALSE,
-  "SafeChat" BOOLEAN NOT NULL DEFAULT FALSE,
-  "LastPaycheck" TIMESTAMP NOT NULL,
-  "MinutesPlayed" INT NOT NULL DEFAULT 0,
-  "Moderator" BOOLEAN NOT NULL DEFAULT FALSE,
-  "Character" INT DEFAULT NULL,
-  "Igloo" INT DEFAULT NULL,
-  "Coins" INT NOT NULL DEFAULT 500,
-  "Color" INT DEFAULT NULL,
-  "Head" INT DEFAULT NULL,
-  "Face" INT DEFAULT NULL,
-  "Neck" INT DEFAULT NULL,
-  "Body" INT DEFAULT NULL,
-  "Hand" INT DEFAULT NULL,
-  "Feet" INT DEFAULT NULL,
-  "Photo" INT DEFAULT NULL,
-  "Flag" INT DEFAULT NULL,
-  "Permaban" SMALLINT NOT NULL DEFAULT 0,
-  "BookModified" SMALLINT NOT NULL DEFAULT 0,
-  "BookColor" SMALLINT NOT NULL DEFAULT 1,
-  "BookHighlight" SMALLINT NOT NULL DEFAULT 1,
-  "BookPattern" SMALLINT NOT NULL DEFAULT 0,
-  "BookIcon" SMALLINT NOT NULL DEFAULT 1,
-  "AgentStatus" BOOLEAN NOT NULL DEFAULT FALSE,
-  "FieldOpStatus" SMALLINT NOT NULL DEFAULT 0,
-  "CareerMedals" INT NOT NULL DEFAULT 0,
-  "AgentMedals" INT NOT NULL DEFAULT 0,
-  "LastFieldOp" TIMESTAMP NOT NULL,
-  "NinjaRank" SMALLINT NOT NULL DEFAULT 0,
-  "NinjaProgress" SMALLINT NOT NULL DEFAULT 0,
-  "FireNinjaRank" SMALLINT NOT NULL DEFAULT 0,
-  "FireNinjaProgress" SMALLINT NOT NULL DEFAULT 0,
-  "WaterNinjaRank" SMALLINT NOT NULL DEFAULT 0,
-  "WaterNinjaProgress" SMALLINT NOT NULL DEFAULT 0,
-  "NinjaMatchesWon" INT NOT NULL DEFAULT 0,
-  "FireMatchesWon" INT NOT NULL DEFAULT 0,
-  "WaterMatchesWon" INT NOT NULL DEFAULT 0,
-  "RainbowAdoptability" SMALLINT NOT NULL DEFAULT 0,
-  "HasDug" BOOLEAN NOT NULL DEFAULT FALSE,
-  "Nuggets" SMALLINT NOT NULL DEFAULT 0,
-  "TimerActive" BOOLEAN NOT NULL DEFAULT FALSE,
-  "TimerStart" TIME NOT NULL DEFAULT '00:00:00',
-  "TimerEnd" TIME NOT NULL DEFAULT '23:59:59',
-  "ApprovalEn" BOOLEAN NOT NULL DEFAULT FALSE,
-  "ApprovalPt" BOOLEAN NOT NULL DEFAULT FALSE,
-  "ApprovalFr" BOOLEAN NOT NULL DEFAULT FALSE,
-  "ApprovalEs" BOOLEAN NOT NULL DEFAULT FALSE,
-  "ApprovalDe" BOOLEAN NOT NULL DEFAULT FALSE,
-  "ApprovalRu" BOOLEAN NOT NULL DEFAULT FALSE,
-  "RejectionEn" BOOLEAN NOT NULL DEFAULT FALSE,
-  "RejectionPt" BOOLEAN NOT NULL DEFAULT FALSE,
-  "RejectionFr" BOOLEAN NOT NULL DEFAULT FALSE,
-  "RejectionEs" BOOLEAN NOT NULL DEFAULT FALSE,
-  "RejectionDe" BOOLEAN NOT NULL DEFAULT FALSE,
-  "RejectionRu" BOOLEAN NOT NULL DEFAULT FALSE,
-  PRIMARY KEY ("ID"),
-  CONSTRAINT penguin_ibfk_1 FOREIGN KEY ("Color") REFERENCES item ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_2 FOREIGN KEY ("Head") REFERENCES item ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_3 FOREIGN KEY ("Face") REFERENCES item ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_4 FOREIGN KEY ("Neck") REFERENCES item ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_5 FOREIGN KEY ("Body") REFERENCES item ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_6 FOREIGN KEY ("Hand") REFERENCES item ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_7 FOREIGN KEY ("Feet") REFERENCES item ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_8 FOREIGN KEY ("Photo") REFERENCES item ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_9 FOREIGN KEY ("Flag") REFERENCES item ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_10 FOREIGN KEY ("Character") REFERENCES "character" ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  id SERIAL,
+  username VARCHAR(12) NOT NULL,
+  nickname VARCHAR(30) NOT NULL,
+  password CHAR(60) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  registration_date TIMESTAMP NOT NULL,
+  active BOOLEAN NOT NULL DEFAULT FALSE,
+  safe_chat BOOLEAN NOT NULL DEFAULT FALSE,
+  last_paycheck TIMESTAMP NOT NULL,
+  minutes_played INT NOT NULL DEFAULT 0,
+  moderator BOOLEAN NOT NULL DEFAULT FALSE,
+  character INT DEFAULT NULL,
+  igloo INT DEFAULT NULL,
+  coins INT NOT NULL DEFAULT 500,
+  color INT DEFAULT NULL,
+  head INT DEFAULT NULL,
+  face INT DEFAULT NULL,
+  neck INT DEFAULT NULL,
+  body INT DEFAULT NULL,
+  hand INT DEFAULT NULL,
+  feet INT DEFAULT NULL,
+  photo INT DEFAULT NULL,
+  flag INT DEFAULT NULL,
+  permaban SMALLINT NOT NULL DEFAULT 0,
+  book_modified SMALLINT NOT NULL DEFAULT 0,
+  book_color SMALLINT NOT NULL DEFAULT 1,
+  book_highlight SMALLINT NOT NULL DEFAULT 1,
+  book_pattern SMALLINT NOT NULL DEFAULT 0,
+  book_icon SMALLINT NOT NULL DEFAULT 1,
+  agent_status BOOLEAN NOT NULL DEFAULT FALSE,
+  field_op_status SMALLINT NOT NULL DEFAULT 0,
+  career_medals INT NOT NULL DEFAULT 0,
+  agent_medals INT NOT NULL DEFAULT 0,
+  last_field_op TIMESTAMP NOT NULL,
+  ninja_rank SMALLINT NOT NULL DEFAULT 0,
+  ninja_progress SMALLINT NOT NULL DEFAULT 0,
+  fire_ninja_rank SMALLINT NOT NULL DEFAULT 0,
+  fire_ninja_progress SMALLINT NOT NULL DEFAULT 0,
+  water_ninja_rank SMALLINT NOT NULL DEFAULT 0,
+  water_ninja_progress SMALLINT NOT NULL DEFAULT 0,
+  ninja_matches_won INT NOT NULL DEFAULT 0,
+  fire_matches_won INT NOT NULL DEFAULT 0,
+  water_matches_won INT NOT NULL DEFAULT 0,
+  rainbow_adoptability SMALLINT NOT NULL DEFAULT 0,
+  has_dug BOOLEAN NOT NULL DEFAULT FALSE,
+  nuggets SMALLINT NOT NULL DEFAULT 0,
+  timer_active BOOLEAN NOT NULL DEFAULT FALSE,
+  timer_start TIME NOT NULL DEFAULT '00:00:00',
+  timer_end TIME NOT NULL DEFAULT '23:59:59',
+  approval_en BOOLEAN NOT NULL DEFAULT FALSE,
+  approval_pt BOOLEAN NOT NULL DEFAULT FALSE,
+  approval_fr BOOLEAN NOT NULL DEFAULT FALSE,
+  approval_es BOOLEAN NOT NULL DEFAULT FALSE,
+  approval_de BOOLEAN NOT NULL DEFAULT FALSE,
+  approval_ru BOOLEAN NOT NULL DEFAULT FALSE,
+  rejection_en BOOLEAN NOT NULL DEFAULT FALSE,
+  rejection_pt BOOLEAN NOT NULL DEFAULT FALSE,
+  rejection_fr BOOLEAN NOT NULL DEFAULT FALSE,
+  rejection_es BOOLEAN NOT NULL DEFAULT FALSE,
+  rejection_de BOOLEAN NOT NULL DEFAULT FALSE,
+  rejection_ru BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (id),
+  CONSTRAINT penguin_ibfk_1 FOREIGN KEY (color) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_2 FOREIGN KEY (head) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_3 FOREIGN KEY (face) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_4 FOREIGN KEY (neck) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_5 FOREIGN KEY (body) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_6 FOREIGN KEY (hand) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_7 FOREIGN KEY (feet) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_8 FOREIGN KEY (photo) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_9 FOREIGN KEY (flag) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_10 FOREIGN KEY (character) REFERENCES character (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE INDEX "Email" ON Penguin("Email");
-CREATE UNIQUE INDEX "Username" ON Penguin("Username");
+CREATE INDEX penguin_email ON Penguin(email);
+CREATE UNIQUE INDEX penguin_username ON Penguin(username);
 
-ALTER TABLE penguin ALTER COLUMN "RegistrationDate" SET DEFAULT now();
-ALTER TABLE penguin ALTER COLUMN "LastPaycheck" SET DEFAULT now();
-ALTER TABLE penguin ALTER COLUMN "LastFieldOp" SET DEFAULT now();
+ALTER TABLE penguin ALTER COLUMN registration_date SET DEFAULT now();
+ALTER TABLE penguin ALTER COLUMN last_paycheck SET DEFAULT now();
+ALTER TABLE penguin ALTER COLUMN last_field_op SET DEFAULT now();
 
-ALTER SEQUENCE "penguin_ID_seq" RESTART WITH 101;
+ALTER SEQUENCE penguin_id_seq RESTART WITH 101;
 
 COMMENT ON TABLE penguin IS 'Penguins';
 
-COMMENT ON COLUMN penguin."ID" IS 'Unique penguin ID';
-COMMENT ON COLUMN penguin."Username" IS 'Penguin login name';
-COMMENT ON COLUMN penguin."Nickname" IS 'Penguin display name';
-COMMENT ON COLUMN penguin."Password" IS 'Password hash';
-COMMENT ON COLUMN penguin."Email" IS 'User Email address';
-COMMENT ON COLUMN penguin."RegistrationDate" IS 'Date of registration';
-COMMENT ON COLUMN penguin."Active" IS '"Email" activated';
-COMMENT ON COLUMN penguin."LastPaycheck" IS 'EPF previous paycheck';
-COMMENT ON COLUMN penguin."MinutesPlayed" IS 'Total minutes connected';
-COMMENT ON COLUMN penguin."Moderator" IS 'Is user moderator?';
-COMMENT ON COLUMN penguin."Character" IS 'Character ID';
-COMMENT ON COLUMN penguin."Igloo" IS 'Penguin active igloo ID';
-COMMENT ON COLUMN penguin."Coins" IS 'Penguin coins';
-COMMENT ON COLUMN penguin."Color" IS 'Penguin color ID';
-COMMENT ON COLUMN penguin."Head" IS 'Penguin head item ID';
-COMMENT ON COLUMN penguin."Face" IS 'Penguin face item ID';
-COMMENT ON COLUMN penguin."Neck" IS 'Penguin neck item ID';
-COMMENT ON COLUMN penguin."Body" IS 'Penguin body item ID';
-COMMENT ON COLUMN penguin."Hand" IS 'Penguin hand item ID';
-COMMENT ON COLUMN penguin."Feet" IS 'Penguin feet item ID';
-COMMENT ON COLUMN penguin."Photo" IS 'Penguin background ID';
-COMMENT ON COLUMN penguin."Flag" IS 'Penguin pin ID';
-COMMENT ON COLUMN penguin."Permaban" IS 'Is penguin banned forever?';
-COMMENT ON COLUMN penguin."BookModified" IS 'Is book cover modified?';
-COMMENT ON COLUMN penguin."BookColor" IS 'Stampbook cover color';
-COMMENT ON COLUMN penguin."BookHighlight" IS 'Stampbook highlight color';
-COMMENT ON COLUMN penguin."BookPattern" IS 'Stampbook cover pattern';
-COMMENT ON COLUMN penguin."BookIcon" IS 'Stampbook cover icon';
-COMMENT ON COLUMN penguin."AgentStatus" IS 'Is penguin EPF agent?';
-COMMENT ON COLUMN penguin."FieldOpStatus" IS 'Is field op complete?';
-COMMENT ON COLUMN penguin."CareerMedals" IS 'Total career medals';
-COMMENT ON COLUMN penguin."AgentMedals" IS 'Current medals';
-COMMENT ON COLUMN penguin."LastFieldOp" IS 'Date of last field op';
-COMMENT ON COLUMN penguin."NinjaRank" IS 'Ninja rank';
-COMMENT ON COLUMN penguin."NinjaProgress" IS 'Ninja progress';
-COMMENT ON COLUMN penguin."FireNinjaRank" IS 'Fire ninja rank';
-COMMENT ON COLUMN penguin."FireNinjaProgress" IS 'Fire ninja progress';
-COMMENT ON COLUMN penguin."WaterNinjaRank" IS 'Water ninja rank';
-COMMENT ON COLUMN penguin."WaterNinjaProgress" IS 'Water ninja progress';
-COMMENT ON COLUMN penguin."NinjaMatchesWon" IS 'CardJitsu matches won';
-COMMENT ON COLUMN penguin."FireMatchesWon" IS 'JitsuFire matches won';
-COMMENT ON COLUMN penguin."WaterMatchesWon" IS 'JitsuWater matces won';
-COMMENT ON COLUMN penguin."RainbowAdoptability" IS 'Rainbow puffle adoptability status';
-COMMENT ON COLUMN penguin."HasDug" IS 'Puffle digging boolean';
-COMMENT ON COLUMN penguin."Nuggets" IS 'Golden puffle nuggets';
-COMMENT ON COLUMN penguin."TimerActive" IS 'Is egg-timer active?';
-COMMENT ON COLUMN penguin."TimerStart" IS 'Egg-timer start time';
-COMMENT ON COLUMN penguin."TimerEnd" IS 'Egg-timer end time';
-COMMENT ON COLUMN penguin."ApprovalEn" IS 'English username approval';
-COMMENT ON COLUMN penguin."ApprovalPt" IS 'Portuguese username approval';
-COMMENT ON COLUMN penguin."ApprovalFr" IS 'French username approval';
-COMMENT ON COLUMN penguin."ApprovalEs" IS 'Spanish username approval';
-COMMENT ON COLUMN penguin."ApprovalDe" IS 'Dutch username approval';
-COMMENT ON COLUMN penguin."ApprovalRu" IS 'Russian username approval';
+COMMENT ON COLUMN penguin.id IS 'Unique penguin ID';
+COMMENT ON COLUMN penguin.username IS 'Penguin login name';
+COMMENT ON COLUMN penguin.nickname IS 'Penguin display name';
+COMMENT ON COLUMN penguin.password IS 'Password hash';
+COMMENT ON COLUMN penguin.email IS 'User Email address';
+COMMENT ON COLUMN penguin.registration_date IS 'Date of registration';
+COMMENT ON COLUMN penguin.active IS 'email activated';
+COMMENT ON COLUMN penguin.last_paycheck IS 'EPF previous paycheck';
+COMMENT ON COLUMN penguin.minutes_played IS 'Total minutes connected';
+COMMENT ON COLUMN penguin.moderator IS 'Is user moderator?';
+COMMENT ON COLUMN penguin.character IS 'Character ID';
+COMMENT ON COLUMN penguin.igloo IS 'Penguin active igloo ID';
+COMMENT ON COLUMN penguin.coins IS 'Penguin coins';
+COMMENT ON COLUMN penguin.color IS 'Penguin color ID';
+COMMENT ON COLUMN penguin.head IS 'Penguin head item ID';
+COMMENT ON COLUMN penguin.face IS 'Penguin face item ID';
+COMMENT ON COLUMN penguin.neck IS 'Penguin neck item ID';
+COMMENT ON COLUMN penguin.body IS 'Penguin body item ID';
+COMMENT ON COLUMN penguin.hand IS 'Penguin hand item ID';
+COMMENT ON COLUMN penguin.feet IS 'Penguin feet item ID';
+COMMENT ON COLUMN penguin.photo IS 'Penguin background ID';
+COMMENT ON COLUMN penguin.flag IS 'Penguin pin ID';
+COMMENT ON COLUMN penguin.permaban IS 'Is penguin banned forever?';
+COMMENT ON COLUMN penguin.book_modified IS 'Is book cover modified?';
+COMMENT ON COLUMN penguin.book_color IS 'Stampbook cover color';
+COMMENT ON COLUMN penguin.book_highlight IS 'Stampbook highlight color';
+COMMENT ON COLUMN penguin.book_pattern IS 'Stampbook cover pattern';
+COMMENT ON COLUMN penguin.book_icon IS 'Stampbook cover icon';
+COMMENT ON COLUMN penguin.agent_status IS 'Is penguin EPF agent?';
+COMMENT ON COLUMN penguin.field_op_status IS 'Is field op complete?';
+COMMENT ON COLUMN penguin.career_medals IS 'Total career medals';
+COMMENT ON COLUMN penguin.agent_medals IS 'Current medals';
+COMMENT ON COLUMN penguin.last_field_op IS 'Date of last field op';
+COMMENT ON COLUMN penguin.ninja_rank IS 'Ninja rank';
+COMMENT ON COLUMN penguin.ninja_progress IS 'Ninja progress';
+COMMENT ON COLUMN penguin.fire_ninja_rank IS 'Fire ninja rank';
+COMMENT ON COLUMN penguin.fire_ninja_progress IS 'Fire ninja progress';
+COMMENT ON COLUMN penguin.water_ninja_rank IS 'Water ninja rank';
+COMMENT ON COLUMN penguin.water_ninja_progress IS 'Water ninja progress';
+COMMENT ON COLUMN penguin.ninja_matches_won IS 'CardJitsu matches won';
+COMMENT ON COLUMN penguin.fire_matches_won IS 'JitsuFire matches won';
+COMMENT ON COLUMN penguin.water_matches_won IS 'JitsuWater matces won';
+COMMENT ON COLUMN penguin.rainbow_adoptability IS 'Rainbow puffle adoptability status';
+COMMENT ON COLUMN penguin.has_dug IS 'Puffle digging boolean';
+COMMENT ON COLUMN penguin.nuggets IS 'Golden puffle nuggets';
+COMMENT ON COLUMN penguin.timer_active IS 'Is egg-timer active?';
+COMMENT ON COLUMN penguin.timer_start IS 'Egg-timer start time';
+COMMENT ON COLUMN penguin.timer_end IS 'Egg-timer end time';
+COMMENT ON COLUMN penguin.approval_en IS 'English username approval';
+COMMENT ON COLUMN penguin.approval_pt IS 'Portuguese username approval';
+COMMENT ON COLUMN penguin.approval_fr IS 'French username approval';
+COMMENT ON COLUMN penguin.approval_es IS 'Spanish username approval';
+COMMENT ON COLUMN penguin.approval_de IS 'Dutch username approval';
+COMMENT ON COLUMN penguin.approval_ru IS 'Russian username approval';
 
 DROP TABLE IF EXISTS activation_key;
 CREATE TABLE activation_key (
-  "PenguinID" INT NOT NULL,
-  "ActivationKey" CHAR(255) NOT NULL,
-  PRIMARY KEY ("PenguinID", "ActivationKey"),
-  CONSTRAINT activation_key_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  activation_key CHAR(255) NOT NULL,
+  PRIMARY KEY (penguin_id, activation_key),
+  CONSTRAINT activation_key_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE activation_key IS 'Penguin activation keys';
 
-COMMENT ON COLUMN activation_key."PenguinID" IS 'Penguin ID';
-COMMENT ON COLUMN activation_key."ActivationKey" IS 'Penguin activation key';
+COMMENT ON COLUMN activation_key.penguin_id IS 'Penguin ID';
+COMMENT ON COLUMN activation_key.activation_key IS 'Penguin activation key';
 
 DROP TABLE IF EXISTS permission;
 CREATE TABLE permission (
-  "ID" SERIAL NOT NULL,
-  "Name" VARCHAR(50) NOT NULL,
-  "Enabled" BOOLEAN NOT NULL DEFAULT TRUE,
-  PRIMARY KEY ("ID")
+  id SERIAL NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  enabled BOOLEAN NOT NULL DEFAULT TRUE,
+  PRIMARY KEY (id)
 );
 
-CREATE UNIQUE INDEX "Name" ON permission("Name");
+CREATE UNIQUE INDEX permission_name ON permission(name);
 
 COMMENT ON TABLE permission IS 'Registered server permissions';
 
-COMMENT ON COLUMN permission."ID" IS 'Unique permission ID';
-COMMENT ON COLUMN permission."Name" IS 'Unique permission identifier';
+COMMENT ON COLUMN permission.id IS 'Unique permission ID';
+COMMENT ON COLUMN permission.name IS 'Unique permission identifier';
 
 DROP TABLE IF EXISTS penguin_permission;
 CREATE TABLE penguin_permission (
-  "PenguinID" INT NOT NULL,
-  "PermissionID" INT NOT NULL,
-  PRIMARY KEY ("PenguinID"),
-  CONSTRAINT penguin_permission_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_permission_ibfk_2 FOREIGN KEY ("PermissionID") REFERENCES permission("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  permission_id INT NOT NULL,
+  PRIMARY KEY (penguin_id),
+  CONSTRAINT penguin_permission_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_permission_ibfk_2 FOREIGN KEY (permission_id) REFERENCES permission(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_permission IS 'Penguin permissions';
 
-COMMENT ON COLUMN penguin_permission."PenguinID" IS 'Penguin ID';
-COMMENT ON COLUMN penguin_permission."PermissionID" IS 'Penguin permission ID';
+COMMENT ON COLUMN penguin_permission.penguin_id IS 'Penguin ID';
+COMMENT ON COLUMN penguin_permission.permission_id IS 'Penguin permission ID';
 
 DROP TABLE IF EXISTS report;
 CREATE TABLE report (
-  "ID" SERIAL NOT NULL,
-  "PenguinID" INT NOT NULL,
-  "ReporterID" INT NOT NULL,
-  "ReportType" SMALLINT NOT NULL DEFAULT 0,
-  "Date" TIMESTAMP NOT NULL,
-  "ServerID" INT NOT NULL,
-  "RoomID" INT NOT NULL,
-  PRIMARY KEY("ID"),
-  CONSTRAINT report_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT report_ibfk_2 FOREIGN KEY ("ReporterID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT report_ibfk_3 FOREIGN KEY ("RoomID") REFERENCES room ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  id SERIAL NOT NULL,
+  penguin_id INT NOT NULL,
+  reporter_id INT NOT NULL,
+  report_type SMALLINT NOT NULL DEFAULT 0,
+  date TIMESTAMP NOT NULL,
+  server_id INT NOT NULL,
+  room_id INT NOT NULL,
+  PRIMARY KEY(id),
+  CONSTRAINT report_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT report_ibfk_2 FOREIGN KEY (reporter_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT report_ibfk_3 FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-ALTER TABLE report ALTER COLUMN "Date" SET DEFAULT now();
+ALTER TABLE report ALTER COLUMN date SET DEFAULT now();
 
 COMMENT ON TABLE report IS 'Player reports';
 
-COMMENT ON COLUMN report."ID" IS 'Unique report ID';
-COMMENT ON COLUMN report."PenguinID" IS 'Reported penguin ID';
-COMMENT ON COLUMN report."ReporterID" IS 'Reporting penguin ID';
-COMMENT ON COLUMN report."ReportType" IS 'Report type ID';
-COMMENT ON COLUMN report."Date" IS 'Date of report';
+COMMENT ON COLUMN report.id IS 'Unique report ID';
+COMMENT ON COLUMN report.penguin_id IS 'Reported penguin ID';
+COMMENT ON COLUMN report.reporter_id IS 'Reporting penguin ID';
+COMMENT ON COLUMN report.report_type IS 'Report type ID';
+COMMENT ON COLUMN report.date IS 'Date of report';
 
 DROP TABLE IF EXISTS ban;
 CREATE TABLE ban (
-  "PenguinID" INT NOT NULL,
-  "Issued" TIMESTAMP NOT NULL,
-  "Expires" TIMESTAMP NOT NULL,
-  "ModeratorID" INT DEFAULT NULL,
-  "Reason" SMALLINT NOT NULL,
-  "Comment" TEXT DEFAULT NULL,
-  PRIMARY KEY ("PenguinID", "Issued", "Expires"),
-  CONSTRAINT ban_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT ban_ibfk_2 FOREIGN KEY ("ModeratorID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  issued TIMESTAMP NOT NULL,
+  expires TIMESTAMP NOT NULL,
+  moderator_id INT DEFAULT NULL,
+  reason SMALLINT NOT NULL,
+  comment TEXT DEFAULT NULL,
+  PRIMARY KEY (penguin_id, issued, expires),
+  CONSTRAINT ban_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT ban_ibfk_2 FOREIGN KEY (moderator_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE INDEX "ModeratorID" ON ban ("ModeratorID");
+CREATE INDEX ban_moderator_id ON ban (moderator_id);
 
-ALTER TABLE ban ALTER COLUMN "Issued" SET DEFAULT now();
-ALTER TABLE ban ALTER COLUMN "Expires" SET DEFAULT now();
+ALTER TABLE ban ALTER COLUMN issued SET DEFAULT now();
+ALTER TABLE ban ALTER COLUMN expires SET DEFAULT now();
 
 COMMENT ON TABLE ban IS 'Penguin ban records';
 
-COMMENT ON COLUMN ban."PenguinID" IS 'Banned penguin ID';
-COMMENT ON COLUMN ban."Issued" IS 'Issue date';
-COMMENT ON COLUMN ban."Expires" IS 'Expiry date';
-COMMENT ON COLUMN ban."ModeratorID" IS 'Moderator penguin ID';
-COMMENT ON COLUMN ban."Reason" IS 'Ban reason';
-COMMENT ON COLUMN ban."Comment" IS 'Ban comment';
+COMMENT ON COLUMN ban.penguin_id IS 'Banned penguin ID';
+COMMENT ON COLUMN ban.issued IS 'Issue date';
+COMMENT ON COLUMN ban.expires IS 'Expiry date';
+COMMENT ON COLUMN ban.moderator_id IS 'Moderator penguin ID';
+COMMENT ON COLUMN ban.reason IS 'Ban reason';
+COMMENT ON COLUMN ban.comment IS 'Ban comment';
 
 DROP TABLE IF EXISTS warning;
 CREATE TABLE warning (
-  "PenguinID" INT NOT NULL,
-  "Issued" TIMESTAMP NOT NULL,
-  "Expires" TIMESTAMP NOT NULL,
-  "Type" SMALLINT NOT NULL,
-  "Comment" TEXT NOT NULL,
-  PRIMARY KEY ("PenguinID", "Issued", "Expires"),
-  CONSTRAINT warning_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  issued TIMESTAMP NOT NULL,
+  expires TIMESTAMP NOT NULL,
+  type SMALLINT NOT NULL,
+  comment TEXT NOT NULL,
+  PRIMARY KEY (penguin_id, issued, expires),
+  CONSTRAINT warning_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE warning IS 'Penguin moderator warnings';
 
-COMMENT ON COLUMN warning."PenguinID" IS 'Warning penguin ID';
-COMMENT ON COLUMN warning."Issued" IS 'Warning issue date';
-COMMENT ON COLUMN warning."Expires" IS 'Warning expiry date';
-COMMENT ON COLUMN warning."Type" IS 'Type of warning';
-COMMENT ON COLUMN warning."Comment" IS 'Warning moderator comment';
+COMMENT ON COLUMN warning.penguin_id IS 'Warning penguin ID';
+COMMENT ON COLUMN warning.issued IS 'Warning issue date';
+COMMENT ON COLUMN warning.expires IS 'Warning expiry date';
+COMMENT ON COLUMN warning.type IS 'Type of warning';
+COMMENT ON COLUMN warning.comment IS 'Warning moderator comment';
 
 DROP TABLE IF EXISTS buddy_list;
 CREATE TABLE buddy_list (
-  "PenguinID" INT NOT NULL,
-  "BuddyID" INT NOT NULL,
-  "BestBuddy" BOOLEAN NOT NULL DEFAULT FALSE,
-  PRIMARY KEY ("PenguinID","BuddyID"),
-  CONSTRAINT buddy_list_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT buddy_list_ibfk_2 FOREIGN KEY ("BuddyID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  buddy_id INT NOT NULL,
+  best_buddy BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (penguin_id,buddy_id),
+  CONSTRAINT buddy_list_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT buddy_list_ibfk_2 FOREIGN KEY (buddy_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE INDEX "BuddyID" ON buddy_list ("BuddyID");
+CREATE INDEX buddy_id ON buddy_list (buddy_id);
 
 COMMENT ON TABLE buddy_list IS 'Penguin buddy relationships';
 
 DROP TABLE IF EXISTS buddy_request;
 CREATE TABLE buddy_request (
-  "PenguinID" INT NOT NULL,
-  "RequesterID" INT NOT NULL,
-  PRIMARY KEY ("PenguinID", "RequesterID"),
-  CONSTRAINT buddy_request_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT buddy_request_ibfk_2 FOREIGN KEY ("RequesterID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  requester_id INT NOT NULL,
+  PRIMARY KEY (penguin_id, requester_id),
+  CONSTRAINT buddy_request_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT buddy_request_ibfk_2 FOREIGN KEY (requester_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE buddy_request IS 'Penguin buddy requests';
 
 DROP TABLE IF EXISTS character_buddy;
 CREATE TABLE character_buddy (
-  "PenguinID" INT NOT NULL,
-  "CharacterID" SMALLINT NOT NULL,
-  PRIMARY KEY ("PenguinID", "CharacterID"),
-  CONSTRAINT character_buddy_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT character_buddy_ibfk_2 FOREIGN KEY ("CharacterID") REFERENCES "character" ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  character_id SMALLINT NOT NULL,
+  PRIMARY KEY (penguin_id, character_id),
+  CONSTRAINT character_buddy_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT character_buddy_ibfk_2 FOREIGN KEY (character_id) REFERENCES character (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE character_buddy IS 'Penguin character buddies';
 
 DROP TABLE IF EXISTS cover_stamp;
 CREATE TABLE cover_stamp (
-  "PenguinID" INT NOT NULL,
-  "StampID" INT NOT NULL,
-  "ItemID" INT NOT NULL,
-  "X" SMALLINT NOT NULL DEFAULT 0,
-  "Y" SMALLINT NOT NULL DEFAULT 0,
-  "Type" SMALLINT NOT NULL DEFAULT 0,
-  "Rotation" SMALLINT NOT NULL DEFAULT 0,
-  "Depth" SMALLINT NOT NULL DEFAULT 0,
-  PRIMARY KEY ("PenguinID", "StampID"),
-  CONSTRAINT cover_stamp_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT cover_stamp_ibfk_2 FOREIGN KEY ("StampID") REFERENCES stamp ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT cover_stamp_ibfk_3 FOREIGN KEY ("ItemID") REFERENCES item ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  stamp_id INT NOT NULL,
+  item_id INT NOT NULL,
+  x SMALLINT NOT NULL DEFAULT 0,
+  y SMALLINT NOT NULL DEFAULT 0,
+  type SMALLINT NOT NULL DEFAULT 0,
+  rotation SMALLINT NOT NULL DEFAULT 0,
+  depth SMALLINT NOT NULL DEFAULT 0,
+  PRIMARY KEY (penguin_id, stamp_id),
+  CONSTRAINT cover_stamp_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT cover_stamp_ibfk_2 FOREIGN KEY (stamp_id) REFERENCES stamp (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT cover_stamp_ibfk_3 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE cover_stamp IS 'Stamps placed on book cover';
 
-COMMENT ON COLUMN cover_stamp."PenguinID" IS 'Unique penguin ID';
-COMMENT ON COLUMN cover_stamp."StampID" IS 'Cover stamp or item ID';
-COMMENT ON COLUMN cover_stamp."X" IS 'Cover X position';
-COMMENT ON COLUMN cover_stamp."Y" IS 'Cover Y position';
-COMMENT ON COLUMN cover_stamp."Type" IS 'Cover item type';
-COMMENT ON COLUMN cover_stamp."Rotation" IS 'Stamp cover rotation';
-COMMENT ON COLUMN cover_stamp."Depth" IS 'Stamp cover depth';
+COMMENT ON COLUMN cover_stamp.penguin_id IS 'Unique penguin ID';
+COMMENT ON COLUMN cover_stamp.stamp_id IS 'Cover stamp or item ID';
+COMMENT ON COLUMN cover_stamp.x IS 'Cover X position';
+COMMENT ON COLUMN cover_stamp.y IS 'Cover Y position';
+COMMENT ON COLUMN cover_stamp.type IS 'Cover item type';
+COMMENT ON COLUMN cover_stamp.rotation IS 'Stamp cover rotation';
+COMMENT ON COLUMN cover_stamp.depth IS 'Stamp cover depth';
 
 DROP TABLE IF EXISTS penguin_card;
 CREATE TABLE penguin_card (
-  "PenguinID" INT NOT NULL,
-  "CardID" INT NOT NULL,
-  "Quantity" SMALLINT NOT NULL DEFAULT 1,
-  PRIMARY KEY ("PenguinID", "CardID"),
-  CONSTRAINT penguin_card_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_card_ibfk_2 FOREIGN KEY ("CardID") REFERENCES card ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  card_id INT NOT NULL,
+  quantity SMALLINT NOT NULL DEFAULT 1,
+  PRIMARY KEY (penguin_id, card_id),
+  CONSTRAINT penguin_card_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_card_ibfk_2 FOREIGN KEY (card_id) REFERENCES card (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE INDEX "PenguinID" ON penguin_card("PenguinID");
+CREATE INDEX penguin_card_penguin_id ON penguin_card(penguin_id);
 
 COMMENT ON TABLE penguin_card IS 'Penguin Card Jitsu decks';
 
-COMMENT ON COLUMN penguin_card."PenguinID" IS 'Owner penguin ID';
-COMMENT ON COLUMN penguin_card."CardID" IS 'Card type ID';
-COMMENT ON COLUMN penguin_card."Quantity" IS 'Quantity owned';
+COMMENT ON COLUMN penguin_card.penguin_id IS 'Owner penguin ID';
+COMMENT ON COLUMN penguin_card.card_id IS 'Card type ID';
+COMMENT ON COLUMN penguin_card.quantity IS 'Quantity owned';
 
 DROP TABLE IF EXISTS penguin_furniture;
 CREATE TABLE penguin_furniture (
-  "PenguinID" INT NOT NULL,
-  "FurnitureID" SMALLINT NOT NULL,
-  "Quantity" SMALLINT NOT NULL DEFAULT 1,
-  PRIMARY KEY ("PenguinID", "FurnitureID"),
-  CONSTRAINT penguin_furniture_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_furniture_ibfk_2 FOREIGN KEY ("FurnitureID") REFERENCES furniture ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  furniture_id SMALLINT NOT NULL,
+  quantity SMALLINT NOT NULL DEFAULT 1,
+  PRIMARY KEY (penguin_id, furniture_id),
+  CONSTRAINT penguin_furniture_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_furniture_ibfk_2 FOREIGN KEY (furniture_id) REFERENCES furniture (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_furniture IS 'Penguin owned furniture';
 
-COMMENT ON COLUMN penguin_furniture."PenguinID" IS 'Owner penguin ID';
-COMMENT ON COLUMN penguin_furniture."FurnitureID" IS 'Furniture item ID';
-COMMENT ON COLUMN penguin_furniture."Quantity" IS 'Quantity owned';
+COMMENT ON COLUMN penguin_furniture.penguin_id IS 'Owner penguin ID';
+COMMENT ON COLUMN penguin_furniture.furniture_id IS 'Furniture item ID';
+COMMENT ON COLUMN penguin_furniture.quantity IS 'Quantity owned';
+
+DROP TABLE IF EXISTS penguin_flooring;
+CREATE TABLE penguin_flooring (
+  penguin_id INT NOT NULL,
+  flooring_id SMALLINT NOT NULL,
+  PRIMARY KEY(penguin_id, flooring_id),
+  CONSTRAINT penguin_flooring_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penugin_flooring_ibfk_2 FOREIGN KEY (flooring_id) REFERENCES flooring (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+COMMENT ON TABLE penguin_flooring IS 'Penguin owned furniture';
+
+COMMENT ON COLUMN penguin_flooring.penguin_id IS 'Owner penguin ID';
+COMMENT ON COLUMN penguin_flooring.flooring_id IS 'Flooring item ID';
 
 DROP TABLE IF EXISTS penguin_igloo_room;
 CREATE TABLE penguin_igloo_room (
-  "ID" SERIAL,
-  "PenguinID" INT NOT NULL,
-  "Type" INT NOT NULL,
-  "Flooring" INT NOT NULL,
-  "Music" SMALLINT NOT NULL DEFAULT 0,
-  "Location" INT NOT NULL,
-  "Locked" BOOLEAN NOT NULL DEFAULT FALSE,
-  PRIMARY KEY ("ID"),
-  CONSTRAINT igloo_room_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT igloo_room_ibfk_2 FOREIGN KEY ("Type") REFERENCES igloo ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT igloo_room_ibfk_3 FOREIGN KEY ("Flooring") REFERENCES flooring ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT igloo_room_ibfk_4 FOREIGN KEY ("Location") REFERENCES location ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  id SERIAL,
+  penguin_id INT NOT NULL,
+  type INT NOT NULL,
+  flooring INT NOT NULL,
+  music SMALLINT NOT NULL DEFAULT 0,
+  location INT NOT NULL,
+  locked BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (id),
+  CONSTRAINT igloo_room_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT igloo_room_ibfk_2 FOREIGN KEY (type) REFERENCES igloo (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT igloo_room_ibfk_3 FOREIGN KEY (flooring) REFERENCES flooring (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT igloo_room_ibfk_4 FOREIGN KEY (location) REFERENCES location (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-ALTER TABLE penguin ADD CONSTRAINT penguin_ibfk_11 FOREIGN KEY ("Igloo") REFERENCES penguin_igloo_room ("ID") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE penguin ADD CONSTRAINT penguin_ibfk_11 FOREIGN KEY (igloo) REFERENCES penguin_igloo_room (id) ON DELETE CASCADE ON UPDATE CASCADE;
 
 COMMENT ON TABLE penguin_igloo_room IS 'Penguin igloo settings';
 
-COMMENT ON COLUMN penguin_igloo_room."ID" IS 'Unique igloo ID';
-COMMENT ON COLUMN penguin_igloo_room."PenguinID" IS 'Owner penguin ID';
-COMMENT ON COLUMN penguin_igloo_room."Type" IS 'Igloo type ID';
-COMMENT ON COLUMN penguin_igloo_room."Flooring" IS 'Igloo flooring ID';
-COMMENT ON COLUMN penguin_igloo_room."Music" IS 'Igloo music ID';
-COMMENT ON COLUMN penguin_igloo_room."Locked" IS 'Is igloo locked?';
+COMMENT ON COLUMN penguin_igloo_room.id IS 'Unique igloo ID';
+COMMENT ON COLUMN penguin_igloo_room.penguin_id IS 'Owner penguin ID';
+COMMENT ON COLUMN penguin_igloo_room.type IS 'Igloo type ID';
+COMMENT ON COLUMN penguin_igloo_room.flooring IS 'Igloo flooring ID';
+COMMENT ON COLUMN penguin_igloo_room.music IS 'Igloo music ID';
+COMMENT ON COLUMN penguin_igloo_room.locked IS 'Is igloo locked?';
 
 DROP TABLE IF EXISTS igloo_like;
 CREATE TABLE igloo_like (
-  "IglooID" INT NOT NULL,
-  "OwnerID" INT NOT NULL,
-  "PlayerID" INT NOT NULL,
-  "Count" SMALLiNT NOT NULL,
-  "Date" DATE NOT NULL,
-  PRIMARY KEY ("IglooID", "OwnerID", "PlayerID"),
-  CONSTRAINT igloo_like_ibfk_1 FOREIGN KEY ("IglooID") REFERENCES penguin_igloo_room ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT igloo_like_ibfk_2 FOREIGN KEY ("OwnerID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT igloo_like_ibfk_3 FOREIGN KEY ("PlayerID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  igloo_id INT NOT NULL,
+  owner_id INT NOT NULL,
+  player_id INT NOT NULL,
+  count SMALLiNT NOT NULL,
+  date DATE NOT NULL,
+  PRIMARY KEY (igloo_id, owner_id, player_id),
+  CONSTRAINT igloo_like_ibfk_1 FOREIGN KEY (igloo_id) REFERENCES penguin_igloo_room (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT igloo_like_ibfk_2 FOREIGN KEY (owner_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT igloo_like_ibfk_3 FOREIGN KEY (player_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-ALTER TABLE igloo_like ALTER COLUMN "Date" SET DEFAULT now();
+ALTER TABLE igloo_like ALTER COLUMN date SET DEFAULT now();
 
 COMMENT ON TABLE igloo_like IS 'Player igloo likes';
 
-COMMENT ON COLUMN igloo_like."IglooID" IS 'Igloo unique ID';
-COMMENT ON COLUMN igloo_like."OwnerID" IS 'Owner unique ID';
-COMMENT ON COLUMN igloo_like."PlayerID" IS 'Liker unique ID';
-COMMENT ON COLUMN igloo_like."Count" IS 'Number of likes';
-COMMENT ON COLUMN igloo_like."Date" IS 'Date of like';
+COMMENT ON COLUMN igloo_like.igloo_id IS 'Igloo unique ID';
+COMMENT ON COLUMN igloo_like.owner_id IS 'Owner unique ID';
+COMMENT ON COLUMN igloo_like.player_id IS 'Liker unique ID';
+COMMENT ON COLUMN igloo_like.count IS 'Number of likes';
+COMMENT ON COLUMN igloo_like.date IS 'Date of like';
 
 
 DROP TABLE IF EXISTS penguin_location;
 CREATE TABLE penguin_location (
-  "PenguinID" INT NOT NULL,
-  "LocationID" INT NOT NULL,
-  PRIMARY KEY ("PenguinID", "LocationID"),
-  CONSTRAINT penguin_location_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_location_ibfk_2 FOREIGN KEY ("LocationID") REFERENCES location ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  location_id INT NOT NULL,
+  PRIMARY KEY (penguin_id, location_id),
+  CONSTRAINT penguin_location_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_location_ibfk_2 FOREIGN KEY (location_id) REFERENCES location (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_location IS 'Penguin owned locations';
 
-COMMENT ON COLUMN penguin_location."PenguinID" IS 'Owner penguin ID';
-COMMENT ON COLUMN penguin_location."LocationID" IS 'Location ID';
+COMMENT ON COLUMN penguin_location.penguin_id IS 'Owner penguin ID';
+COMMENT ON COLUMN penguin_location.location_id IS 'Location ID';
 
 DROP TABLE IF EXISTS igloo_furniture;
 CREATE TABLE igloo_furniture (
-  "IglooID" INT NOT NULL,
-  "FurnitureID" INT NOT NULL,
-  "X" SMALLINT NOT NULL DEFAULT 0,
-  "Y" SMALLINT NOT NULL DEFAULT 0,
-  "Frame" SMALLINT NOT NULL DEFAULT 0,
-  "Rotation" SMALLINT NOT NULL DEFAULT 0,
-  PRIMARY KEY ("IglooID", "FurnitureID", "X", "Y", "Frame", "Rotation"),
-  CONSTRAINT igloo_furniture_ibfk_1 FOREIGN KEY ("IglooID") REFERENCES penguin_igloo_room ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT igloo_furniture_ibfk_2 FOREIGN KEY ("FurnitureID") REFERENCES furniture ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  igloo_id INT NOT NULL,
+  furniture_id INT NOT NULL,
+  x SMALLINT NOT NULL DEFAULT 0,
+  y SMALLINT NOT NULL DEFAULT 0,
+  frame SMALLINT NOT NULL DEFAULT 0,
+  rotation SMALLINT NOT NULL DEFAULT 0,
+  PRIMARY KEY (igloo_id, furniture_id, x, y, frame, rotation),
+  CONSTRAINT igloo_furniture_ibfk_1 FOREIGN KEY (igloo_id) REFERENCES penguin_igloo_room (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT igloo_furniture_ibfk_2 FOREIGN KEY (furniture_id) REFERENCES furniture (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE INDEX IglooID ON igloo_furniture("IglooID");
+CREATE INDEX igloo_furniture_igloo_id ON igloo_furniture(igloo_id);
 
 COMMENT ON TABLE igloo_furniture IS 'Furniture placed inside igloos';
 
-COMMENT ON COLUMN igloo_furniture."IglooID" IS 'Furniture igloo ID';
-COMMENT ON COLUMN igloo_furniture."FurnitureID" IS 'Furniture item ID';
-COMMENT ON COLUMN igloo_furniture."X" IS 'Igloo X position';
-COMMENT ON COLUMN igloo_furniture."Y" IS 'Igloo Y position';
-COMMENT ON COLUMN igloo_furniture."Frame" IS 'Furniture frame ID';
-COMMENT ON COLUMN igloo_furniture."Rotation" IS 'Furniture rotation ID';
+COMMENT ON COLUMN igloo_furniture.igloo_id IS 'Furniture igloo ID';
+COMMENT ON COLUMN igloo_furniture.furniture_id IS 'Furniture item ID';
+COMMENT ON COLUMN igloo_furniture.x IS 'Igloo X position';
+COMMENT ON COLUMN igloo_furniture.y IS 'Igloo Y position';
+COMMENT ON COLUMN igloo_furniture.frame IS 'Furniture frame ID';
+COMMENT ON COLUMN igloo_furniture.rotation IS 'Furniture rotation ID';
 
 DROP TABLE IF EXISTS penguin_igloo;
 CREATE TABLE penguin_igloo (
-  "PenguinID" INT NOT NULL,
-  "IglooID" INT NOT NULL,
-  PRIMARY KEY ("PenguinID", "IglooID"),
-  CONSTRAINT penguin_igloo_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_igloo_ibfk_2 FOREIGN KEY ("IglooID") REFERENCES igloo ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  igloo_id INT NOT NULL,
+  PRIMARY KEY (penguin_id, igloo_id),
+  CONSTRAINT penguin_igloo_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_igloo_ibfk_2 FOREIGN KEY (igloo_id) REFERENCES igloo (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_igloo IS 'Penguin owned igloos';
 
-COMMENT ON COLUMN penguin_igloo."PenguinID" IS 'Owner penguin ID';
-COMMENT ON COLUMN penguin_igloo."IglooID" IS 'Igloo ID';
+COMMENT ON COLUMN penguin_igloo.penguin_id IS 'Owner penguin ID';
+COMMENT ON COLUMN penguin_igloo.igloo_id IS 'Igloo ID';
 
 DROP TABLE IF EXISTS penguin_track;
 CREATE TABLE penguin_track (
-  "ID" SERIAL NOT NULL,
-  "Name" VARCHAR(12) NOT NULL DEFAULT '',
-  "OwnerID" INT NOT NULL,
-  "Sharing" BOOLEAN NOT NULL DEFAULT FALSE,
-  "Pattern" TEXT NOT NULL,
-  PRIMARY KEY ("ID"),
-  CONSTRAINT penguin_track_ibfk_1 FOREIGN KEY ("OwnerID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  id SERIAL NOT NULL,
+  name VARCHAR(12) NOT NULL DEFAULT '',
+  owner_id INT NOT NULL,
+  sharing BOOLEAN NOT NULL DEFAULT FALSE,
+  pattern TEXT NOT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT penguin_track_ibfk_1 FOREIGN KEY (owner_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_track IS 'Penguin SoundStudio tracks';
 
-COMMENT ON COLUMN penguin_track."ID" IS 'Unique track ID';
-COMMENT ON COLUMN penguin_track."Name" IS 'Name of track';
-COMMENT ON COLUMN penguin_track."OwnerID" IS 'Owner penguin ID';
-COMMENT ON COLUMN penguin_track."Sharing" IS 'Is song shared?';
-COMMENT ON COLUMN penguin_track."Pattern" IS 'Song data';
+COMMENT ON COLUMN penguin_track.id IS 'Unique track ID';
+COMMENT ON COLUMN penguin_track.name IS 'Name of track';
+COMMENT ON COLUMN penguin_track.owner_id IS 'Owner penguin ID';
+COMMENT ON COLUMN penguin_track.sharing IS 'Is song shared?';
+COMMENT ON COLUMN penguin_track.pattern IS 'Song data';
 
 DROP TABLE IF EXISTS track_like;
 CREATE TABLE track_like (
-  "PenguinID" INT NOT NULL,
-  "TrackID" INT NOT NULL,
-  "Date" TIMESTAMP NOT NULL,
-  PRIMARY KEY ("TrackID", "PenguinID", "Date"),
-  CONSTRAINT track_like_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT track_like_ibfk_2 FOREIGN KEY ("TrackID") REFERENCES penguin_track ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  track_id INT NOT NULL,
+  date TIMESTAMP NOT NULL,
+  PRIMARY KEY (track_id, penguin_id, date),
+  CONSTRAINT track_like_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT track_like_ibfk_2 FOREIGN KEY (track_id) REFERENCES penguin_track (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE INDEX TrackID ON track_like ("TrackID");
+CREATE INDEX track_like_track_id ON track_like (track_id);
 
 COMMENT ON TABLE track_like IS 'SoundStudio likes';
 
-COMMENT ON COLUMN track_like."TrackID" IS 'Liked track ID';
-COMMENT ON COLUMN track_like."PenguinID" IS 'Liker penguin ID';
-COMMENT ON COLUMN track_like."Date" IS 'Timestamp of like';
+COMMENT ON COLUMN track_like.track_id IS 'Liked track ID';
+COMMENT ON COLUMN track_like.penguin_id IS 'Liker penguin ID';
+COMMENT ON COLUMN track_like.date IS 'Timestamp of like';
 
 DROP TABLE IF EXISTS penguin_launch_game;
 CREATE TABLE penguin_launch_game (
-  "PenguinID" INT NOT NULL,
-  "Level" SMALLINT NOT NULL DEFAULT 0,
-  "PuffleOs" SMALLINT NOT NULL DEFAULT 0,
-  "BestTime" SMALLINT NOT NULL DEFAULT 600,
-  "Turbo" BOOLEAN NOT NULL DEFAULT FALSE,
-  PRIMARY KEY ("PenguinID", "Level"),
-  CONSTRAINT penguin_launch_game_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  level SMALLINT NOT NULL DEFAULT 0,
+  puffle_os SMALLINT NOT NULL DEFAULT 0,
+  best_time SMALLINT NOT NULL DEFAULT 600,
+  turbo BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (penguin_id, level),
+  CONSTRAINT penguin_launch_game_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 DROP TABLE IF EXISTS ignore_list;
 CREATE TABLE ignore_list (
-  "PenguinID" INT NOT NULL,
-  "IgnoreID" INT NOT NULL,
-  PRIMARY KEY ("PenguinID", "IgnoreID"),
-  CONSTRAINT ignore_list_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT ignore_list_ibfk_2 FOREIGN KEY ("IgnoreID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  ignore_id INT NOT NULL,
+  PRIMARY KEY (penguin_id, ignore_id),
+  CONSTRAINT ignore_list_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT ignore_list_ibfk_2 FOREIGN KEY (ignore_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE INDEX IgnoreID ON ignore_list ("IgnoreID");
+CREATE INDEX ignore_list_ignore_id ON ignore_list (ignore_id);
 
 COMMENT ON TABLE ignore_list IS 'Penguin ignore relationships';
 
 DROP TABLE IF EXISTS penguin_item;
 CREATE TABLE penguin_item (
-  "PenguinID" INT NOT NULL,
-  "ItemID" SMALLINT NOT NULL,
-  PRIMARY KEY ("PenguinID", "ItemID"),
-  CONSTRAINT penguin_item_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_item_ibfk_2 FOREIGN KEY ("ItemID") REFERENCES item ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  item_id SMALLINT NOT NULL,
+  PRIMARY KEY (penguin_id, item_id),
+  CONSTRAINT penguin_item_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_item IS 'Penguin owned clothing items';
 
-COMMENT ON COLUMN penguin_item."PenguinID" IS 'Owner penguin ID';
-COMMENT ON COLUMN penguin_item."ItemID" IS 'Clothing item ID';
+COMMENT ON COLUMN penguin_item.penguin_id IS 'Owner penguin ID';
+COMMENT ON COLUMN penguin_item.item_id IS 'Clothing item ID';
 
 DROP TABLE IF EXISTS login;
 CREATE TABLE login (
-  "ID" SERIAL,
-  "PenguinID" INT NOT NULL,
-  "Date" TIMESTAMP NOT NULL,
-  "IPAddress" CHAR(255) NOT NULL,
-  PRIMARY KEY ("ID"),
-  CONSTRAINT login_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  id SERIAL,
+  penguin_id INT NOT NULL,
+  date TIMESTAMP NOT NULL,
+  i_p_address CHAR(255) NOT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT login_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-ALTER TABLE login ALTER COLUMN "Date" SET DEFAULT now();
+ALTER TABLE login ALTER COLUMN date SET DEFAULT now();
 
 COMMENT ON TABLE login IS 'Penguin login records';
 
-COMMENT ON COLUMN login."ID" IS 'Unique login ID';
-COMMENT ON COLUMN login."PenguinID" IS 'Login penguin ID';
-COMMENT ON COLUMN login."Date" IS 'Login date';
-COMMENT ON COLUMN login."IPAddress" IS 'Connection IP address';
+COMMENT ON COLUMN login.id IS 'Unique login ID';
+COMMENT ON COLUMN login.penguin_id IS 'Login penguin ID';
+COMMENT ON COLUMN login.date IS 'Login date';
+COMMENT ON COLUMN login.i_p_address IS 'Connection IP address';
 
 DROP TABLE IF EXISTS penguin_postcard;
 CREATE TABLE penguin_postcard (
-  "ID" SERIAL,
-  "SenderID" INT DEFAULT NULL,
-  "RecipientID" INT NOT NULL,
-  "PostcardID" SMALLINT NOT NULL,
-  "SendDate" TIMESTAMP NOT NULL,
-  "Details" VARCHAR(255) NOT NULL DEFAULT '',
-  "HasRead" BOOLEAN NOT NULL DEFAULT FALSE,
-  PRIMARY KEY ("ID"),
-  CONSTRAINT penguin_postcard_ibfk_1 FOREIGN KEY ("SenderID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_postcard_ibfk_2 FOREIGN KEY ("RecipientID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_postcard_ibfk_3 FOREIGN KEY ("PostcardID") REFERENCES postcard ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  id SERIAL,
+  penguin_id INT NOT NULL,
+  sender_id INT DEFAULT NULL,
+  postcard_id SMALLINT NOT NULL,
+  send_date TIMESTAMP NOT NULL,
+  details VARCHAR(255) NOT NULL DEFAULT '',
+  has_read BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (id),
+  CONSTRAINT penguin_postcard_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_postcard_ibfk_2 FOREIGN KEY (sender_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_postcard_ibfk_3 FOREIGN KEY (postcard_id) REFERENCES postcard (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-ALTER TABLE penguin_postcard ALTER COLUMN "SendDate" SET DEFAULT now();
+ALTER TABLE penguin_postcard ALTER COLUMN send_date SET DEFAULT now();
 
-CREATE INDEX "SenderID" ON penguin_postcard("SenderID");
-CREATE INDEX "RecipientID" ON penguin_postcard("RecipientID");
+CREATE INDEX penguin_postcard_penguin_id ON penguin_postcard(penguin_id);
+CREATE INDEX penguin_postcard_sender_id ON penguin_postcard(sender_id);
 
 COMMENT ON TABLE penguin_postcard IS 'Sent postcards';
 
-COMMENT ON COLUMN penguin_postcard."ID" IS 'Unique postcard ID';
-COMMENT ON COLUMN penguin_postcard."SenderID" IS 'Sender penguin ID';
-COMMENT ON COLUMN penguin_postcard."RecipientID" IS 'Postcard type ID';
-COMMENT ON COLUMN penguin_postcard."PostcardID" IS 'Postcard type ID';
-COMMENT ON COLUMN penguin_postcard."SendDate" IS 'Postcard type ID';
-COMMENT ON COLUMN penguin_postcard."Details" IS 'Postcard details';
-COMMENT ON COLUMN penguin_postcard."HasRead" IS 'Is read?';
+COMMENT ON COLUMN penguin_postcard.id IS 'Unique postcard ID';
+COMMENT ON COLUMN penguin_postcard.penguin_id IS 'Postcard type ID';
+COMMENT ON COLUMN penguin_postcard.sender_id IS 'Sender penguin ID';
+COMMENT ON COLUMN penguin_postcard.postcard_id IS 'Postcard type ID';
+COMMENT ON COLUMN penguin_postcard.send_date IS 'Postcard type ID';
+COMMENT ON COLUMN penguin_postcard.details IS 'Postcard details';
+COMMENT ON COLUMN penguin_postcard.has_read IS 'Is read?';
 
 DROP TABLE IF EXISTS penguin_puffle;
 CREATE TABLE penguin_puffle (
-  "ID" SERIAL,
-  "PenguinID" INT NOT NULL,
-  "Name" VARCHAR(16) NOT NULL,
-  "AdoptionDate" TIMESTAMP NOT NULL,
-  "Type" INT NOT NULL,
-  "Food" SMALLINT NOT NULL DEFAULT 100,
-  "Play" SMALLINT NOT NULL DEFAULT 100,
-  "Rest" SMALLINT NOT NULL DEFAULT 100,
-  "Clean" SMALLINT NOT NULL DEFAULT 100,
-  "Walking" BOOLEAN DEFAULT FALSE,
-  "Hat" INT NOT NULL,
-  "Backyard" BOOLEAN DEFAULT FALSE,
-  "HasDug" BOOLEAN DEFAULT FALSE,
-  PRIMARY KEY ("ID"),
-  CONSTRAINT penguin_puffle_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_puffle_ibfk_2 FOREIGN KEY ("Type") REFERENCES puffle ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_puffle_ibfk_3 FOREIGN KEY ("Hat") REFERENCES puffle_item ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  id SERIAL,
+  penguin_id INT NOT NULL,
+  puffle_id INT NOT NULL,
+  name VARCHAR(16) NOT NULL,
+  adoption_date TIMESTAMP NOT NULL,
+  food SMALLINT NOT NULL DEFAULT 100,
+  play SMALLINT NOT NULL DEFAULT 100,
+  rest SMALLINT NOT NULL DEFAULT 100,
+  clean SMALLINT NOT NULL DEFAULT 100,
+  walking BOOLEAN DEFAULT FALSE,
+  hat INT NOT NULL,
+  backyard BOOLEAN DEFAULT FALSE,
+  has_dug BOOLEAN DEFAULT FALSE,
+  PRIMARY KEY (id),
+  CONSTRAINT penguin_puffle_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_puffle_ibfk_2 FOREIGN KEY (puffle_id) REFERENCES puffle (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_puffle_ibfk_3 FOREIGN KEY (hat) REFERENCES puffle_item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-ALTER TABLE penguin_puffle ALTER COLUMN "AdoptionDate" SET DEFAULT now();
+ALTER TABLE penguin_puffle ALTER COLUMN adoption_date SET DEFAULT now();
 
 COMMENT ON TABLE penguin_puffle IS 'Adopted puffles';
 
-COMMENT ON COLUMN penguin_puffle."ID" IS 'Unique puffle ID';
-COMMENT ON COLUMN penguin_puffle."PenguinID" IS 'Owner penguin ID';
-COMMENT ON COLUMN penguin_puffle."Name" IS 'Puffle name';
-COMMENT ON COLUMN penguin_puffle."AdoptionDate" IS 'Date of adoption';
-COMMENT ON COLUMN penguin_puffle."Type" IS 'Puffle type ID';
-COMMENT ON COLUMN penguin_puffle."Food" IS 'Puffle health %';
-COMMENT ON COLUMN penguin_puffle."Play" IS 'Puffle hunger %';
-COMMENT ON COLUMN penguin_puffle."Rest" IS 'Puffle rest %';
-COMMENT ON COLUMN penguin_puffle."Clean" IS 'Puffle clean %';
-COMMENT ON COLUMN penguin_puffle."Walking" IS 'Is being walked?';
-COMMENT ON COLUMN penguin_puffle."Hat" IS 'Puffle hat item ID';
-COMMENT ON COLUMN penguin_puffle."Backyard" IS 'Is in backyard?';
-COMMENT ON COLUMN penguin_puffle."HasDug" IS 'Has dug?';
+COMMENT ON COLUMN penguin_puffle.id IS 'Unique puffle ID';
+COMMENT ON COLUMN penguin_puffle.penguin_id IS 'Owner penguin ID';
+COMMENT ON COLUMN penguin_puffle.puffle_id IS 'Puffle type ID';
+COMMENT ON COLUMN penguin_puffle.name IS 'Puffle name';
+COMMENT ON COLUMN penguin_puffle.adoption_date IS 'Date of adoption';
+COMMENT ON COLUMN penguin_puffle.food IS 'Puffle health %';
+COMMENT ON COLUMN penguin_puffle.play IS 'Puffle hunger %';
+COMMENT ON COLUMN penguin_puffle.rest IS 'Puffle rest %';
+COMMENT ON COLUMN penguin_puffle.clean IS 'Puffle clean %';
+COMMENT ON COLUMN penguin_puffle.walking IS 'Is being walked?';
+COMMENT ON COLUMN penguin_puffle.hat IS 'Puffle hat item ID';
+COMMENT ON COLUMN penguin_puffle.backyard IS 'Is in backyard?';
+COMMENT ON COLUMN penguin_puffle.has_dug IS 'Has dug?';
 
 DROP TABLE IF EXISTS penguin_puffle_item;
 CREATE TABLE penguin_puffle_item (
-  "PenguinID" INT NOT NULL,
-  "ItemID" INT NOT NULL,
-  "Quantity" SMALLINT NOT NULL,
-  PRIMARY KEY ("PenguinID", "ItemID"),
-  CONSTRAINT penguin_puffle_item_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  item_id INT NOT NULL,
+  quantity SMALLINT NOT NULL,
+  PRIMARY KEY (penguin_id, item_id),
+  CONSTRAINT penguin_puffle_item_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_puffle_item IS 'Owned puffle care items';
 
-COMMENT ON COLUMN penguin_puffle_item."PenguinID" IS 'Owner penguin ID';
-COMMENT ON COLUMN penguin_puffle_item."ItemID" IS 'Puffle care item ID';
-COMMENT ON COLUMN penguin_puffle_item."Quantity" IS 'Quantity owned';
+COMMENT ON COLUMN penguin_puffle_item.penguin_id IS 'Owner penguin ID';
+COMMENT ON COLUMN penguin_puffle_item.item_id IS 'Puffle care item ID';
+COMMENT ON COLUMN penguin_puffle_item.quantity IS 'Quantity owned';
 
 DROP TABLE IF EXISTS puffle_quest;
 CREATE TABLE puffle_quest (
-  "PenguinID" INT NOT NULL,
-  "TaskID" SMALLINT NOT NULL,
-  "CompletionDate" TIMESTAMP DEFAULT NULL,
-  "ItemCollected" BOOLEAN NOT NULL DEFAULT FALSE,
-  "CoinsCollected" BOOLEAN NOT NULL DEFAULT FALSE,
-  PRIMARY KEY ("PenguinID", "TaskID"),
-  CONSTRAINT puffle_quest_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  task_id SMALLINT NOT NULL,
+  completion_date TIMESTAMP DEFAULT NULL,
+  item_collected BOOLEAN NOT NULL DEFAULT FALSE,
+  coins_collected BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (penguin_id, task_id),
+  CONSTRAINT puffle_quest_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE puffle_quest IS 'Puffle quest progress';
 
-COMMENT ON COLUMN puffle_quest."PenguinID" IS 'Quest penguin ID';
-COMMENT ON COLUMN puffle_quest."TaskID" IS 'Quest task ID';
-COMMENT ON COLUMN puffle_quest."CompletionDate" IS 'Time of completion';
-COMMENT ON COLUMN puffle_quest."ItemCollected" IS 'Item collection status';
-COMMENT ON COLUMN puffle_quest."CoinsCollected" IS 'Coins collection status';
+COMMENT ON COLUMN puffle_quest.penguin_id IS 'Quest penguin ID';
+COMMENT ON COLUMN puffle_quest.task_id IS 'Quest task ID';
+COMMENT ON COLUMN puffle_quest.completion_date IS 'Time of completion';
+COMMENT ON COLUMN puffle_quest.item_collected IS 'Item collection status';
+COMMENT ON COLUMN puffle_quest.coins_collected IS 'Coins collection status';
 
 DROP TABLE IF EXISTS redemption_code;
 CREATE TABLE redemption_code (
-  "ID" SERIAL,
-  "Code" VARCHAR(16) NOT NULL,
-  "Type" VARCHAR(8) NOT NULL DEFAULT 'BLANKET',
-  "Coins" INT NOT NULL DEFAULT 0,
-  "Expires" TIMESTAMP DEFAULT NULL,
-  PRIMARY KEY ("ID")
+  id SERIAL,
+  code VARCHAR(16) NOT NULL,
+  type VARCHAR(8) NOT NULL DEFAULT 'BLANKET',
+  coins INT NOT NULL DEFAULT 0,
+  expires TIMESTAMP DEFAULT NULL,
+  PRIMARY KEY (id)
 );
 
-CREATE UNIQUE INDEX "Code" ON redemption_code ("Code");
+CREATE UNIQUE INDEX redemption_code_code ON redemption_code (code);
 
 COMMENT ON TABLE redemption_code IS 'Redemption codes';
 
-COMMENT ON COLUMN redemption_code."ID" IS 'Unique code ID';
-COMMENT ON COLUMN redemption_code."Code" IS 'Redemption code';
-COMMENT ON COLUMN redemption_code."Type" IS 'Code type';
-COMMENT ON COLUMN redemption_code."Coins" IS 'Code coins amount';
-COMMENT ON COLUMN redemption_code."Expires" IS 'Expiry date';
+COMMENT ON COLUMN redemption_code.id IS 'Unique code ID';
+COMMENT ON COLUMN redemption_code.code IS 'Redemption code';
+COMMENT ON COLUMN redemption_code.type IS 'Code type';
+COMMENT ON COLUMN redemption_code.coins IS 'Code coins amount';
+COMMENT ON COLUMN redemption_code.expires IS 'Expiry date';
 
 DROP TABLE IF EXISTS redemption_book;
 CREATE TABLE redemption_book (
-  "ID" INT NOT NULL,
-  "Name" VARCHAR(255) NOT NULL,
-  PRIMARY KEY ("ID")
+  id INT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id)
 );
 
 COMMENT ON TABLE redemption_book IS 'Redemption books';
 
-COMMENT ON COLUMN redemption_book."ID" IS 'Unique redemption book ID';
-COMMENT ON COLUMN redemption_book."Name" IS 'Book name';
+COMMENT ON COLUMN redemption_book.id IS 'Unique redemption book ID';
+COMMENT ON COLUMN redemption_book.name IS 'Book name';
 
 DROP TABLE IF EXISTS redemption_book_word;
 CREATE TABLE redemption_book_word (
-  "BookID" INT NOT NULL,
-  "Page" SMALLINT NOT NULL DEFAULT 1,
-  "Line" SMALLINT NOT NULL DEFAULT 1,
-  "WordNumber" SMALLINT NOT NULL DEFAULT 1,
-  "Answer" VARCHAR(20) NOT NULL,
-  PRIMARY KEY("BookID", "Page", "Line", "WordNumber"),
-  CONSTRAINT redemption_book_word_ibfk_1 FOREIGN KEY ("BookID") REFERENCES redemption_book ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  book_id INT NOT NULL,
+  page SMALLINT NOT NULL DEFAULT 1,
+  line SMALLINT NOT NULL DEFAULT 1,
+  word_number SMALLINT NOT NULL DEFAULT 1,
+  answer VARCHAR(20) NOT NULL,
+  PRIMARY KEY(book_id, page, line, word_number),
+  CONSTRAINT redemption_book_word_ibfk_1 FOREIGN KEY (book_id) REFERENCES redemption_book (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE redemption_book_word IS 'Redemption book answers';
 
-COMMENT ON COLUMN redemption_book_word."BookID" IS 'Redemption book ID';
-COMMENT ON COLUMN redemption_book_word."Page" IS 'Page number inside book';
-COMMENT ON COLUMN redemption_book_word."Line" IS 'Line number of page';
-COMMENT ON COLUMN redemption_book_word."WordNumber" IS 'The nth word on the line';
-COMMENT ON COLUMN redemption_book_word."Answer" IS 'The correct word';
+COMMENT ON COLUMN redemption_book_word.book_id IS 'Redemption book ID';
+COMMENT ON COLUMN redemption_book_word.page IS 'Page number inside book';
+COMMENT ON COLUMN redemption_book_word.line IS 'Line number of page';
+COMMENT ON COLUMN redemption_book_word.word_number IS 'The nth word on the line';
+COMMENT ON COLUMN redemption_book_word.answer IS 'The correct word';
 
 DROP TABLE IF EXISTS penguin_redemption;
 CREATE TABLE penguin_redemption (
-  "PenguinID" INT NOT NULL,
-  "CodeID" INT DEFAULT NULL,
-  "BookID" INT DEFAULT NULL,
-  PRIMARY KEY ("PenguinID", "CodeID"),
-  CONSTRAINT penguin_redemption_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_redemption_ibfk_2 FOREIGN KEY ("CodeID") REFERENCES redemption_code ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_redemption_ibfk_3 FOREIGN KEY ("BookID") REFERENCES redemption_book ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  code_id INT DEFAULT NULL,
+  book_id INT DEFAULT NULL,
+  PRIMARY KEY (penguin_id, code_id),
+  CONSTRAINT penguin_redemption_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_redemption_ibfk_2 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_redemption_ibfk_3 FOREIGN KEY (book_id) REFERENCES redemption_book (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE INDEX "CodeID" ON penguin_redemption ("CodeID");
-CREATE INDEX "BookID" ON penguin_redemption ("BookID")
+CREATE INDEX penguin_redemption_code_id ON penguin_redemption (code_id);
+CREATE INDEX penguin_redemption_book_id ON penguin_redemption (book_id)
 
 COMMENT ON TABLE penguin_redemption IS 'Redeemed codes';
 
-COMMENT ON COLUMN penguin_redemption."PenguinID" IS 'Unique penguin ID';
-COMMENT ON COLUMN penguin_redemption."CodeID" IS 'Unique code ID';
+COMMENT ON COLUMN penguin_redemption.penguin_id IS 'Unique penguin ID';
+COMMENT ON COLUMN penguin_redemption.code_id IS 'Unique code ID';
 
 DROP TABLE IF EXISTS redemption_award_card;
 CREATE TABLE redemption_award_card (
-  "CodeID" INT NOT NULL,
-  "CardID" INT DEFAULT NULL,
-  PRIMARY KEY ("CodeID", "CardID"),
-  CONSTRAINT redemption_award_ibfk_1 FOREIGN KEY ("CodeID") REFERENCES redemption_code ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT redemption_award_ibfk_2 FOREIGN KEY ("CardID") REFERENCES card ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  code_id INT NOT NULL,
+  card_id INT DEFAULT NULL,
+  PRIMARY KEY (code_id, card_id),
+  CONSTRAINT redemption_award_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT redemption_award_ibfk_2 FOREIGN KEY (card_id) REFERENCES card (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE redemption_award_card IS 'Redemption code card awards';
 
-COMMENT ON COLUMN redemption_award_card."CodeID" IS 'Unique code ID';
-COMMENT ON COLUMN redemption_award_card."CardID" IS 'Code card ID';
+COMMENT ON COLUMN redemption_award_card.code_id IS 'Unique code ID';
+COMMENT ON COLUMN redemption_award_card.card_id IS 'Code card ID';
 
 DROP TABLE IF EXISTS redemption_award_item;
 CREATE TABLE redemption_award_item (
-  "CodeID" INT NOT NULL,
-  "ItemID" INT DEFAULT NULL,
-  PRIMARY KEY ("CodeID", "ItemID"),
-  CONSTRAINT redemption_award_item_ibfk_1 FOREIGN KEY ("CodeID") REFERENCES redemption_code ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT redemption_award_item_ibfk_2 FOREIGN KEY ("ItemID") REFERENCES item ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  code_id INT NOT NULL,
+  item_id INT DEFAULT NULL,
+  PRIMARY KEY (code_id, item_id),
+  CONSTRAINT redemption_award_item_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT redemption_award_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE redemption_award_item IS 'Redemption code item awards';
 
-COMMENT ON COLUMN redemption_award_item."CodeID" IS 'Unique code ID';
-COMMENT ON COLUMN redemption_award_item."ItemID" IS 'Code item ID';
+COMMENT ON COLUMN redemption_award_item.code_id IS 'Unique code ID';
+COMMENT ON COLUMN redemption_award_item.item_id IS 'Code item ID';
 
 DROP TABLE IF EXISTS redemption_award_furniture;
 CREATE TABLE redemption_award_furniture (
-  "CodeID" INT NOT NULL,
-  "FurnitureID" INT DEFAULT NULL,
-  PRIMARY KEY ("CodeID", "FurnitureID"),
-  CONSTRAINT redemption_award_furniture_ibfk_1 FOREIGN KEY ("CodeID") REFERENCES redemption_code ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT redemption_award_furniture_ibfk_2 FOREIGN KEY ("FurnitureID") REFERENCES furniture ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  code_id INT NOT NULL,
+  furniture_id INT DEFAULT NULL,
+  PRIMARY KEY (code_id, furniture_id),
+  CONSTRAINT redemption_award_furniture_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT redemption_award_furniture_ibfk_2 FOREIGN KEY (furniture_id) REFERENCES furniture (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE redemption_award_furniture IS 'Redemption code furniture awards';
 
-COMMENT ON COLUMN redemption_award_furniture."CodeID" IS 'Unique code ID';
-COMMENT ON COLUMN redemption_award_furniture."FurnitureID" IS 'Code igloo furniture ID';
+COMMENT ON COLUMN redemption_award_furniture.code_id IS 'Unique code ID';
+COMMENT ON COLUMN redemption_award_furniture.furniture_id IS 'Code igloo furniture ID';
 
 DROP TABLE IF EXISTS redemption_award_igloo;
 CREATE TABLE redemption_award_igloo (
-  "CodeID" INT NOT NULL,
-  "IglooID" INT DEFAULT NULL,
-  PRIMARY KEY ("CodeID", "IglooID"),
-  CONSTRAINT redemption_award_igloo_ibfk_1 FOREIGN KEY ("CodeID") REFERENCES redemption_code ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT redemption_award_igloo_ibfk_2 FOREIGN KEY ("IglooID") REFERENCES igloo ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  code_id INT NOT NULL,
+  igloo_id INT DEFAULT NULL,
+  PRIMARY KEY (code_id, igloo_id),
+  CONSTRAINT redemption_award_igloo_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT redemption_award_igloo_ibfk_2 FOREIGN KEY (igloo_id) REFERENCES igloo (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE redemption_award_igloo IS 'Redemption code igloo awards';
 
-COMMENT ON COLUMN redemption_award_igloo."CodeID" IS 'Unique code ID';
-COMMENT ON COLUMN redemption_award_igloo."IglooID" IS 'Code igloo ID';
+COMMENT ON COLUMN redemption_award_igloo.code_id IS 'Unique code ID';
+COMMENT ON COLUMN redemption_award_igloo.igloo_id IS 'Code igloo ID';
 
 DROP TABLE IF EXISTS redemption_award_location;
 CREATE TABLE redemption_award_location (
-  "CodeID" INT NOT NULL,
-  "LocationID" INT DEFAULT NULL,
-  PRIMARY KEY ("CodeID", "LocationID"),
-  CONSTRAINT redemption_award_location_ibfk_1 FOREIGN KEY ("CodeID") REFERENCES redemption_code ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT redemption_award_location_ibfk_2 FOREIGN KEY ("LocationID") REFERENCES location ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  code_id INT NOT NULL,
+  location_id INT DEFAULT NULL,
+  PRIMARY KEY (code_id, location_id),
+  CONSTRAINT redemption_award_location_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT redemption_award_location_ibfk_2 FOREIGN KEY (location_id) REFERENCES location (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE redemption_award_location IS 'Redemption code location awards';
 
-COMMENT ON COLUMN redemption_award_location."CodeID" IS 'Unique code ID';
-COMMENT ON COLUMN redemption_award_location."LocationID" IS 'Code igloo location ID';
+COMMENT ON COLUMN redemption_award_location.code_id IS 'Unique code ID';
+COMMENT ON COLUMN redemption_award_location.location_id IS 'Code igloo location ID';
 
 DROP TABLE IF EXISTS redemption_award_flooring;
 CREATE TABLE redemption_award_flooring (
-  "CodeID" INT NOT NULL,
-  "FlooringID" INT DEFAULT NULL,
-  PRIMARY KEY ("CodeID", "FlooringID"),
-  CONSTRAINT redemption_award_flooring_ibfk_1 FOREIGN KEY ("CodeID") REFERENCES redemption_code ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT redemption_award_flooring_ibfk_2 FOREIGN KEY ("FlooringID") REFERENCES flooring ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  code_id INT NOT NULL,
+  flooring_id INT DEFAULT NULL,
+  PRIMARY KEY (code_id, flooring_id),
+  CONSTRAINT redemption_award_flooring_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT redemption_award_flooring_ibfk_2 FOREIGN KEY (flooring_id) REFERENCES flooring (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE redemption_award_flooring IS 'Redemption code flooring awards';
 
-COMMENT ON COLUMN redemption_award_flooring."CodeID" IS 'Unique code ID';
-COMMENT ON COLUMN redemption_award_flooring."FlooringID" IS 'Code igloo flooring ID';
+COMMENT ON COLUMN redemption_award_flooring.code_id IS 'Unique code ID';
+COMMENT ON COLUMN redemption_award_flooring.flooring_id IS 'Code igloo flooring ID';
 
 DROP TABLE IF EXISTS redemption_award_puffle;
 CREATE TABLE redemption_award_puffle (
-  "CodeID" INT NOT NULL,
-  "PuffleID" INT DEFAULT NULL,
-  PRIMARY KEY ("CodeID", "PuffleID"),
-  CONSTRAINT redemption_award_puffle_ibfk_1 FOREIGN KEY ("CodeID") REFERENCES redemption_code ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT redemption_award_puffle_ibfk_2 FOREIGN KEY ("PuffleID") REFERENCES puffle ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  code_id INT NOT NULL,
+  puffle_id INT DEFAULT NULL,
+  PRIMARY KEY (code_id, puffle_id),
+  CONSTRAINT redemption_award_puffle_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT redemption_award_puffle_ibfk_2 FOREIGN KEY (puffle_id) REFERENCES puffle (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE redemption_award_puffle IS 'Redemption code puffle awards';
 
-COMMENT ON COLUMN redemption_award_puffle."CodeID" IS 'Unique code ID';
-COMMENT ON COLUMN redemption_award_puffle."PuffleID" IS 'Code puffle ID';
+COMMENT ON COLUMN redemption_award_puffle.code_id IS 'Unique code ID';
+COMMENT ON COLUMN redemption_award_puffle.puffle_id IS 'Code puffle ID';
 
 DROP TABLE IF EXISTS redemption_award_puffle_item;
 CREATE TABLE redemption_award_puffle_item (
-  "CodeID" INT NOT NULL,
-  "PuffleItemID" INT DEFAULT NULL,
-  PRIMARY KEY ("CodeID", "PuffleItemID"),
-  CONSTRAINT redemption_award_puffle_item_ibfk_1 FOREIGN KEY ("CodeID") REFERENCES redemption_code ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT redemption_award_puffle_item_ibfk_2 FOREIGN KEY ("PuffleItemID") REFERENCES puffle_item ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  code_id INT NOT NULL,
+  puffle_item_id INT DEFAULT NULL,
+  PRIMARY KEY (code_id, puffle_item_id),
+  CONSTRAINT redemption_award_puffle_item_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT redemption_award_puffle_item_ibfk_2 FOREIGN KEY (puffle_item_id) REFERENCES puffle_item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE redemption_award_puffle_item IS 'Redemption code puffle care item awards';
 
-COMMENT ON COLUMN redemption_award_puffle_item."CodeID" IS 'Unique code ID';
-COMMENT ON COLUMN redemption_award_puffle_item."PuffleItemID" IS 'Code puffle care item ID';
+COMMENT ON COLUMN redemption_award_puffle_item.code_id IS 'Unique code ID';
+COMMENT ON COLUMN redemption_award_puffle_item.puffle_item_id IS 'Code puffle care item ID';
 
 DROP TABLE IF EXISTS penguin_stamp;
 CREATE TABLE penguin_stamp (
-  "PenguinID" INT NOT NULL,
-  "StampID" INT NOT NULL,
-  "Recent" BOOLEAN NOT NULL DEFAULT TRUE,
-  PRIMARY KEY ("PenguinID", "StampID"),
-  CONSTRAINT stamp_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT stamp_ibfk_2 FOREIGN KEY ("StampID") REFERENCES stamp ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  stamp_id INT NOT NULL,
+  recent BOOLEAN NOT NULL DEFAULT TRUE,
+  PRIMARY KEY (penguin_id, stamp_id),
+  CONSTRAINT stamp_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT stamp_ibfk_2 FOREIGN KEY (stamp_id) REFERENCES stamp (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_stamp IS 'Penguin earned stamps';
 
-COMMENT ON COLUMN penguin_stamp."PenguinID" IS 'Stamp penguin ID';
-COMMENT ON COLUMN penguin_stamp."StampID" IS 'Stamp ID';
-COMMENT ON COLUMN penguin_stamp."Recent" IS 'Is recently earned?';
+COMMENT ON COLUMN penguin_stamp.penguin_id IS 'Stamp penguin ID';
+COMMENT ON COLUMN penguin_stamp.stamp_id IS 'Stamp ID';
+COMMENT ON COLUMN penguin_stamp.recent IS 'Is recently earned?';
 
 DROP TABLE IF EXISTS penguin_membership;
 CREATE TABLE penguin_membership (
-  "PenguinID" INT NOT NULL,
-  "Start" TIMESTAMP NOT NULL, 
-  "End" TIMESTAMP NOT NULL,
-  PRIMARY KEY("PenguinID", "Start", "End"),
-  CONSTRAINT penguin_membership_ibfk_1 FOREIGN KEY ("PenguinID") REFERENCES penguin ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+  penguin_id INT NOT NULL,
+  start TIMESTAMP NOT NULL, 
+  expires TIMESTAMP NOT NULL,
+  PRIMARY KEY(penguin_id, start, expires),
+  CONSTRAINT penguin_membership_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_membership IS 'Penguin membership records';
 
-COMMENT ON COLUMN penguin_membership."PenguinID" IS 'Penguin ID of membership';
-COMMENT ON COLUMN penguin_membership."Start" IS 'Start time of membership';
-COMMENT ON COLUMN penguin_membership."End" IS 'End time of membership';
+COMMENT ON COLUMN penguin_membership.penguin_id IS 'Penguin ID of membership';
+COMMENT ON COLUMN penguin_membership.start IS 'Start time of membership';
+COMMENT ON COLUMN penguin_membership.expires IS 'End time of membership';
 
-INSERT INTO item ("ID", "Name", "Type", "Cost", "Member", "Bait", "Patched", "EPF", "Tour", "ReleaseDate") VALUES
+INSERT INTO item (id, name, type, cost, member, bait, patched, epf, tour, release_date) VALUES
  (1, 'Blue', 1, 20, FALSE, FALSE, FALSE, FALSE, FALSE, now()),
  (2, 'Green', 1, 20, FALSE, FALSE, FALSE, FALSE, FALSE, now()),
  (3, 'Pink', 1, 20, FALSE, FALSE, FALSE, FALSE, FALSE, now()),
@@ -6540,7 +6552,7 @@ INSERT INTO item ("ID", "Name", "Type", "Cost", "Member", "Bait", "Patched", "EP
  (34206, 'Be Heard Campaign Shirt', 5, 0, FALSE, FALSE, FALSE, FALSE, FALSE, now()),
  (90000, 'Elsa''s Braid', 2, 0, TRUE, TRUE, FALSE, FALSE, FALSE, now());
 
-INSERT INTO item ("ID", "Name", "Type", "Cost", "Member", "Bait", "Patched", "EPF", "Tour", "ReleaseDate") VALUES
+INSERT INTO item (id, name, type, cost, member, bait, patched, epf, tour, release_date) VALUES
  (115, 'Gary''s Glasses', 2, 0, FALSE, TRUE, FALSE, FALSE, FALSE, now()),
  (442, 'Rockhopper''s Hat', 1, 0, FALSE, TRUE, FALSE, FALSE, FALSE, now()),
  (1000, 'Franky''s Cowboy Hat', 1, 0, FALSE, TRUE, FALSE, FALSE, FALSE, now()),
@@ -6568,7 +6580,7 @@ INSERT INTO item ("ID", "Name", "Type", "Cost", "Member", "Bait", "Patched", "EP
  (6127, 'Rocky''s Shoes', 6, 0, FALSE, TRUE, FALSE, FALSE, FALSE, now()),
  (6128, 'CeCe''s Shoes', 6, 0, FALSE, TRUE, FALSE, FALSE, FALSE, now());
  
-INSERT INTO card ("ID", "Name", "SetID", "PowerID", "Element", "Color", "Value", "Description") VALUES
+INSERT INTO card (id, name, set_id, power_id, element, color, value, description) VALUES
  (1, 'CART SURFER', 1, 0, 'f', 'b', 3, ''),
  (2, 'COFFEE SHOP', 1, 0, 'f', 'g', 2, ''),
  (3, 'ASTRO-BARRIER', 1, 0, 'f', 'g', 8, ''),
@@ -6993,10 +7005,10 @@ INSERT INTO card ("ID", "Name", "SetID", "PowerID", "Element", "Color", "Value",
  (667, 'Water Party Sketch', 7, 0, 'w', 'r', 5, ''),
  (668, 'Zany Orange Puffle', 7, 0, 'w', 'p', 6, ''),
  (669, 'Sporty Pink Puffle', 7, 0, 'w', 'p', 7, ''),
- (670, 'Wii Game Day "Goal!"', 7, 0, 'w', 'b', 8, ''),
+ (670, 'Wii Game Day goal!', 7, 0, 'w', 'b', 8, ''),
  (671, 'Epic White Puffle', 7, 0, 'w', 'b', 8, ''),
  (672, 'Awesome Blue Puffle', 7, 0, 'f', 'b', 9, ''),
- (673, '"Feed a Puffle"', 7, 0, 'f', 'y', 9, ''),
+ (673, 'feed a _puffle', 7, 0, 'f', 'y', 9, ''),
  (674, 'Ninja Battle', 7, 0, 'f', 'b', 2, ''),
  (675, 'The Mystery of Sensei', 7, 0, 'f', 'p', 4, ''),
  (676, 'Master the Elements', 7, 0, 'f', 'o', 5, ''),
@@ -7079,7 +7091,7 @@ INSERT INTO card ("ID", "Name", "SetID", "PowerID", "Element", "Color", "Value",
  (803, 'Mobile Water 1', 8, 0, 'w', 'b', 8, ''),
  (804, 'Mobile Fire Power Card 1', 8, 2, 'f', 'p', 11, 'When this is scored, your card gets +2 for the next round');
 
-INSERT INTO flooring ("ID", "Name", "Cost") VALUES
+INSERT INTO flooring (id, name, cost) VALUES
  (0, 'Floor Removal', 20),
  (1, 'Terracotta Tile', 680),
  (2, 'Maple Hardwood', 620),
@@ -7105,7 +7117,7 @@ INSERT INTO flooring ("ID", "Name", "Cost") VALUES
  (22, 'Lime Green Carpet', 530),
  (23, 'Woven Rice Mat', 750);
 
-INSERT INTO furniture ("ID", "Name", "Type", "Sort", "Cost", "Member", "Patched", "Bait", "MaxQuantity") VALUES
+INSERT INTO furniture (id, name, type, sort, cost, member, patched, bait, max_quantity) VALUES
  (1, 'Pink Chair', 1, 1, 200, TRUE, FALSE, FALSE, 99),
  (2, 'Pink Beanbag Chair', 1, 1, 350, TRUE, FALSE, FALSE, 99),
  (3, 'Pink Table', 1, 1, 300, TRUE, FALSE, FALSE, 99),
@@ -8491,7 +8503,7 @@ INSERT INTO furniture ("ID", "Name", "Type", "Sort", "Cost", "Member", "Patched"
  (12129, 'Matryoshka Doll', 1, 1, 0, TRUE, FALSE, FALSE, 99),
  (12156, 'Holiday Wreath', 2, 2, 0, TRUE, FALSE, FALSE, 99);
 
-INSERT INTO igloo ("ID", "Name", "Cost") VALUES
+INSERT INTO igloo (id, name, cost) VALUES
  (0, 'Igloo Removal', 0),
  (1, 'Basic Igloo', 1500),
  (2, 'Candy Igloo', 1500),
@@ -8589,7 +8601,7 @@ INSERT INTO igloo ("ID", "Name", "Cost") VALUES
  (97, 'Spring Palace', 0),
  (98, 'Stage Igloo', 1500);
 
-INSERT INTO location ("ID", "Name", "Cost") VALUES
+INSERT INTO location (id, name, cost) VALUES
  (1, 'Default', 0),
  (2, 'Beach', 2800),
  (3, 'Forest', 2700),
@@ -8599,7 +8611,7 @@ INSERT INTO location ("ID", "Name", "Cost") VALUES
  (7, 'Soccer Pitch', 1800),
  (8, 'Undersea', 1800);
 
-INSERT INTO postcard ("ID", "Name", "Cost", "Enabled") VALUES
+INSERT INTO postcard (id, name, cost, enabled) VALUES
  (1, 'Re-decorated Igloo', 10, TRUE),
  (2, 'Puffle Performance', 10, TRUE),
  (3, 'Penguins Time Forgot', 10, TRUE),
@@ -8805,7 +8817,7 @@ INSERT INTO postcard ("ID", "Name", "Cost", "Enabled") VALUES
  (240, 'You''ve been published 3 times', 0, FALSE),
  (241, 'You are this month''s VIP', 0, FALSE);
 
-INSERT INTO puffle_item ("ID", "ParentID", "Name", "Type", "PlayExternal", "Cost", "Quantity", "Member", "FoodEffect", "RestEffect", "PlayEffect", "CleanEffect") VALUES
+INSERT INTO puffle_item (id, parent_id, name, type, play_external, cost, quantity, member, food_effect, rest_effect, play_effect, clean_effect) VALUES
  (1, 1, 'Brush', 'care', 'none', 0, 1, FALSE, -2, -2, 5, 5),
  (3, 3, 'Puffle O''s', 'food', 'none', 0, 1, FALSE, 50, -5, -5, -1),
  (4, 4, 'Cookie', 'food', 'none', 10, 1, FALSE, 15, -7, -20, -1),
@@ -8954,7 +8966,7 @@ INSERT INTO puffle_item ("ID", "ParentID", "Name", "Type", "PlayExternal", "Cost
  (158, 158, 'Drum Roll', 'head', 'none', 0, 1, TRUE, 0, 0, 0, 0),
  (159, 159, 'Swashbuckler Hat', 'head', 'none', 0, 1, TRUE, 0, 0, 0, 0);
 
-INSERT INTO puffle ("ID", "ParentID", "Name", "Member", "FavouriteFood", "RunawayPostcard", "MaxFood", "MaxRest", "MaxClean") VALUES
+INSERT INTO puffle (id, parent_id, name, member, favourite_food, runaway_postcard, max_food, max_rest, max_clean) VALUES
  (0, 0, 'Blue', FALSE, 101, 100, 100, 100, 100),
  (1, 1, 'Pink', TRUE, 107, 101, 100, 120, 80),
  (2, 2, 'Black', TRUE, 112, 102, 120, 80, 100),
@@ -8996,7 +9008,7 @@ INSERT INTO puffle ("ID", "ParentID", "Name", "Member", "FavouriteFood", "Runawa
  (1026, 6, 'Yellow Alien', TRUE, 114, NULL, 100, 100, 100),
  (1027, 4, 'Purple Alien', TRUE, 110, NULL, 100, 100, 100);
  
-INSERT INTO puffle_treasure_puffle_item ("PuffleID", "PuffleItemID") VALUES
+INSERT INTO puffle_treasure_puffle_item (puffle_id, puffle_item_id) VALUES
  (0, 115), (1, 115), (2, 115), (3, 115), (4, 115), (5, 115), (6, 115), (7, 115), (8, 115), (9, 115), (10, 115), (11, 115), (1000, 115), (1001, 115), (1002, 115), (1003, 115), (1004, 115), (1005, 115), (1006, 115), (1007, 115), (1008, 115), (1009, 115), (1010, 115), (1011, 115), (1012, 115), (1013, 115), (1014, 115), (1015, 115), (1016, 115), (1017, 115), (1018, 115), (1019, 115), (1020, 115), (1021, 115), (1022, 115), (1023, 115), (1024, 115), (1025, 115), (1026, 115), (1027, 115),
  (0, 114), (1, 114), (2, 114), (3, 114), (4, 114), (5, 114), (6, 114), (7, 114), (8, 114), (9, 114), (10, 114), (11, 114), (1000, 114), (1001, 114), (1002, 114), (1003, 114), (1004, 114), (1005, 114), (1006, 114), (1007, 114), (1008, 114), (1009, 114), (1010, 114), (1011, 114), (1012, 114), (1013, 114), (1014, 114), (1015, 114), (1016, 114), (1017, 114), (1018, 114), (1019, 114), (1020, 114), (1021, 114), (1022, 114), (1023, 114), (1024, 114), (1025, 114), (1026, 114), (1027, 114),
  (0, 109), (1, 109), (2, 109), (3, 109), (4, 109), (5, 109), (6, 109), (7, 109), (8, 109), (9, 109), (10, 109), (11, 109), (1000, 109), (1001, 109), (1002, 109), (1003, 109), (1004, 109), (1005, 109), (1006, 109), (1007, 109), (1008, 109), (1009, 109), (1010, 109), (1011, 109), (1012, 109), (1013, 109), (1014, 109), (1015, 109), (1016, 109), (1017, 109), (1018, 109), (1019, 109), (1020, 109), (1021, 109), (1022, 109), (1023, 109), (1024, 109), (1025, 109), (1026, 109), (1027, 109),
@@ -9010,7 +9022,7 @@ INSERT INTO puffle_treasure_puffle_item ("PuffleID", "PuffleItemID") VALUES
  (0, 111), (1, 111), (2, 111), (3, 111), (4, 111), (5, 111), (6, 111), (7, 111), (8, 111), (9, 111), (10, 111), (11, 111), (1000, 111), (1001, 111), (1002, 111), (1003, 111), (1004, 111), (1005, 111), (1006, 111), (1007, 111), (1008, 111), (1009, 111), (1010, 111), (1011, 111), (1012, 111), (1013, 111), (1014, 111), (1015, 111), (1016, 111), (1017, 111), (1018, 111), (1019, 111), (1020, 111), (1021, 111), (1022, 111), (1023, 111), (1024, 111), (1025, 111), (1026, 111), (1027, 111),
  (0, 128), (1, 128), (2, 128), (3, 128), (4, 128), (5, 128), (6, 128), (7, 128), (8, 128), (9, 128), (10, 128), (11, 128), (1000, 128), (1001, 128), (1002, 128), (1003, 128), (1004, 128), (1005, 128), (1006, 128), (1007, 128), (1008, 128), (1009, 128), (1010, 128), (1011, 128), (1012, 128), (1013, 128), (1014, 128), (1015, 128), (1016, 128), (1017, 128), (1018, 128), (1019, 128), (1020, 128), (1021, 128), (1022, 128), (1023, 128), (1024, 128), (1025, 128), (1026, 128), (1027, 128);
 
-INSERT INTO puffle_treasure_furniture ("PuffleID", "FurnitureID") VALUES
+INSERT INTO puffle_treasure_furniture (puffle_id, furniture_id) VALUES
  (0, 305), (1, 305), (2, 305), (3, 305), (4, 305), (5, 305), (6, 305), (7, 305), (8, 305), (9, 305), (10, 305), (11, 305), (1000, 305), (1001, 305), (1002, 305), (1003, 305), (1004, 305), (1005, 305), (1006, 305), (1007, 305), (1008, 305), (1009, 305), (1010, 305), (1011, 305), (1012, 305), (1013, 305), (1014, 305), (1015, 305), (1016, 305), (1017, 305), (1018, 305), (1019, 305), (1020, 305), (1021, 305), (1022, 305), (1023, 305), (1024, 305), (1025, 305), (1026, 305), (1027, 305),
  (0, 313), (1, 313), (2, 313), (3, 313), (4, 313), (5, 313), (6, 313), (7, 313), (8, 313), (9, 313), (10, 313), (11, 313), (1000, 313), (1001, 313), (1002, 313), (1003, 313), (1004, 313), (1005, 313), (1006, 313), (1007, 313), (1008, 313), (1009, 313), (1010, 313), (1011, 313), (1012, 313), (1013, 313), (1014, 313), (1015, 313), (1016, 313), (1017, 313), (1018, 313), (1019, 313), (1020, 313), (1021, 313), (1022, 313), (1023, 313), (1024, 313), (1025, 313), (1026, 313), (1027, 313),
  (0, 504), (1, 504), (2, 504), (3, 504), (4, 504), (5, 504), (6, 504), (7, 504), (8, 504), (9, 504), (10, 504), (11, 504), (1000, 504), (1001, 504), (1002, 504), (1003, 504), (1004, 504), (1005, 504), (1006, 504), (1007, 504), (1008, 504), (1009, 504), (1010, 504), (1011, 504), (1012, 504), (1013, 504), (1014, 504), (1015, 504), (1016, 504), (1017, 504), (1018, 504), (1019, 504), (1020, 504), (1021, 504), (1022, 504), (1023, 504), (1024, 504), (1025, 504), (1026, 504), (1027, 504),
@@ -9040,7 +9052,7 @@ INSERT INTO puffle_treasure_furniture ("PuffleID", "FurnitureID") VALUES
  (1000, 2182), (1001, 2182), (1002, 2182), (1003, 2182), (1004, 2182), (1005, 2182),
  (1000, 2183), (1001, 2183), (1002, 2183), (1003, 2183), (1004, 2183), (1005, 2183);
 
-INSERT INTO puffle_treasure_item ("PuffleID", "ItemID") VALUES
+INSERT INTO puffle_treasure_item (puffle_id, item_id) VALUES
  (0, 3028), (1, 3028), (2, 3028), (3, 3028), (4, 3028), (5, 3028), (6, 3028), (7, 3028), (8, 3028), (9, 3028), (10, 3028), (11, 3028), (1000, 3028), (1001, 3028), (1002, 3028), (1003, 3028), (1004, 3028), (1005, 3028), (1006, 3028), (1007, 3028), (1008, 3028), (1009, 3028), (1010, 3028), (1011, 3028), (1012, 3028), (1013, 3028), (1014, 3028), (1015, 3028), (1016, 3028), (1017, 3028), (1018, 3028), (1019, 3028), (1020, 3028), (1021, 3028), (1022, 3028), (1023, 3028), (1024, 3028), (1025, 3028), (1026, 3028), (1027, 3028),
  (0, 232), (1, 232), (2, 232), (3, 232), (4, 232), (5, 232), (6, 232), (7, 232), (8, 232), (9, 232), (10, 232), (11, 232), (1000, 232), (1001, 232), (1002, 232), (1003, 232), (1004, 232), (1005, 232), (1006, 232), (1007, 232), (1008, 232), (1009, 232), (1010, 232), (1011, 232), (1012, 232), (1013, 232), (1014, 232), (1015, 232), (1016, 232), (1017, 232), (1018, 232), (1019, 232), (1020, 232), (1021, 232), (1022, 232), (1023, 232), (1024, 232), (1025, 232), (1026, 232), (1027, 232),
  (0, 412), (1, 412), (2, 412), (3, 412), (4, 412), (5, 412), (6, 412), (7, 412), (8, 412), (9, 412), (10, 412), (11, 412), (1000, 412), (1001, 412), (1002, 412), (1003, 412), (1004, 412), (1005, 412), (1006, 412), (1007, 412), (1008, 412), (1009, 412), (1010, 412), (1011, 412), (1012, 412), (1013, 412), (1014, 412), (1015, 412), (1016, 412), (1017, 412), (1018, 412), (1019, 412), (1020, 412), (1021, 412), (1022, 412), (1023, 412), (1024, 412), (1025, 412), (1026, 412), (1027, 412),
@@ -9096,7 +9108,7 @@ INSERT INTO puffle_treasure_item ("PuffleID", "ItemID") VALUES
  (1000, 24033), (1001, 24033), (1002, 24033), (1003, 24033), (1004, 24033), (1005, 24033),
  (1000, 24029), (1001, 24029), (1002, 24029), (1003, 24029), (1004, 24029), (1005, 24029);
 
-INSERT INTO stamp_group ("ID", "Name", "ParentID") VALUES
+INSERT INTO stamp_group (id, name, parent_id) VALUES
  (5, 'Events', NULL), 
  (6, 'Characters', 5), 
  (7, 'Activities', NULL), 
@@ -9124,7 +9136,7 @@ INSERT INTO stamp_group ("ID", "Name", "ParentID") VALUES
  (58, 'Smoothie Smash', 8), 
  (60, 'Card-Jitsu : Snow', 8);
  
-INSERT INTO stamp ("ID", "Name", "GroupID", "Member", "Rank", "Description") VALUES
+INSERT INTO stamp (id, name, group_id, member, rank, description) VALUES
  (9, 'Stage Crew', 7, FALSE, 1, 'Operate the Switchbox 3000'),
  (10, 'Underground', 7, FALSE, 1, 'Find the secret entrance to the underground'),
  (11, 'Snapshot', 7, FALSE, 1, 'Use a camera on top of the Ski Hill'),
@@ -9478,7 +9490,7 @@ INSERT INTO stamp ("ID", "Name", "GroupID", "Member", "Rank", "Description") VAL
  (127, 'White Puffle', 26, FALSE, 1, 'Feed a white puffle in Feed a Puffle'),
  (128, 'Goalie', 26, FALSE, 4, 'Win a game without letting a puck in your net');
  
-INSERT INTO room ("ID", "Name", "Member", "MaxUsers", "RequiredItem", "Game", "Blackhole", "Spawn", "StampGroup") VALUES
+INSERT INTO room (id, name, member, max_users, required_item, game, blackhole, spawn, stamp_group) VALUES
  (100, 'Town Center', FALSE, 120, NULL, FALSE, FALSE, TRUE, NULL),
  (110, 'Coffee Shop', FALSE, 80, NULL, FALSE, FALSE, FALSE, NULL),
  (111, 'Book Room', FALSE, 80, NULL, FALSE, FALSE, FALSE, NULL),
@@ -9624,7 +9636,7 @@ INSERT INTO room ("ID", "Name", "Member", "MaxUsers", "RequiredItem", "Game", "B
  (1100, 'My Penguin', FALSE, 0, NULL, FALSE, FALSE, FALSE, NULL),
  (1104, 'Gold Mine', FALSE, 80, NULL, FALSE, FALSE, FALSE, NULL);
  
-INSERT INTO room_waddle ("ID", "RoomID", "Seats", "Game") VALUES
+INSERT INTO room_waddle (id, room_id, seats, game) VALUES
  (100, 230, 4, 'sled'),
  (101, 230, 3, 'sled'),
  (102, 230, 2, 'sled'),
@@ -9642,7 +9654,7 @@ INSERT INTO room_waddle ("ID", "RoomID", "Seats", "Game") VALUES
  (302, 816, 3, 'water'),
  (303, 816, 4, 'water');
  
-INSERT INTO room_table ("ID", "RoomID", "Game") VALUES
+INSERT INTO room_table (id, room_id, game) VALUES
  (205, 220, 'four'),
  (206, 220, 'four'),
  (207, 220, 'four'),
@@ -9665,7 +9677,7 @@ INSERT INTO room_table ("ID", "RoomID", "Game") VALUES
  (306, 422, 'treasure'),
  (307, 422, 'treasure');
 
-INSERT INTO redemption_book ("ID", "Name") VALUES
+INSERT INTO redemption_book (id, name) VALUES
  (1, 'The Ultimate Official Guide to Club Penguin'),
  (2, 'Club Penguin Stowaway! Adventures at Sea'),
  (3, 'The Inventor''s Apprentice'),
@@ -9701,7 +9713,7 @@ INSERT INTO redemption_book ("ID", "Name") VALUES
  (33, 'A Missão Secreta do Agente Rookie');
 
  
-INSERT INTO redemption_book_word ("BookID", "Page", "Line", "WordNumber", "Answer") VALUES
+INSERT INTO redemption_book_word (book_id, page, line, word_number, answer) VALUES
  (1, 9, 15, 4, 'account'),
  (1, 11, 5, 2, 'always'),
  (1, 11, 19, 5, 'birthday'),
@@ -11263,7 +11275,7 @@ INSERT INTO redemption_book_word ("BookID", "Page", "Line", "WordNumber", "Answe
  (26, 78, 11, 3, 'sunshine'),
  (26, 78, 8, 4, 'race');
  
-INSERT INTO dance_song ("ID", "Name", "SongLength", "MillisPerBar") VALUES
+INSERT INTO dance_song (id, name, song_length, millis_per_bar) VALUES
  (0, 'Penguin Band Boogie', 123000, 2000),
  (1, 'The Generic Way', 117000, 2070),
  (2, 'Epic Win', 124000, 2666),
@@ -11271,7 +11283,7 @@ INSERT INTO dance_song ("ID", "Name", "SongLength", "MillisPerBar") VALUES
  (4, 'Go West', 139000, 2181),
  (5, 'Patrick''s Jig', 118000, 2790);
  
-INSERT INTO "character" ("ID", "Name", "GiftID", "StampID") VALUES
+INSERT INTO character (id, name, gift_id, stamp_id) VALUES
  (1, 'Rockhopper', 9215, 7),
  (2, 'Aunt Arctic', 9196, 33),
  (3, 'Cadence', 9217, 31),
@@ -11300,7 +11312,7 @@ INSERT INTO "character" ("ID", "Name", "GiftID", "StampID") VALUES
  (33, 'Kermit The Frog', 9252, NULL),
  (35, 'Sam', 9277, NULL);
  
-INSERT INTO penguin ("ID", "Username", "Nickname", "ApprovalEn", "Password", "Email", "Color", "Character") VALUES
+INSERT INTO penguin (id, username, nickname, approval_en, password, email, color, character) VALUES
  (1, 'Rockhopper', 'Rockhopper', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 5, 1),
  (2, 'Aunt Arctic', 'Aunt Arctic', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 2, 2),
  (3, 'Cadence', 'Cadence', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 10, 3),
@@ -11330,13 +11342,13 @@ INSERT INTO penguin ("ID", "Username", "Nickname", "ApprovalEn", "Password", "Em
  (27, 'CeCe', 'CeCe', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 7, NULL),
  (28, 'Merry Walrus', 'Merry Walrus', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, NULL);
  
-INSERT INTO penguin ("Username", "Nickname", "ApprovalEn", "Password", "Email", "Color") VALUES
+INSERT INTO penguin (username, nickname, approval_en, password, email, color) VALUES
   ('Basil', 'Basil', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', 'basil@solero.me', 1);
   
-INSERT INTO penguin_item ("PenguinID", "ItemID") VALUES
+INSERT INTO penguin_item (penguin_id, item_id) VALUES
   (101, 1);
   
-INSERT INTO penguin_item ("PenguinID", "ItemID") VALUES 
+INSERT INTO penguin_item (penguin_id, item_id) VALUES 
  (1, 5), (1, 1692), (1, 4712), (1, 442), (1, 1476), (1, 3194), (1, 4946), (1, 1521), (1, 1753), (1, 24016), (1, 161), (1, 152), (1, 5020),
  (2, 2), (2, 2007), (2, 1044), (2, 1562), (2, 4814),
  (3, 10), (3, 1032), (3, 3011), (3, 1033), (3, 1460), (3, 1701), (3, 5023), (3, 1235), (3, 4955), (3, 1034),

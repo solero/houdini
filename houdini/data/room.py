@@ -4,17 +4,17 @@ from houdini.data import db, BaseCrumbsCollection
 class Room(db.Model):
     __tablename__ = 'room'
 
-    ID = db.Column(db.Integer, primary_key=True)
-    InternalID = db.Column(db.Integer, nullable=False, unique=True,
-                           server_default=db.text("nextval('\"room_InternalID_seq\"'::regclass)"))
-    Name = db.Column(db.String(50), nullable=False)
-    Member = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    MaxUsers = db.Column(db.SmallInteger, nullable=False, server_default=db.text("80"))
-    RequiredItem = db.Column(db.ForeignKey('item.ID', ondelete='CASCADE', onupdate='CASCADE'))
-    Game = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    Blackhole = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    Spawn = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    StampGroup = db.Column(db.ForeignKey('stamp_group.ID', ondelete='CASCADE', onupdate='CASCADE'))
+    id = db.Column(db.Integer, primary_key=True)
+    internal_id = db.Column(db.Integer, nullable=False, unique=True,
+                            server_default=db.text("nextval('\"room_internal_id_seq\"'::regclass)"))
+    name = db.Column(db.String(50), nullable=False)
+    member = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    max_users = db.Column(db.SmallInteger, nullable=False, server_default=db.text("80"))
+    required_item = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'))
+    game = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    blackhole = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    spawn = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    stamp_group = db.Column(db.ForeignKey('stamp_group.id', ondelete='CASCADE', onupdate='CASCADE'))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -50,10 +50,10 @@ class Room(db.Model):
 class RoomTable(db.Model):
     __tablename__ = 'room_table'
 
-    ID = db.Column(db.Integer, primary_key=True, nullable=False)
-    RoomID = db.Column(db.ForeignKey('room.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                       nullable=False)
-    Game = db.Column(db.String(20), nullable=False)
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    room_id = db.Column(db.ForeignKey('room.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
+    game = db.Column(db.String(20), nullable=False)
 
     GameClassMapping = {
 
@@ -111,11 +111,11 @@ class RoomTable(db.Model):
 class RoomWaddle(db.Model):
     __tablename__ = 'room_waddle'
 
-    ID = db.Column(db.Integer, primary_key=True, nullable=False)
-    RoomID = db.Column(db.ForeignKey('room.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                       nullable=False)
-    Seats = db.Column(db.SmallInteger, nullable=False, server_default=db.text("2"))
-    Game = db.Column(db.String(20), nullable=False)
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    room_id = db.Column(db.ForeignKey('room.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
+    seats = db.Column(db.SmallInteger, nullable=False, server_default=db.text("2"))
+    game = db.Column(db.String(20), nullable=False)
 
     GameClassMapping = {
 

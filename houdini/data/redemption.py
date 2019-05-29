@@ -4,92 +4,91 @@ from houdini.data import db
 class RedemptionBook(db.Model):
     __tablename__ = 'redemption_book'
 
-    ID = db.Column(db.Integer, primary_key=True)
-    Name = db.Column(db.String(255), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
 
 
 class RedemptionBookWord(db.Model):
     __tablename__ = 'redemption_book_word'
 
-    BookID = db.Column(db.ForeignKey('redemption_book.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                       nullable=False)
-    Page = db.Column(db.SmallInteger, primary_key=True, nullable=False, server_default=db.text("1"))
-    Line = db.Column(db.SmallInteger, primary_key=True, nullable=False, server_default=db.text("1"))
-    WordNumber = db.Column(db.SmallInteger, primary_key=True, nullable=False, server_default=db.text("1"))
-    Answer = db.Column(db.String(20), nullable=False)
+    book_id = db.Column(db.ForeignKey('redemption_book.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
+    page = db.Column(db.SmallInteger, primary_key=True, nullable=False, server_default=db.text("1"))
+    line = db.Column(db.SmallInteger, primary_key=True, nullable=False, server_default=db.text("1"))
+    word_number = db.Column(db.SmallInteger, primary_key=True, nullable=False, server_default=db.text("1"))
+    answer = db.Column(db.String(20), nullable=False)
 
 
 class RedemptionCode(db.Model):
     __tablename__ = 'redemption_code'
 
-    ID = db.Column(db.Integer, primary_key=True,
-                   server_default=db.text("nextval('\"redemption_code_ID_seq\"'::regclass)"))
-    Code = db.Column(db.String(16), nullable=False, unique=True)
-    Type = db.Column(db.String(8), nullable=False, server_default=db.text("'BLANKET'::character varying"))
-    Coins = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
-    Expires = db.Column(db.DateTime)
+    id = db.Column(db.Integer, primary_key=True,
+                   server_default=db.text("nextval('\"redemption_code_id_seq\"'::regclass)"))
+    code = db.Column(db.String(16), nullable=False, unique=True)
+    type = db.Column(db.String(8), nullable=False, server_default=db.text("'BLANKET'::character varying"))
+    coins = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
+    expires = db.Column(db.DateTime)
 
 
-t_redemption_award_card = db.Table(
-    'redemption_award_card', db,
-    db.Column('CodeID', db.ForeignKey('redemption_code.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False),
-    db.Column('CardID', db.ForeignKey('card.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False)
-)
+class RedemptionAwardCard(db.Model):
+    __tablename__ = 'redemption_award_card'
+    code_id = db.Column(db.ForeignKey('redemption_code.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
+    card_id = db.Column(db.ForeignKey('card.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
 
-t_redemption_award_flooring = db.Table(
-    'redemption_award_flooring', db,
-    db.Column('CodeID', db.ForeignKey('redemption_code.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False),
-    db.Column('FlooringID', db.ForeignKey('flooring.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False)
-)
 
-t_redemption_award_furniture = db.Table(
-    'redemption_award_furniture', db,
-    db.Column('CodeID', db.ForeignKey('redemption_code.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False),
-    db.Column('FurnitureID', db.ForeignKey('furniture.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False)
-)
+class RedemptionAwardFlooring(db.Model):
+    __tablename__ = 'redemption_award_flooring'
+    code_id = db.Column(db.ForeignKey('redemption_code.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
+    flooring_id = db.Column(db.ForeignKey('flooring.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                            nullable=False)
 
-t_redemption_award_igloo = db.Table(
-    'redemption_award_igloo', db,
-    db.Column('CodeID', db.ForeignKey('redemption_code.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False),
-    db.Column('IglooID', db.ForeignKey('igloo.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False)
-)
 
-t_redemption_award_item = db.Table(
-    'redemption_award_item', db,
-    db.Column('CodeID', db.ForeignKey('redemption_code.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False),
-    db.Column('ItemID', db.ForeignKey('item.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False)
-)
+class RedemptionAwardFurniture(db.Model):
+    __tablename__ = 'redemption_award_furniture'
+    code_id = db.Column(db.ForeignKey('redemption_code.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
+    furniture_id = db.Column(db.ForeignKey('furniture.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                             nullable=False)
 
-t_redemption_award_location = db.Table(
-    'redemption_award_location', db,
-    db.Column('CodeID', db.ForeignKey('redemption_code.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False),
-    db.Column('LocationID', db.ForeignKey('location.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False)
-)
 
-t_redemption_award_puffle = db.Table(
-    'redemption_award_puffle', db,
-    db.Column('CodeID', db.ForeignKey('redemption_code.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False),
-    db.Column('PuffleID', db.ForeignKey('puffle.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False)
-)
+class RedemptionAwardIgloo(db.Model):
+    __tablename__ = 'redemption_award_igloo'
+    code_id = db.Column('CodeID', db.ForeignKey('redemption_code.id', ondelete='CASCADE', onupdate='CASCADE'),
+                        primary_key=True,nullable=False)
+    igloo_id = db.Column(db.ForeignKey('igloo.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                         nullable=False)
 
-t_redemption_award_puffle_item = db.Table(
-    'redemption_award_puffle_item', db,
-    db.Column('CodeID', db.ForeignKey('redemption_code.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False),
-    db.Column('PuffleItemID', db.ForeignKey('puffle_item.ID', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-              nullable=False)
-)
+
+class RedemptionAwardItem(db.Model):
+    __tablename__ = 'redemption_award_item'
+    code_id = db.Column(db.ForeignKey('redemption_code.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
+    item_id = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
+
+
+class RedemptionAwardLocation(db.Model):
+    __tablename__ = 'redemption_award_location'
+    code_id = db.Column(db.ForeignKey('redemption_code.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
+    location_id = db.Column(db.ForeignKey('location.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                            nullable=False)
+
+
+class RedemptionAwardPuffle(db.Model):
+    __tablename__ = 'redemption_award_puffle'
+    code_id = db.Column(db.ForeignKey('redemption_code.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
+    puffle_id = db.Column(db.ForeignKey('puffle.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                          nullable=False)
+
+
+class RedemptionAwardPuffleItem(db.Model):
+    __tablename__ = 'redemption_award_puffle_item'
+    code_id = db.Column(db.ForeignKey('redemption_code.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
+    puffle_item_id = db.Column(db.ForeignKey('puffle_item.id', ondelete='CASCADE', onupdate='CASCADE'),
+                               primary_key=True, nullable=False)

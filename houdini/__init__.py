@@ -56,16 +56,16 @@ class PenguinStringCompiler(OrderedDict):
     @classmethod
     def setup_default_builder(cls, string_builder):
         string_builder.update({
-            'ID': PenguinStringCompiler.data_attribute_by_name('ID'),
-            'Nickname': PenguinStringCompiler.attribute_by_name('Nickname'),
-            'Approval': PenguinStringCompiler.attribute_by_name('approval'),
-            'Color': PenguinStringCompiler.data_attribute_by_name('Color'),
-            'Head': PenguinStringCompiler.data_attribute_by_name('Head'),
-            'Face': PenguinStringCompiler.data_attribute_by_name('Face'),
-            'Neck': PenguinStringCompiler.data_attribute_by_name('Neck'),
-            'Body': PenguinStringCompiler.data_attribute_by_name('Body'),
-            'Hand': PenguinStringCompiler.data_attribute_by_name('Name'),
-            'Photo': PenguinStringCompiler.data_attribute_by_name('Photo'),
+            'ID': PenguinStringCompiler.data_attribute_by_name('id'),
+            'Nickname': PenguinStringCompiler.attribute_by_name('nickname'),
+            'Approval': PenguinStringCompiler.data_attribute_by_name('approval'),
+            'Color': PenguinStringCompiler.data_attribute_by_name('color'),
+            'Head': PenguinStringCompiler.data_attribute_by_name('head'),
+            'Face': PenguinStringCompiler.data_attribute_by_name('face'),
+            'Neck': PenguinStringCompiler.data_attribute_by_name('neck'),
+            'Body': PenguinStringCompiler.data_attribute_by_name('body'),
+            'Hand': PenguinStringCompiler.data_attribute_by_name('hand'),
+            'Photo': PenguinStringCompiler.data_attribute_by_name('photo'),
             'X': PenguinStringCompiler.attribute_by_name('x'),
             'Y': PenguinStringCompiler.attribute_by_name('y'),
             'Frame': PenguinStringCompiler.attribute_by_name('frame'),
@@ -80,14 +80,14 @@ class PenguinStringCompiler(OrderedDict):
     @classmethod
     def setup_anonymous_default_builder(cls, string_builder):
         string_builder.update({
-            'ID': PenguinStringCompiler.attribute_by_name('ID'),
-            'Nickname': PenguinStringCompiler.attribute_by_name('Nickname'),
+            'ID': PenguinStringCompiler.attribute_by_name('id'),
+            'Nickname': PenguinStringCompiler.attribute_by_name('nickname'),
             'Approval': PenguinStringCompiler.attribute_by_name('approval'),
-            'Color': PenguinStringCompiler.attribute_by_name('Color'),
-            'Head': PenguinStringCompiler.attribute_by_name('Head'),
-            'Face': PenguinStringCompiler.attribute_by_name('Face'),
-            'Neck': PenguinStringCompiler.attribute_by_name('Neck'),
-            'Body': PenguinStringCompiler.attribute_by_name('Body'),
-            'Hand': PenguinStringCompiler.attribute_by_name('Name'),
-            'Photo': PenguinStringCompiler.attribute_by_name('Photo')
+            'Color': PenguinStringCompiler.attribute_by_name('color'),
+            'Head': PenguinStringCompiler.attribute_by_name('head'),
+            'Face': PenguinStringCompiler.attribute_by_name('face'),
+            'Neck': PenguinStringCompiler.attribute_by_name('neck'),
+            'Body': PenguinStringCompiler.attribute_by_name('body'),
+            'Hand': PenguinStringCompiler.attribute_by_name('name'),
+            'Photo': PenguinStringCompiler.attribute_by_name('photo')
         })
