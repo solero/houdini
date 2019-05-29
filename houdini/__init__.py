@@ -11,6 +11,13 @@ class ConflictResolution(enum.Enum):
     Exception = 2
 
 
+class Language(enum.Enum):
+    En = 1
+    Pt = 2
+    Fr = 4
+    Es = 8
+    De = 32
+    Ru = 64
 class PenguinStringCompiler(OrderedDict):
 
     def __init__(self, *args, **kwargs):
