@@ -1,21 +1,20 @@
 import os
-import copy
 
 
-def evaluate_handler_file_event(handler_file_event):
+def evaluate_listener_file_event(listener_file_event):
     # Ignore all directory events
-    if handler_file_event.is_directory:
+    if listener_file_event.is_directory:
         return False
 
-    handler_module_path = handler_file_event.src_path[2:]
+    listener_module_path = listener_file_event.src_path[2:]
 
     # Ignore non-Python files
-    if handler_module_path[-3:] != ".py":
+    if listener_module_path[-3:] != ".py":
         return False
 
-    handler_module = handler_module_path.replace(os.path.sep, ".")[:-3]
+    listener_module = listener_module_path.replace(os.path.sep, ".")[:-3]
 
-    return handler_module_path, handler_module
+    return listener_module_path, listener_module
 
 
 def evaluate_plugin_file_event(plugin_file_event):
@@ -23,16 +22,16 @@ def evaluate_plugin_file_event(plugin_file_event):
     if plugin_file_event.is_directory:
         return False
 
-    handler_module_path = plugin_file_event.src_path[2:]
+    plugin_module_path = plugin_file_event.src_path[2:]
 
     # Ignore non-Python files
-    if handler_module_path[-3:] != ".py":
+    if plugin_module_path[-3:] != ".py":
         return False
 
     # Remove file extension and replace path separator with dots. Then make like a banana.. and split.
-    handler_module_tokens = handler_module_path.replace(os.path.sep, ".")[:-3].split(".")
+    plugin_module_tokens = plugin_module_path.replace(os.path.sep, ".")[:-3].split(".")
 
-    if handler_module_tokens.pop() == "__init__":
-        return handler_module_path, ".".join(handler_module_tokens)
+    if plugin_module_tokens.pop() == "__init__":
+        return plugin_module_path, ".".join(plugin_module_tokens)
 
     return False
