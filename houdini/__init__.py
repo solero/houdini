@@ -44,13 +44,13 @@ class PenguinStringCompiler(OrderedDict):
     @classmethod
     def attribute_by_name(cls, attribute_name):
         async def attribute_method(p):
-            return getattr(p, attribute_name)
+            return getattr(p, attribute_name) or 0
         return attribute_method
 
     @classmethod
     def data_attribute_by_name(cls, attribute_name):
         async def attribute_method(p):
-            return getattr(p.data, attribute_name)
+            return getattr(p.data, attribute_name) or 0
         return attribute_method
 
     @classmethod
