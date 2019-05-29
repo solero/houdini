@@ -4,7 +4,7 @@ from abc import abstractmethod
 import asyncio
 import itertools
 import inspect
-
+import collections
 
 from houdini.cooldown import CooldownError
 
@@ -169,6 +169,17 @@ class IConverter(ABC):
         """The actual converter implementation"""
 
 
+Credentials = collections.namedtuple('Credentials', ('username', 'password'))
+WorldCredentials = collections.namedtuple('Credentials', [
+    'id',
+    'username',
+    'login_key',
+    'language_approved', 'language_rejected',
+    'client_key',
+    'confirmation_hash'
+])
+
+
 class CredentialsConverter(IConverter):
 
     description = """Used for obtaining login credentials from XML login data"""
@@ -176,7 +187,20 @@ class CredentialsConverter(IConverter):
     async def convert(self, ctx):
         username = ctx.argument[0][0].text
         password = ctx.argument[0][1].text
-        return username, password
+        return Credentials(username, password)
+
+
+class WorldCredentialsConverter(IConverter):
+
+    description = """Used for obtaining login credentials on the world server"""
+
+    async def convert(self, ctx):
+        raw_login_data = ctx.argument[0][0].text
+        password_hashes = ctx.argument[0][1].text
+        penguin_id, _, username, login_key, language_approved, language_rejected = raw_login_data.split('|')
+        client_key, confirmation_hash = password_hashes.split('#')
+        return WorldCredentials(int(penguin_id), username, login_key, int(language_approved), int(language_rejected),
+                                client_key, confirmation_hash)
 
 
 class VersionChkConverter(IConverter):
@@ -358,7 +382,15 @@ class _ConverterContext:
         self.p = p
 
 
+ConverterTypes = {
+    Credentials: CredentialsConverter,
+    WorldCredentials: WorldCredentialsConverter
+}
+
+
 def get_converter(component):
+    if component.annotation in ConverterTypes:
+        return ConverterTypes[component.annotation]
     if component.annotation is component.empty:
         return str
     return component.annotation
