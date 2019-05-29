@@ -9,10 +9,6 @@ from houdini.penguin import Penguin
 from houdini import PenguinStringCompiler
 import config
 
-from aiologger import Logger
-from aiologger.handlers.files import AsyncTimedRotatingFileHandler, RolloverInterval, AsyncFileHandler
-from aiologger.handlers.streams import AsyncStreamHandler
-
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -106,22 +102,12 @@ class HoudiniFactory:
         if not os.path.exists(errors_log_directory):
             os.mkdir(errors_log_directory)
 
-        if sys.platform != 'win32':
-            self.logger = Logger(name='houdini')
-            universal_handler = AsyncTimedRotatingFileHandler(
-                filename=self.server_config['Logging']['General'],
-                backup_count=3,
-                when=RolloverInterval.HOURS
-            )
-            error_handler = AsyncFileHandler(filename=self.server_config['Logging']['Errors'])
-            console_handler = AsyncStreamHandler(stream=sys.stdout)
-        else:
-            self.logger = logging.getLogger('houdini')
-            universal_handler = RotatingFileHandler(self.server_config['Logging']['General'],
-                                                    maxBytes=2097152, backupCount=3, encoding='utf-8')
+        self.logger = logging.getLogger('houdini')
+        universal_handler = RotatingFileHandler(self.server_config['Logging']['General'],
+                                                maxBytes=2097152, backupCount=3, encoding='utf-8')
 
-            error_handler = logging.FileHandler(self.server_config['Logging']['Errors'])
-            console_handler = logging.StreamHandler(stream=sys.stdout)
+        error_handler = logging.FileHandler(self.server_config['Logging']['Errors'])
+        console_handler = logging.StreamHandler(stream=sys.stdout)
 
         log_formatter = logging.Formatter('%(asctime)s [%(levelname)-5.5s]  %(message)s')
         error_handler.setLevel(logging.ERROR)
