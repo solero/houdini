@@ -2,7 +2,6 @@ import sys
 import importlib
 import os.path
 import logging
-import asyncio
 from watchdog.events import FileSystemEventHandler
 
 from houdini.events import evaluate_plugin_file_event
@@ -22,30 +21,34 @@ class PluginFileEventHandler(FileSystemEventHandler):
 
         plugin_module_path, plugin_module = plugin_module_details
 
-        self.logger.debug('New plugin detected %s', plugin_module)
+        self.logger.debug('New plugin detected {}'.format(plugin_module))
 
         try:
             plugin_module_object = importlib.import_module(plugin_module)
 
-            self.server.plugin.load(plugin_module_object)
+            self.server.plugins.load(plugin_module_object)
 
-            self.logger.info('New plugin \'%s\' has been loaded.' % plugin_module)
+            self.logger.info('New plugin {} has been loaded'.format(plugin_module))
         except Exception as import_error:
-            self.logger.error('%s detected in %s, not importing.', import_error.__class__.__name__, plugin_module)
+            self.logger.error('{} detected in {}, not importing'.format(
+                import_error.__class__.__name__, plugin_module))
 
     def on_deleted(self, event):
         plugin_module_path = event.src_path[2:]
 
-        plugin_module = plugin_module_path.replace(os.path.pathsep, ".")
+        plugin_module = plugin_module_path.replace(os.path.sep, ".")
 
         if plugin_module not in sys.modules:
             return
 
-        self.logger.debug('Deleting listeners registered by %s.', plugin_module)
+        self.logger.debug('Deleting plugin {}'.format(plugin_module))
 
         plugin_module_object = sys.modules[plugin_module]
 
         self.server.plugins.remove(plugin_module_object)
+        del sys.modules[plugin_module]
+
+        self.logger.info('Plugin {} has been removed'.format(plugin_module))
 
     def on_modified(self, event):
         plugin_module_details = evaluate_plugin_file_event(event)
@@ -57,7 +60,7 @@ class PluginFileEventHandler(FileSystemEventHandler):
         if plugin_module not in sys.modules:
             return
 
-        self.logger.info('Reloading %s', plugin_module)
+        self.logger.info('Reloading plugin {}'.format(plugin_module))
 
         plugin_module_object = sys.modules[plugin_module]
 
@@ -72,15 +75,13 @@ class PluginFileEventHandler(FileSystemEventHandler):
 
             self.server.plugins.load(new_plugin_module)
 
-            self.logger.info('Successfully reloaded %s!', plugin_module)
+            self.logger.info('Successfully reloaded plugin {}'.format(plugin_module))
         except LookupError as lookup_error:
-            self.logger.warning('Did not reload plugin \'%s\': %s.', plugin_module, lookup_error)
+            self.logger.warning('Did not reload plugin \'{}\': {}'.format(plugin_module, lookup_error))
         except Exception as rebuild_error:
-            self.logger.error('%s detected in %s, not reloading.', rebuild_error.__class__.__name__, plugin_module)
-            self.logger.info('Restoring handler references...')
+            self.logger.error('{} detected in {}, not reloading'.format(
+                rebuild_error.__class__.__name__, plugin_module))
 
             self.server.xt_listeners.restore()
             self.server.xml_listeners.restore()
             self.server.commands.restore()
-
-            self.logger.info('Restored handler references. Phew!')

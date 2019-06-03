@@ -20,17 +20,17 @@ class ListenerFileEventHandler(FileSystemEventHandler):
 
         listener_module_path, listener_module = listener_module_details
 
-        if '__init__.py' in listener_module_path:
-            return
-
-        self.logger.debug('New handler module detected %s', listener_module)
+        self.logger.debug('New listener module detected {}'.format(listener_module))
 
         try:
             module = importlib.import_module(listener_module)
             self.server.xt_listeners.load(module)
             self.server.xml_listeners.load(module)
+
+            self.logger.info('New listener module loaded {}'.format(listener_module))
         except Exception as import_error:
-            self.logger.error('%s detected in %s, not importing.', import_error.__class__.__name__, listener_module)
+            self.logger.error('{} detected in {}, not importing'.format(
+                import_error.__class__.__name__, listener_module))
 
     def on_deleted(self, event):
         listener_module_details = evaluate_listener_file_event(event)
@@ -45,10 +45,13 @@ class ListenerFileEventHandler(FileSystemEventHandler):
 
         listener_module_object = sys.modules[listener_module]
 
-        self.logger.debug('Deleting listeners registered by %s...', listener_module)
+        self.logger.debug('Deleting listener module {}'.format(listener_module))
 
         self.server.xt_listeners.remove(listener_module_object)
         self.server.xml_listeners.remove(listener_module_object)
+        del sys.modules[listener_module]
+
+        self.logger.info('Deleted listener module {}'.format(listener_module))
 
     def on_modified(self, event):
         listener_module_details = evaluate_listener_file_event(event)
@@ -61,11 +64,10 @@ class ListenerFileEventHandler(FileSystemEventHandler):
         if listener_module not in sys.modules:
             return False
 
-        self.logger.info('Reloading %s', listener_module)
+        self.logger.info('Reloading listener module {}'.format(listener_module))
 
         self.server.xt_listeners.backup()
         self.server.xml_listeners.backup()
-        self.server.commands.backup()
 
         listener_module_object = sys.modules[listener_module]
 
@@ -77,13 +79,10 @@ class ListenerFileEventHandler(FileSystemEventHandler):
             self.server.xt_listeners.load(module)
             self.server.xml_listeners.load(module)
 
-            self.logger.info('Successfully reloaded %s!', listener_module)
+            self.logger.info('Successfully reloaded listener module {}!'.format(listener_module))
         except Exception as rebuild_error:
-            self.logger.error('%s detected in %s, not reloading.', rebuild_error.__class__.__name__, listener_module)
-            self.logger.info('Restoring listeners...')
+            self.logger.error('{} detected in {}, not reloading.'.format(
+                rebuild_error.__class__.__name__, listener_module))
 
             self.server.xt_listeners.restore()
             self.server.xml_listeners.restore()
-            self.server.commands.restore()
-
-            self.logger.info('Listeners restored. Phew!')

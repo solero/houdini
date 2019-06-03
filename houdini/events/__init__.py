@@ -12,6 +12,10 @@ def evaluate_listener_file_event(listener_file_event):
     if listener_module_path[-3:] != ".py":
         return False
 
+    # Ignore package index files
+    if '__init__.py' in listener_module_path:
+        return False
+
     listener_module = listener_module_path.replace(os.path.sep, ".")[:-3]
 
     return listener_module_path, listener_module
