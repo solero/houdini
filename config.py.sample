@@ -1,4 +1,4 @@
-from Houdini import ConflictResolution
+from houdini import ConflictResolution
 
 database = {
     'Address': 'localhost',
