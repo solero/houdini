@@ -132,7 +132,7 @@ class HoudiniFactory:
             self.config.database['Address'],
             self.config.database['Name']))
 
-        self.logger.info('Houdini module instantiated')
+        self.logger.info('Booting Houdini')
 
         self.redis = await aioredis.create_redis_pool('redis://{}:{}'.format(
             self.config.redis['Address'], self.config.redis['Port']),
