@@ -110,36 +110,44 @@ class _XMLListener(_Listener):
 
 
 class _ListenerManager(_AbstractManager):
-    def setup(self, module, strict_load=None, exclude_load=None):
-        for handler_module in self.server.get_package_modules(module):
-            if not (strict_load and handler_module not in strict_load or exclude_load
-                    and handler_module in exclude_load):
-                module = sys.modules[handler_module] if handler_module in sys.modules.keys() \
-                    else importlib.import_module(handler_module)
-                self.load(module)
+    def __init__(self, server):
+        self.strict_load = None
+        self.exclude_load = None
 
-        self.logger.info('Handler modules loaded')
+        super().__init__(server)
+
+    def setup(self, module, strict_load=None, exclude_load=None):
+        self.strict_load, self.exclude_load = strict_load, exclude_load
+        for handler_module in self.server.get_package_modules(module):
+            module = sys.modules[handler_module] if handler_module in sys.modules.keys() \
+                else importlib.import_module(handler_module)
+            self.load(module)
+
+        self.logger.debug('Loaded {} listeners'.format(len(self)))
 
     def load(self, module):
-        listener_objects = inspect.getmembers(module, self.is_listener)
-        for listener_name, listener_object in listener_objects:
-            if isinstance(module, plugins.IPlugin):
-                listener_object.instance = module
+        module_name = module.__module__ if isinstance(module, plugins.IPlugin) else module.__name__
+        if not (self.strict_load and module_name not in self.strict_load or
+                self.exclude_load and module_name in self.exclude_load):
+            listener_objects = inspect.getmembers(module, self.is_listener)
+            for listener_name, listener_object in listener_objects:
+                if isinstance(module, plugins.IPlugin):
+                    listener_object.instance = module
 
-            if listener_object.packet not in self:
-                self[listener_object.packet] = []
+                if listener_object.packet not in self:
+                    self[listener_object.packet] = []
 
-            if listener_object not in self[listener_object.packet]:
-                if listener_object.priority == Priority.High:
-                    self[listener_object.packet].insert(0, listener_object)
-                elif listener_object.priority == Priority.Override:
-                    self[listener_object.packet] = [listener_object]
-                else:
-                    self[listener_object.packet].append(listener_object)
+                if listener_object not in self[listener_object.packet]:
+                    if listener_object.priority == Priority.High:
+                        self[listener_object.packet].insert(0, listener_object)
+                    elif listener_object.priority == Priority.Override:
+                        self[listener_object.packet] = [listener_object]
+                    else:
+                        self[listener_object.packet].append(listener_object)
 
-        for listener_name, listener_object in listener_objects:
-            for override in listener_object.overrides:
-                self[override.packet].remove(override)
+            for listener_name, listener_object in listener_objects:
+                for override in listener_object.overrides:
+                    self[override.packet].remove(override)
 
     def remove(self, module):
         for handler_id, handler_listeners in self.items():
