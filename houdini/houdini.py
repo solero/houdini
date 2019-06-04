@@ -3,6 +3,7 @@ import os
 import sys
 import pkgutil
 import importlib
+import copy
 
 from houdini.spheniscidae import Spheniscidae
 from houdini.penguin import Penguin
@@ -43,9 +44,9 @@ from houdini.plugins import PluginManager
 from houdini.commands import CommandManager
 
 
-class HoudiniFactory:
+class Houdini:
 
-    def __init__(self, **kwargs):
+    def __init__(self, server_name,  **kwargs):
         self.server = None
         self.redis = None
         self.config = None
@@ -53,7 +54,11 @@ class HoudiniFactory:
         self.db = db
         self.peers_by_ip = {}
 
-        self.server_name = kwargs['server']
+        self.server_name = server_name
+        self.database_config_override = kwargs.get('database')
+        self.redis_config_override = kwargs.get('redis')
+        self.commands_config_override = kwargs.get('commands')
+        self.server_config_override = kwargs.get('server')
         self.server_config = None
 
         self.logger = None
@@ -91,7 +96,12 @@ class HoudiniFactory:
     async def start(self):
         self.config = config
 
-        self.server_config = self.config.servers[self.server_name]
+        self.server_config = copy.deepcopy(self.config.servers[self.server_name])
+        self.server_config.update(self.server_config_override)
+
+        self.config.database.update(self.database_config_override)
+        self.config.redis.update(self.redis_config_override)
+        self.config.commands.update(self.commands_config_override)
 
         general_log_directory = os.path.dirname(self.server_config["Logging"]["General"])
         errors_log_directory = os.path.dirname(self.server_config["Logging"]["Errors"])
