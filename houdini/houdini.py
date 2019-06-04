@@ -206,8 +206,8 @@ class Houdini:
 
         self.permissions = await PermissionCrumbsCollection.get_collection()
 
-        handlers_path = './houdini{}handlers'.format(os.path.sep)
-        plugins_path = './houdini{}plugins'.format(os.path.sep)
+        handlers_path = os.path.join(os.path.dirname(__file__), 'handlers')
+        plugins_path = os.path.join(os.path.dirname(__file__), 'plugins')
         self.configure_observers([handlers_path, ListenerFileEventHandler],
                                  [plugins_path, PluginFileEventHandler])
 
