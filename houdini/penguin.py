@@ -6,7 +6,7 @@ class Penguin(Spheniscidae):
 
     __slots__ = ['x', 'y', 'frame','room', 'waddle', 'table', 'data',
                  'login_key', 'member', 'membership_days', 'avatar',
-                 'walking_puffle', 'permissions']
+                 'walking_puffle', 'permissions', 'age']
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -16,12 +16,13 @@ class Penguin(Spheniscidae):
         self.room = None
         self.waddle = None
         self.table = None
+        self.age = 0
 
         self.data = None
         self.login_key = None
 
         self.member = None
-        self.membership_days = 0
+        self.membership_days = 750
 
         self.avatar = None
 
