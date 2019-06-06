@@ -977,7 +977,7 @@ CREATE TABLE penguin_puffle (
   rest SMALLINT NOT NULL DEFAULT 100,
   clean SMALLINT NOT NULL DEFAULT 100,
   walking BOOLEAN DEFAULT FALSE,
-  hat INT NOT NULL,
+  hat INT DEFAULT NULL,
   backyard BOOLEAN DEFAULT FALSE,
   has_dug BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (id),
@@ -1010,7 +1010,8 @@ CREATE TABLE penguin_puffle_item (
   item_id INT NOT NULL,
   quantity SMALLINT NOT NULL,
   PRIMARY KEY (penguin_id, item_id),
-  CONSTRAINT penguin_puffle_item_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT penguin_puffle_item_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_puffle_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES puffle_item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_puffle_item IS 'Owned puffle care items';
