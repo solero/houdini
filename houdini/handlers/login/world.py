@@ -48,3 +48,5 @@ async def handle_login(p, credentials: WorldCredentials):
     p.data = data
     p.login_key = credentials.login_key
     await p.send_xt('l')
+
+    p.age = (datetime.now() - p.data.registration_date).days
