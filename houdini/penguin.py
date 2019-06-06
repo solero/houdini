@@ -45,7 +45,7 @@ class Penguin(Spheniscidae):
 
     @property
     def nickname(self):
-        return self.data.nickname if self.data.approval else "P" + self.data.id
+        return self.data.safe_nickname(self.server.server_config['Language'])
 
     async def load(self):
         if self.data:

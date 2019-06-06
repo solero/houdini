@@ -15,7 +15,7 @@ class ConflictResolution(enum.Enum):
     Exception = 2
 
 
-class Language(enum.Enum):
+class Language(enum.IntEnum):
     En = 1
     Pt = 2
     Fr = 4

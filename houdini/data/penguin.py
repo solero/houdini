@@ -66,6 +66,9 @@ class Penguin(db.Model):
     rejection_de = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     rejection_ru = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
 
+    def safe_nickname(self, language_bitmask):
+        return self.nickname if self.approval & language_bitmask else "P" + str(self.id)
+
     @property
     def approval(self):
         return int('{}{}0{}{}{}{}'.format(self.approval_ru * 1, self.approval_de * 1, self.approval_es * 1,

@@ -1,4 +1,5 @@
 from houdini import ConflictResolution
+from houdini import Language
 
 database = {
     'Address': 'localhost',
@@ -39,6 +40,7 @@ servers = {
         'Id': '100',
         'Address': '0.0.0.0',
         'Port': 9875,
+        'Language': Language.En,
         'World': True,
         'Capacity': 200,
         'CacheExpiry': 3600,

@@ -5,6 +5,7 @@ import config
 
 from houdini.houdini import Houdini
 from houdini import ConflictResolution
+from houdini import Language
 
 if __name__ == '__main__':
     logger = logging.getLogger('houdini')
@@ -21,6 +22,8 @@ if __name__ == '__main__':
                         help='Cache expiry (seconds)', type=int)
     parser.add_argument('-P', '--plugins', action='store',
                         nargs='*', help='Plugins to load')
+    parser.add_argument('-l', '--language', action='store', help='Houdini language',
+                        choices=['En', 'Fr', 'Pt', 'Es', 'De', 'Ru'])
 
     boot_modes = parser.add_mutually_exclusive_group()
     boot_modes.add_argument('-W', '--world', action='store_true', help='Run server in world mode')
@@ -115,11 +118,12 @@ if __name__ == '__main__':
     if server['World']:
         server.update({
             'Id': args.id or config.servers[args.server]['Id'],
+            'Language': getattr(Language, args.language) if args.language else config.servers[args.server]['Language'],
             'Capacity': args.capacity or config.servers[args.server]['Capacity'],
             'CacheExpiry': args.cache_expiry or config.servers[args.server]['CacheExpiry']
         })
 
-    server['logging'] = logging
+    server['Logging'] = logging
 
     factory_instance = Houdini(args.server,
                                database=database,
