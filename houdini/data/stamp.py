@@ -1,5 +1,4 @@
 from houdini.data import db, BaseCrumbsCollection
-from houdini.data.penguin import PenguinStamp
 
 
 class Stamp(db.Model):
@@ -34,6 +33,16 @@ class CoverStamp(db.Model):
     type = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
     rotation = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
     depth = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+
+
+class PenguinStamp(db.Model):
+    __tablename__ = 'penguin_stamp'
+
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    stamp_id = db.Column(db.ForeignKey('stamp.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                         nullable=False)
+    recent = db.Column(db.Boolean, nullable=False, server_default=db.text("true"))
 
 
 class StampCrumbsCollection(BaseCrumbsCollection):

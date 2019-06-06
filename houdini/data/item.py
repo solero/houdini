@@ -1,5 +1,4 @@
 from houdini.data import db, BaseCrumbsCollection
-from houdini.data.penguin import PenguinItem
 
 
 class Item(db.Model):
@@ -15,6 +14,15 @@ class Item(db.Model):
     epf = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     tour = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     release_date = db.Column(db.Date, nullable=False, server_default=db.text("now()"))
+
+
+class PenguinItem(db.Model):
+    __tablename__ = 'penguin_item'
+
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'),
+                           primary_key=True, nullable=False)
+    item_id = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'),
+                        primary_key=True, nullable=False)
 
 
 class ItemCrumbsCollection(BaseCrumbsCollection):

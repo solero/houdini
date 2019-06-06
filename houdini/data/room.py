@@ -47,6 +47,19 @@ class Room(db.Model):
             await penguin.send_xt(*data)
 
 
+class PenguinIglooRoom(db.Model):
+    __tablename__ = 'penguin_igloo_room'
+
+    id = db.Column(db.Integer, primary_key=True,
+                   server_default=db.text("nextval('\"penguin_igloo_room_id_seq\"'::regclass)"))
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    type = db.Column(db.ForeignKey('igloo.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    flooring = db.Column(db.ForeignKey('flooring.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    music = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    location = db.Column(db.ForeignKey('location.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    locked = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+
+
 class RoomTable(db.Model):
     __tablename__ = 'room_table'
 

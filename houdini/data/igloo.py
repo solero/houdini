@@ -1,5 +1,4 @@
 from houdini.data import db, BaseCrumbsCollection
-from houdini.data.penguin import PenguinIgloo, PenguinLocation, PenguinFurniture, PenguinFlooring
 
 
 class Flooring(db.Model):
@@ -67,6 +66,43 @@ class Location(db.Model):
     name = db.Column(db.String(50), nullable=False)
     cost = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
     patched = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+
+
+class PenguinIgloo(db.Model):
+    __tablename__ = 'penguin_igloo'
+
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    igloo_id = db.Column(db.ForeignKey('igloo.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                         nullable=False)
+
+
+class PenguinLocation(db.Model):
+    __tablename__ = 'penguin_location'
+
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    location_id = db.Column(db.ForeignKey('location.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                            nullable=False)
+
+
+class PenguinFurniture(db.Model):
+    __tablename__ = 'penguin_furniture'
+
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    furniture_id = db.Column(db.ForeignKey('furniture.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                             nullable=False)
+    quantity = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
+
+
+class PenguinFlooring(db.Model):
+    __tablename__ = 'penguin_flooring'
+
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    flooring_id = db.Column(db.ForeignKey('flooring.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                            nullable=False)
 
 
 class IglooCrumbsCollection(BaseCrumbsCollection):

@@ -1,5 +1,4 @@
 from houdini.data import db, BaseCrumbsCollection
-from houdini.data.penguin import PenguinPermission
 
 
 class Permission(db.Model):
@@ -8,6 +7,13 @@ class Permission(db.Model):
     id = db.Column(db.Integer, primary_key=True, server_default=db.text("nextval('\"permission_id_seq\"'::regclass)"))
     name = db.Column(db.String(50), nullable=False, unique=True)
     enabled = db.Column(db.Boolean, nullable=False, server_default=db.text("true"))
+
+
+class PenguinPermission(db.Model):
+    __tablename__ = 'penguin_permission'
+
+    penguin_id = db.Column(db.ForeignKey(u'penguin.id', ondelete=u'CASCADE', onupdate=u'CASCADE'), primary_key=True)
+    permission_id = db.Column(db.ForeignKey(u'permission.id', ondelete=u'CASCADE', onupdate=u'CASCADE'), nullable=False)
 
 
 class PermissionCrumbsCollection(BaseCrumbsCollection):

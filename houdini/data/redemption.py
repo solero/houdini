@@ -92,3 +92,13 @@ class RedemptionAwardPuffleItem(db.Model):
                         nullable=False)
     puffle_item_id = db.Column(db.ForeignKey('puffle_item.id', ondelete='CASCADE', onupdate='CASCADE'),
                                primary_key=True, nullable=False)
+
+
+class PenguinRedemption(db.Model):
+    __tablename__ = 'penguin_redemption'
+
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    code_id = db.Column(db.ForeignKey('redemption_code.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False, index=True)
+    book_id = db.Column(db.ForeignKey('redemption_book.id', ondelete='CASCADE', onupdate='CASCADE'), index=True)

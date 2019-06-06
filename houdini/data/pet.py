@@ -1,5 +1,4 @@
 from houdini.data import db, BaseCrumbsCollection
-from houdini.data.penguin import PenguinPuffle, PenguinPuffleItem
 
 
 class Puffle(db.Model):
@@ -60,6 +59,57 @@ class PuffleTreasurePuffleItem(db.Model):
                                primary_key=True, nullable=False)
 
 
+class PuffleQuest(db.Model):
+    __tablename__ = 'puffle_quest'
+
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    task_id = db.Column(db.SmallInteger, primary_key=True, nullable=False)
+    completion_date = db.Column(db.DateTime)
+    item_collected = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    coins_collected = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+
+
+class PenguinPuffle(db.Model):
+    __tablename__ = 'penguin_puffle'
+
+    id = db.Column(db.Integer, primary_key=True,
+                   server_default=db.text("nextval('\"penguin_puffle_id_seq\"'::regclass)"))
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    puffle_id = db.Column(db.ForeignKey('puffle.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    name = db.Column(db.String(16), nullable=False)
+    adoption_date = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
+    food = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
+    play = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
+    rest = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
+    clean = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
+    walking = db.Column(db.Boolean, server_default=db.text("false"))
+    hat = db.Column(db.ForeignKey('puffle_item.id', ondelete='CASCADE', onupdate='CASCADE'))
+    backyard = db.Column(db.Boolean, server_default=db.text("false"))
+    has_dug = db.Column(db.Boolean, server_default=db.text("false"))
+
+
+class PenguinPuffleItem(db.Model):
+    __tablename__ = 'penguin_puffle_item'
+
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    item_id = db.Column(db.ForeignKey('puffle_item.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
+    quantity = db.Column(db.SmallInteger, nullable=False)
+
+
+class PenguinLaunchGame(db.Model):
+    __tablename__ = 'penguin_launch_game'
+
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    level = db.Column(db.SmallInteger, primary_key=True, nullable=False, server_default=db.text("0"))
+    puffle_os = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    best_time = db.Column(db.SmallInteger, nullable=False, server_default=db.text("600"))
+    turbo = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+
+
 class PuffleCrumbsCollection(BaseCrumbsCollection):
 
     def __init__(self, inventory_id=None):
@@ -67,7 +117,7 @@ class PuffleCrumbsCollection(BaseCrumbsCollection):
                          key='id',
                          inventory_model=PenguinPuffle,
                          inventory_key='penguin_id',
-                         inventory_value='puffle_id',
+                         inventory_value='id',
                          inventory_id=inventory_id)
 
 

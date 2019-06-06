@@ -1,5 +1,4 @@
 from houdini.data import db, BaseCrumbsCollection
-from houdini.data.penguin import PenguinCard
 
 
 class Card(db.Model):
@@ -15,10 +14,22 @@ class Card(db.Model):
     description = db.Column(db.String(255), nullable=False, server_default=db.text("''::character varying"))
 
 
+class PenguinCard(db.Model):
+    __tablename__ = 'penguin_card'
+
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False, index=True)
+    card_id = db.Column(db.ForeignKey('card.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
+    quantity = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
+
+
 class CardCrumbsCollection(BaseCrumbsCollection):
 
     def __init__(self, inventory_id=None):
         super().__init__(model=Card,
                          key='id',
+                         inventory_key='penguin_id',
+                         inventory_value='card_id',
                          inventory_model=PenguinCard,
                          inventory_id=inventory_id)
