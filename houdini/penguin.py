@@ -1,10 +1,11 @@
+import time
+
 from houdini.spheniscidae import Spheniscidae
 
-from houdini.data.permission import PermissionCrumbsCollection
 
 class Penguin(Spheniscidae):
 
-    __slots__ = ['x', 'y', 'frame','room', 'waddle', 'table', 'data',
+    __slots__ = ['x', 'y', 'frame', 'room', 'waddle', 'table', 'data',
                  'login_key', 'member', 'membership_days', 'avatar',
                  'walking_puffle', 'permissions']
 
@@ -26,10 +27,6 @@ class Penguin(Spheniscidae):
         self.avatar = None
 
         self.walking_puffle = None
-
-        self.permissions = None
-
-        self.logger.debug('New penguin created')
 
     @property
     def party_state(self):

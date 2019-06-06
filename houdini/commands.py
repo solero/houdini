@@ -1,7 +1,5 @@
 import inspect
 import config
-import logging
-import copy
 
 from houdini import handlers
 from houdini import plugins
