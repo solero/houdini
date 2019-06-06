@@ -1,5 +1,6 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
+from houdini.converters import RoomConverter
 
 import random
 
@@ -22,3 +23,10 @@ async def handle_join_server(p, penguin_id: int, login_key: str, lang: str):
 
     await p.data.load_inventories()
     p.joined_world = True
+
+
+@handlers.handler(XTPacket('j', 'jr'))
+@handlers.cooldown(1)
+async def handle_join_room(p, room: RoomConverter, x: int, y: int):
+    p.x, p.y = x, y
+    await p.join_room(room)
