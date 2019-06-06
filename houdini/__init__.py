@@ -58,7 +58,6 @@ class PenguinStringCompiler(OrderedDict):
         assert type(compiler_method) == FunctionType
         super().__setitem__(key, compiler_method)
 
-    @cached(namespace='houdini')
     async def compile(self, p):
         compiler_method_results = []
 
