@@ -11343,8 +11343,8 @@ INSERT INTO penguin (id, username, nickname, approval_en, password, email, color
  (27, 'CeCe', 'CeCe', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 7, NULL),
  (28, 'Merry Walrus', 'Merry Walrus', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, NULL);
  
-INSERT INTO penguin (username, nickname, approval_en, password, email, color) VALUES
-  ('Basil', 'Basil', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', 'basil@solero.me', 1);
+INSERT INTO penguin (username, nickname, approval_en, active, password, email, color) VALUES
+  ('Basil', 'Basil', TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', 'basil@solero.me', 1);
   
 INSERT INTO penguin_item (penguin_id, item_id) VALUES
   (101, 1);
