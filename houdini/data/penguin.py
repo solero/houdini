@@ -1,5 +1,13 @@
 from houdini.data import db
 
+from houdini.data.permission import PermissionCrumbsCollection
+from houdini.data.item import ItemCrumbsCollection
+from houdini.data.igloo import IglooCrumbsCollection, FlooringCrumbsCollection, LocationCrumbsCollection
+from houdini.data.stamp import StampCrumbsCollection
+from houdini.data.ninja import CardCrumbsCollection
+from houdini.data.mail import PostcardCrumbsCollection
+from houdini.data.pet import PuffleCrumbsCollection, PuffleItemCrumbsCollection
+
 
 class Penguin(db.Model):
     __tablename__ = 'penguin'
@@ -65,6 +73,32 @@ class Penguin(db.Model):
     rejection_es = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     rejection_de = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     rejection_ru = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+
+    def __init__(self, *args, **kwargs):
+        self.inventory = None
+        self.permissions = None
+        self.igloos = None
+        self.flooring = None
+        self.locations = None
+        self.stamps = None
+        self.cards = None
+        self.postcards = None
+        self.puffles = None
+        self.puffle_items = None
+
+        super().__init__(*args, **kwargs)
+
+    async def load_inventories(self):
+        self.inventory = await ItemCrumbsCollection.get_collection(self.id)
+        self.permissions = await PermissionCrumbsCollection.get_collection(self.id)
+        self.igloos = await IglooCrumbsCollection.get_collection(self.id)
+        self.flooring = await FlooringCrumbsCollection.get_collection(self.id)
+        self.locations = await LocationCrumbsCollection.get_collection(self.id)
+        self.stamps = await StampCrumbsCollection.get_collection(self.id)
+        self.cards = await CardCrumbsCollection.get_collection(self.id)
+        self.postcards = await PostcardCrumbsCollection.get_collection(self.id)
+        self.puffles = await PuffleCrumbsCollection.get_collection(self.id)
+        self.puffle_items = await PuffleItemCrumbsCollection.get_collection(self.id)
 
     def safe_nickname(self, language_bitmask):
         return self.nickname if self.approval & language_bitmask else "P" + str(self.id)

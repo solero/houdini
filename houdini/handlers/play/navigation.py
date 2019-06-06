@@ -20,5 +20,5 @@ async def handle_join_server(p, penguin_id: int, login_key: str, lang: str):
     spawn = random.choice(p.server.spawn_rooms)
     await spawn.add_penguin(p)
 
-    await p.load()
+    await p.data.load_inventories()
     p.joined_world = True
