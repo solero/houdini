@@ -1,4 +1,3 @@
-from houdini import handlers
 from houdini.handlers import XMLPacket, XTPacket
 
 from asyncio import IncompleteReadError
@@ -126,10 +125,10 @@ class Spheniscidae:
         else:
             self.logger.warn('Received invalid XML data!')
 
-    async def __client_connected(self):
+    async def _client_connected(self):
         self.logger.info('Client %s connected', self.peer_name)
 
-    async def __client_disconnected(self):
+    async def _client_disconnected(self):
         del self.server.peers_by_ip[self.peer_name]
 
         self.logger.info('Client %s disconnected', self.peer_name)
@@ -142,7 +141,7 @@ class Spheniscidae:
             await self.__handle_xt_data(data)
 
     async def run(self):
-        await self.__client_connected()
+        await self._client_connected()
         while not self.__writer.is_closing():
             try:
                 data = await self.__reader.readuntil(
@@ -156,7 +155,7 @@ class Spheniscidae:
                 self.__writer.close()
             except ConnectionResetError:
                 self.__writer.close()
-        await self.__client_disconnected()
+        await self._client_disconnected()
 
     def __repr__(self):
         return '<Spheniscidae {}>'.format(self.peer_name)

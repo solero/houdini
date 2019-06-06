@@ -158,6 +158,9 @@ class Penguin(Spheniscidae):
 
         return True
 
+    def _client_connected(self):
+        super()._client_connected()
+
     def __repr__(self):
         if self.data is not None:
             return '<Penguin ID=\'{}\' Username=\'{}\'>'.format(self.data.id, self.data.username)
