@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from houdini.data import db
 
 from houdini.data.permission import PermissionCrumbsCollection
@@ -102,6 +104,10 @@ class Penguin(db.Model):
 
     def safe_nickname(self, language_bitmask):
         return self.nickname if self.approval & language_bitmask else "P" + str(self.id)
+
+    @property
+    def age(self):
+        return (datetime.now() - self.registration_date).days
 
     @property
     def approval(self):
