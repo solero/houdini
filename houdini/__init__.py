@@ -95,6 +95,8 @@ class PenguinStringCompiler(OrderedDict):
             'Neck': PenguinStringCompiler.data_attribute_by_name('neck'),
             'Body': PenguinStringCompiler.data_attribute_by_name('body'),
             'Hand': PenguinStringCompiler.data_attribute_by_name('hand'),
+            'Feet': PenguinStringCompiler.data_attribute_by_name('feet'),
+            'Flag': PenguinStringCompiler.data_attribute_by_name('flag'),
             'Photo': PenguinStringCompiler.data_attribute_by_name('photo'),
             'X': PenguinStringCompiler.attribute_by_name('x'),
             'Y': PenguinStringCompiler.attribute_by_name('y'),
@@ -119,5 +121,7 @@ class PenguinStringCompiler(OrderedDict):
             'Neck': PenguinStringCompiler.attribute_by_name('neck'),
             'Body': PenguinStringCompiler.attribute_by_name('body'),
             'Hand': PenguinStringCompiler.attribute_by_name('name'),
+            'Feet': PenguinStringCompiler.attribute_by_name('feet'),
+            'Flag': PenguinStringCompiler.attribute_by_name('flag'),
             'Photo': PenguinStringCompiler.attribute_by_name('photo')
         })
