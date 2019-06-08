@@ -41,6 +41,10 @@ class Penguin(Spheniscidae):
         return str()
 
     @property
+    def string(self):
+        return self.server.penguin_string_compiler.compile(self)
+
+    @property
     def nickname(self):
         return self.data.safe_nickname(self.server.server_config['Language'])
 

@@ -2,7 +2,9 @@ from houdini import handlers
 from houdini.handlers import XTPacket
 from houdini.converters import RoomConverter
 
-import random, time
+import random
+import time
+import ujson
 
 
 @handlers.handler(XTPacket('j', 'js'), pre_login=True)
@@ -24,8 +26,10 @@ async def handle_join_server(p, penguin_id: int, login_key: str, lang: str):
     penguin_standard_time = current_time * 1000
     server_time_offset = 7
 
-    await p.send_xt('lp', await p.server.penguin_string_compiler.compile(p), p.data.coins, 0, 1440,
-                penguin_standard_time, p.age, 0, p.data.minutes_played, None, server_time_offset, 1, 0, 211843)
+    await p.send_xt('lp', await p.string, p.data.coins, p.data.safe_chat, 1440,
+                    penguin_standard_time, p.data.age, 0, p.data.minutes_played,
+                    "membership_days", server_time_offset, "has_opened_player_card",
+                    "map_category", "StatusField")
 
     spawn = random.choice(p.server.spawn_rooms)
     await spawn.add_penguin(p)
