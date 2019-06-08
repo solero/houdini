@@ -17,7 +17,6 @@ class Penguin(Spheniscidae):
         self.room = None
         self.waddle = None
         self.table = None
-        self.age = 0
 
         self.data = None
         self.login_key = None
