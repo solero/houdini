@@ -159,8 +159,8 @@ class Penguin(Spheniscidae):
 
         return True
 
-    def _client_connected(self):
-        super()._client_connected()
+    async def _client_connected(self):
+        await super()._client_connected()
 
     def __repr__(self):
         if self.data is not None:
