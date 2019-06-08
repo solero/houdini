@@ -30,7 +30,7 @@ servers = {
         'Logging': {
             'General': 'logs/login.log',
             'Errors': 'logs/login-errors.log',
-            'Level': 'DEBUG'
+            'Level': 'INFO'
         },
         'LoginFailureLimit': 5,
         'LoginFailureTimer': 3600,
