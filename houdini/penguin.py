@@ -166,50 +166,50 @@ class Penguin(Spheniscidae):
         await super()._client_connected()
         
     
-    async def update_color(self, item_id):
-        self.logger.info('{} updated their color to \'{}\' '.format(self.data.username, item_id))
-        await self.data.update(color=item_id).apply()
-        await self.room.send_xt('upc', self.data.id, item_id)
+    async def update_color(self, item):
+        self.logger.info('{} updated their color to \'{}\' '.format(self.data.username, item.id))
+        await self.data.update(color=item.id).apply()
+        await self.room.send_xt('upc', self.data.id, item.id)
 
-    async def update_head(self, item_id):
-        self.logger.info('{} updated their head to \'{}\' '.format(self.data.username, item_id))
-        await self.data.update(head=item_id).apply()
-        await self.room.send_xt('uph', self.data.id, item_id)
+    async def update_head(self, item):
+        self.logger.info('{} updated their head to \'{}\' '.format(self.data.username, item.id))
+        await self.data.update(head=item.id).apply()
+        await self.room.send_xt('uph', self.data.id, item.id)
 
-    async def update_face(self, item_id):
-        self.logger.info('{} updated their face to \'{}\' '.format(self.data.username, item_id))
-        await self.data.update(face=item_id).apply()
-        await self.room.send_xt('upf', self.data.id, item_id)
+    async def update_face(self, item):
+        self.logger.info('{} updated their face to \'{}\' '.format(self.data.username, item.id))
+        await self.data.update(face=item.id).apply()
+        await self.room.send_xt('upf', self.data.id, item.id)
 
-    async def update_neck(self, item_id):
-        self.logger.info('{} updated their neck to \'{}\' '.format(self.data.username, item_id))
-        await self.data.update(neck=item_id).apply()
-        await self.room.send_xt('upn', self.data.id, item_id)
+    async def update_neck(self, item):
+        self.logger.info('{} updated their neck to \'{}\' '.format(self.data.username, item.id))
+        await self.data.update(neck=item.id).apply()
+        await self.room.send_xt('upn', self.data.id, item.id)
 
-    async def update_body(self, item_id):
-        self.logger.info('{} updated their body to \'{}\' '.format(self.data.username, item_id))
-        await self.data.update(body=item_id).apply()
-        await self.room.send_xt('upb', self.data.id, item_id)
+    async def update_body(self, item):
+        self.logger.info('{} updated their body to \'{}\' '.format(self.data.username, item.id))
+        await self.data.update(body=item.id).apply()
+        await self.room.send_xt('upb', self.data.id, item.id)
 
-    async def update_hand(self, item_id):
-        self.logger.info('{} updated their hand to \'{}\' '.format(self.data.username, item_id))
-        await self.data.update(hand=item_id).apply()
-        await self.room.send_xt('upa', self.data.id, item_id)
+    async def update_hand(self, item):
+        self.logger.info('{} updated their hand to \'{}\' '.format(self.data.username, item.id))
+        await self.data.update(hand=item.id).apply()
+        await self.room.send_xt('upa', self.data.id, item.id)
 
-    async def update_feet(self, item_id):
-        self.logger.info('{} updated their feet to \'{}\' '.format(self.data.username, item_id))
-        await self.data.update(feet=item_id).apply()
-        await self.room.send_xt('upe', self.data.id, item_id)
+    async def update_feet(self, item):
+        self.logger.info('{} updated their feet to \'{}\' '.format(self.data.username, item.id))
+        await self.data.update(feet=item.id).apply()
+        await self.room.send_xt('upe', self.data.id, item.id)
 
-    async def update_flag(self, item_id):
-        self.logger.info('{} updated their pin to \'{}\' '.format(self.data.username, item_id))
-        await self.data.update(flag=item_id).apply()
-        await self.room.send_xt('upl', self.data.id, item_id)
+    async def update_flag(self, item):
+        self.logger.info('{} updated their pin to \'{}\' '.format(self.data.username, item.id))
+        await self.data.update(flag=item.id).apply()
+        await self.room.send_xt('upl', self.data.id, item.id)
 
-    async def update_photo(self, item_id):
-        self.logger.info('{} updated their background to \'{}\' '.format(self.data.username, item_id))
-        await self.data.update(photo=item_id).apply()
-        await self.room.send_xt('upp', self.data.id, item_id)
+    async def update_photo(self, item):
+        self.logger.info('{} updated their background to \'{}\' '.format(self.data.username, item.id))
+        await self.data.update(photo=item.id).apply()
+        await self.room.send_xt('upp', self.data.id, item.id)
         
     def __repr__(self):
         if self.data is not None:
