@@ -183,63 +183,92 @@ class Penguin(Spheniscidae):
 
         return True
 
-    async def _client_connected(self):
-        await super()._client_connected()
-        
-    
-    async def update_color(self, item):
-        item_id = None if item is None else item.id
-        await self.data.update(color=item_id).apply()
-        await self.room.send_xt('upc', self.data.id, item_id or 0)
-        self.logger.info('{} updated their color to \'{}\' '.format(self.data.username, item_id or 0))
+    async def set_color(self, item):
+        await self.data.update(color=item.id).apply()
+        await self.room.send_xt('upc', self.data.id, item.id)
+        self.logger.info('{} updated their color to \'{}\' '.format(
+            self.data.username, item.name))
 
-    async def update_head(self, item):
+    async def set_head(self, item):
         item_id = None if item is None else item.id
         await self.data.update(head=item_id).apply()
         await self.room.send_xt('uph', self.data.id, item_id or 0)
-        self.logger.info('{} updated their head to \'{}\' '.format(self.data.username, item_id or 0))
 
-    async def update_face(self, item):
+        self.logger.info('{} updated their head item to \'{}\' '.format(
+            self.data.username, item.name) if item else
+                         '{} removed their head item'.format(
+                             self.data.username))
+
+    async def set_face(self, item):
         item_id = None if item is None else item.id
         await self.data.update(face=item_id).apply()
         await self.room.send_xt('upf', self.data.id, item_id or 0)
-        self.logger.info('{} updated their face to \'{}\' '.format(self.data.username, item_id or 0))
 
-    async def update_neck(self, item):
+        self.logger.info('{} updated their face item to \'{}\' '.format(
+            self.data.username, item.name) if item else
+                         '{} removed their face item'.format(
+                             self.data.username))
+
+    async def set_neck(self, item):
         item_id = None if item is None else item.id
         await self.data.update(neck=item_id).apply()
         await self.room.send_xt('upn', self.data.id, item_id or 0)
-        self.logger.info('{} updated their neck to \'{}\' '.format(self.data.username, item_id or 0))
 
-    async def update_body(self, item):
+        self.logger.info('{} updated their neck item to \'{}\' '.format(
+            self.data.username, item.name) if item else
+                         '{} removed their neck item'.format(
+                             self.data.username))
+
+    async def set_body(self, item):
         item_id = None if item is None else item.id
         await self.data.update(body=item_id).apply()
         await self.room.send_xt('upb', self.data.id, item_id or 0)
-        self.logger.info('{} updated their body to \'{}\' '.format(self.data.username, item_id or 0))
 
-    async def update_hand(self, item):
+        self.logger.info('{} updated their body item to \'{}\' '.format(
+            self.data.username, item.name) if item else
+                         '{} removed their body item'.format(
+                             self.data.username))
+
+    async def set_hand(self, item):
         item_id = None if item is None else item.id
         await self.data.update(hand=item_id).apply()
         await self.room.send_xt('upa', self.data.id, item_id or 0)
-        self.logger.info('{} updated their hand to \'{}\' '.format(self.data.username, item_id or 0))
 
-    async def update_feet(self, item):
+        self.logger.info('{} updated their hand item to \'{}\' '.format(
+            self.data.username, item.name) if item else
+                         '{} removed their hand item'.format(
+                             self.data.username))
+
+    async def set_feet(self, item):
         item_id = None if item is None else item.id
         await self.data.update(feet=item_id).apply()
         await self.room.send_xt('upe', self.data.id, item_id or 0)
-        self.logger.info('{} updated their feet to \'{}\' '.format(self.data.username, item_id or 0))
 
-    async def update_flag(self, item):
+        self.logger.info('{} updated their feet item to \'{}\' '.format(
+            self.data.username, item.name) if item else
+                         '{} removed their feet item'.format(
+                             self.data.username))
+
+    async def set_flag(self, item):
         item_id = None if item is None else item.id
         await self.data.update(flag=item_id).apply()
         await self.room.send_xt('upl', self.data.id, item_id or 0)
-        self.logger.info('{} updated their flag to \'{}\' '.format(self.data.username, item_id or 0))
 
-    async def update_photo(self, item):
+        self.logger.info('{} updated their flag item to \'{}\' '.format(
+            self.data.username, item.name) if item else
+                         '{} removed their flag item'.format(
+                             self.data.username))
+
+    async def set_photo(self, item):
         item_id = None if item is None else item.id
         await self.data.update(photo=item_id).apply()
         await self.room.send_xt('upp', self.data.id, item_id or 0)
-        self.logger.info('{} updated their photo to \'{}\' '.format(self.data.username, item_id or 0))
+
+        self.logger.info('{} updated their background to \'{}\' '.format(
+            self.data.username, item.name) if item else
+                         '{} removed their background item'.format(
+                             self.data.username))
+
         
     def __repr__(self):
         if self.data is not None:
