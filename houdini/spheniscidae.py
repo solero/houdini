@@ -1,6 +1,6 @@
 from houdini.handlers import XMLPacket, XTPacket
 
-from asyncio import IncompleteReadError
+from asyncio import IncompleteReadError, CancelledError
 
 import defusedxml.cElementTree as Et
 from xml.etree.cElementTree import Element, SubElement, tostring
@@ -153,8 +153,13 @@ class Spheniscidae:
                 await self.__writer.drain()
             except IncompleteReadError:
                 self.__writer.close()
+            except CancelledError:
+                self.__writer.close()
             except ConnectionResetError:
                 self.__writer.close()
+            except BaseException as e:
+                self.logger.exception(e.__traceback__)
+
         await self._client_disconnected()
 
     def __repr__(self):
