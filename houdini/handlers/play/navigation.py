@@ -38,6 +38,7 @@ async def handle_join_server(p, penguin_id: int, login_key: str, lang: str):
     p.joined_world = True
 
     p.server.penguins_by_id[p.data.id] = p
+    p.server.penguins_by_username[p.data.username] = p
 
 
 @handlers.handler(XTPacket('j', 'jr'))
