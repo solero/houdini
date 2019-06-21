@@ -269,6 +269,8 @@ class Penguin(Spheniscidae):
                          '{} removed their background item'.format(
                              self.data.username))
 
+    async def _client_connected(self):
+        await super()._client_connected()
         
     def __repr__(self):
         if self.data is not None:
