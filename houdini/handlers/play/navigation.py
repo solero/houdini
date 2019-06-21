@@ -1,15 +1,14 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
-from houdini.converters import RoomConverter
+from houdini.data.room import Room
 
 import random
 import time
-import ujson
 
 
 @handlers.handler(XTPacket('j', 'js'), pre_login=True)
 @handlers.allow_once
-async def handle_join_server(p, penguin_id: int, login_key: str, lang: str):
+async def handle_join_server(p, penguin_id: int, login_key: str):
     if penguin_id != p.data.id:
         return await p.close()
 
@@ -19,8 +18,6 @@ async def handle_join_server(p, penguin_id: int, login_key: str, lang: str):
     await p.send_xt('activefeatures')
     await p.send_xt('js', int(p.data.agent_status), int(0),
                     int(p.data.moderator), int(p.data.book_modified))
-
-    #handleGetMyPlayerPuffles()
 
     current_time = int(time.time())
     penguin_standard_time = current_time * 1000
@@ -35,10 +32,11 @@ async def handle_join_server(p, penguin_id: int, login_key: str, lang: str):
     await spawn.add_penguin(p)
 
     await p.data.load_inventories()
-    p.joined_world = True
 
     p.server.penguins_by_id[p.data.id] = p
     p.server.penguins_by_username[p.data.username] = p
+
+    p.joined_world = True
 
 
 @handlers.handler(XTPacket('j', 'jr'))
