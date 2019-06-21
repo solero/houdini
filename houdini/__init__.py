@@ -104,7 +104,7 @@ class PenguinStringCompiler(OrderedDict):
     def setup_default_builder(cls, string_builder):
         string_builder.update({
             'ID': PenguinStringCompiler.data_attribute_by_name('id'),
-            'Nickname': PenguinStringCompiler.attribute_by_name('nickname'),
+            'Nickname': PenguinStringCompiler.data_attribute_by_name('nickname'),
             'Approval': PenguinStringCompiler.data_attribute_by_name('approval'),
             'Color': PenguinStringCompiler.data_attribute_by_name('color'),
             'Head': PenguinStringCompiler.data_attribute_by_name('head'),
