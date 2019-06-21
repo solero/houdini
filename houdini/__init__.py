@@ -1,5 +1,4 @@
 from collections import OrderedDict
-from aiocache import cached
 from types import FunctionType
 from abc import abstractmethod
 

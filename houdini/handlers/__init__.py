@@ -1,11 +1,8 @@
 import inspect
 import enum
-import os
 import itertools
 import importlib
 import sys
-import logging
-import copy
 from types import FunctionType
 
 from houdini.converters import _listener, _ArgumentDeserializer, get_converter, do_conversion, _ConverterContext

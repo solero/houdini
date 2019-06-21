@@ -43,7 +43,6 @@ class Item(db.Model):
         return self.type == 9
 
 
-
 class PenguinItem(db.Model):
     __tablename__ = 'penguin_item'
 
