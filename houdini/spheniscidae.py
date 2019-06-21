@@ -5,6 +5,10 @@ from asyncio import IncompleteReadError, CancelledError
 import defusedxml.cElementTree as Et
 from xml.etree.cElementTree import Element, SubElement, tostring
 
+from houdini.handlers import AuthorityError
+from houdini.converters import ChecklistError
+from houdini.cooldown import CooldownError
+
 
 class Spheniscidae:
 
@@ -135,10 +139,17 @@ class Spheniscidae:
 
     async def __data_received(self, data):
         data = data.decode()[:-1]
-        if data.startswith('<'):
-            await self.__handle_xml_data(data)
-        else:
-            await self.__handle_xt_data(data)
+        try:
+            if data.startswith('<'):
+                await self.__handle_xml_data(data)
+            else:
+                await self.__handle_xt_data(data)
+        except AuthorityError:
+            self.logger.debug('{} tried to send game packet before authentication'.format(self))
+        except CooldownError:
+            self.logger.debug('{} tried to send a packet during a cooldown'.format(self))
+        except ChecklistError:
+            self.logger.debug('{} sent a packet without meeting checklist requirements'.format(self))
 
     async def run(self):
         await self._client_connected()
