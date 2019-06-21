@@ -200,11 +200,11 @@ def check(predicate):
     return decorator
 
 
-def allow_once():
-    def check_for_packet(listener, p):
-        return listener.packet not in p.received_packets
-    return check(check_for_packet)
+def check_for_packet(listener, p):
+    return listener.packet not in p.received_packets
 
+
+allow_once = check(check_for_packet)
 
 def player_attribute(**attrs):
     def check_for_attributes(_, p):

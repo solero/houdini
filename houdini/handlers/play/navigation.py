@@ -8,7 +8,7 @@ import ujson
 
 
 @handlers.handler(XTPacket('j', 'js'), pre_login=True)
-@handlers.allow_once()
+@handlers.allow_once
 async def handle_join_server(p, penguin_id: int, login_key: str, lang: str):
     if penguin_id != p.data.id:
         return await p.close()
