@@ -21,8 +21,8 @@ class Penguin(Spheniscidae):
         self.data = None
         self.login_key = None
 
-        self.member = None
-        self.membership_days = 0
+        self.member = 1
+        self.membership_days = 1
 
         self.avatar = None
 
