@@ -7,8 +7,18 @@ from houdini.data.quest import Quest, QuestAwardItem, QuestAwardFurniture, Quest
 from houdini.data.quest import PenguinQuestTask
 
 import ujson
+from aiocache import cached
 
 
+def get_status_key(_, p):
+    return 'quest.status.{}'.format(p.data.id)
+
+
+def get_settings_key(_, p):
+    return 'quest.settings.{}'.format(p.room.id)
+
+
+@cached(alias='default', key_builder=get_status_key)
 async def get_player_quest_status(p):
     query = Quest.load(tasks=QuestTask,
                        items=QuestAwardItem,
@@ -54,6 +64,7 @@ AwardTypes = {
 }
 
 
+@cached(alias='default', key_builder=get_settings_key)
 async def get_quest_settings(p):
     query = Quest.load(items=QuestAwardItem,
                        furniture=QuestAwardFurniture,
@@ -117,6 +128,8 @@ async def load_active_quests(p):
 @handlers.handler(XTPacket('j', 'js'), after=handle_join_server)
 @handlers.allow_once
 async def handle_quest_join_server(p):
+    await p.server.cache.delete('quest.status.{}'.format(p.data.id))
+
     await load_active_quests(p)
     await p.send_xt('nxquestsettings', await get_quest_settings(p))
     await p.send_xt('nxquestdata', await get_player_quest_status(p))
@@ -128,6 +141,8 @@ async def handle_quest_join_room(p):
         for quest in p.active_quests:
             for task in quest.tasks:
                 if task.id in quest.in_progress and task.room_id == p.room.id:
+                    await p.server.cache.delete('quest.status.{}'.format(p.data.id))
+
                     await PenguinQuestTask.update.values(complete=True)\
                         .where((PenguinQuestTask.task_id == task.id) &
                                (PenguinQuestTask.penguin_id == p.data.id)).gino.status()
@@ -137,6 +152,8 @@ async def handle_quest_join_room(p):
 
 @handlers.handler(XTPacket('nx', 'nxquestaward'))
 async def handle_quest_award(p, quest_id: int):
+    await p.server.cache.delete('quest.status.{}'.format(p.data.id))
+
     quest = await Quest.load(items=QuestAwardItem,
                              furniture=QuestAwardFurniture,
                              pet=QuestAwardPuffleItem).where(Quest.id == quest_id).gino.first()
@@ -152,6 +169,8 @@ async def handle_quest_award(p, quest_id: int):
 @handlers.handler(XTPacket('nx', 'nxquestactivate'))
 @handlers.allow_once
 async def handle_quest_activate(p):
+    await p.server.cache.delete('quest.status.{}'.format(p.data.id))
+
     await init_all_quests(p)
     await p.send_xt('nxquestdata', await get_player_quest_status(p))
 
