@@ -53,6 +53,9 @@ class Penguin(Spheniscidae):
     async def join_room(self, room):
         await room.add_penguin(self)
 
+        self.logger.info('{} joined room \'{}\''.format(
+            self.data.username, room.name))
+
     async def add_inventory(self, item, notify=True):
         if item.id in self.data.inventory:
             return False
