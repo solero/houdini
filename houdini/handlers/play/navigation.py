@@ -26,10 +26,10 @@ async def handle_join_server(p, penguin_id: int, login_key: str, lang: str):
     penguin_standard_time = current_time * 1000
     server_time_offset = 7
 
-    await p.send_xt('lp', await p.string, p.data.coins, p.data.safe_chat, 1440,
+    await p.send_xt('lp', await p.string, p.data.coins, int(p.data.safe_chat), 1440,
                     penguin_standard_time, p.data.age, 0, p.data.minutes_played,
-                    "membership_days", server_time_offset, "has_opened_player_card",
-                    "map_category", "StatusField")
+                    "membership_days", server_time_offset, int(p.data.opened_playercard),
+                    p.data.map_category, p.data.status_field)
 
     spawn = random.choice(p.server.spawn_rooms)
     await spawn.add_penguin(p)

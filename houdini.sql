@@ -421,6 +421,7 @@ CREATE TABLE penguin (
   rainbow_adoptability SMALLINT NOT NULL DEFAULT 0,
   has_dug BOOLEAN NOT NULL DEFAULT FALSE,
   nuggets SMALLINT NOT NULL DEFAULT 0,
+  status_field INT NOT NULL DEFAULT 0,
   timer_active BOOLEAN NOT NULL DEFAULT FALSE,
   timer_start TIME NOT NULL DEFAULT '00:00:00',
   timer_end TIME NOT NULL DEFAULT '23:59:59',
@@ -505,6 +506,7 @@ COMMENT ON COLUMN penguin.water_matches_won IS 'JitsuWater matces won';
 COMMENT ON COLUMN penguin.rainbow_adoptability IS 'Rainbow puffle adoptability status';
 COMMENT ON COLUMN penguin.has_dug IS 'Puffle digging boolean';
 COMMENT ON COLUMN penguin.nuggets IS 'Golden puffle nuggets';
+COMMENT ON COLUMN penguin.status_field IS 'New player status field';
 COMMENT ON COLUMN penguin.timer_active IS 'Is egg-timer active?';
 COMMENT ON COLUMN penguin.timer_start IS 'Egg-timer start time';
 COMMENT ON COLUMN penguin.timer_end IS 'Egg-timer end time';

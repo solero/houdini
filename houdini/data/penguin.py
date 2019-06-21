@@ -60,6 +60,7 @@ class Penguin(db.Model):
     rainbow_adoptability = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
     has_dug = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     nuggets = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    status_field = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
     timer_active = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     timer_start = db.Column(db.Time, nullable=False, server_default=db.text("'00:00:00'::time without time zone"))
     timer_end = db.Column(db.Time, nullable=False, server_default=db.text("'23:59:59'::time without time zone"))
