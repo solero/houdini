@@ -200,7 +200,7 @@ def cooldown(per=1.0, rate=1, bucket_type=BucketType.Default, callback=None):
 
 def check(predicate):
     def decorator(handler_function):
-        if not hasattr(handler_function, 'checks'):
+        if not hasattr(handler_function, '__checks'):
             handler_function.__checks = []
 
         if not type(predicate) == FunctionType:
