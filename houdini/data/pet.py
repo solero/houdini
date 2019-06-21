@@ -96,7 +96,7 @@ class PenguinPuffleItem(db.Model):
                            nullable=False)
     item_id = db.Column(db.ForeignKey('puffle_item.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
                         nullable=False)
-    quantity = db.Column(db.SmallInteger, nullable=False)
+    quantity = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
 
 
 class PenguinLaunchGame(db.Model):

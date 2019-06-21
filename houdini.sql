@@ -1010,7 +1010,7 @@ DROP TABLE IF EXISTS penguin_puffle_item;
 CREATE TABLE penguin_puffle_item (
   penguin_id INT NOT NULL,
   item_id INT NOT NULL,
-  quantity SMALLINT NOT NULL,
+  quantity SMALLINT NOT NULL DEFAULT 1,
   PRIMARY KEY (penguin_id, item_id),
   CONSTRAINT penguin_puffle_item_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT penguin_puffle_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES puffle_item (id) ON DELETE CASCADE ON UPDATE CASCADE
