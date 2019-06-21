@@ -81,6 +81,7 @@ class Penguin(db.Model):
         self.inventory = None
         self.permissions = None
         self.igloos = None
+        self.furniture = None
         self.flooring = None
         self.locations = None
         self.stamps = None
@@ -95,6 +96,7 @@ class Penguin(db.Model):
         self.inventory = await ItemCrumbsCollection.get_collection(self.id)
         self.permissions = await PermissionCrumbsCollection.get_collection(self.id)
         self.igloos = await IglooCrumbsCollection.get_collection(self.id)
+        self.furniture = await FurnitureCrumbsCollection.get_collection(self.id)
         self.flooring = await FlooringCrumbsCollection.get_collection(self.id)
         self.locations = await LocationCrumbsCollection.get_collection(self.id)
         self.stamps = await StampCrumbsCollection.get_collection(self.id)
