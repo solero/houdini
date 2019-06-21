@@ -96,7 +96,7 @@ class Spheniscidae:
                 await listener(self, packet_data)
             self.received_packets.add(packet)
         else:
-            self.logger.debug('Handler for %s doesn\'t exist!', packet_id)
+            self.logger.warn('Handler for %s doesn\'t exist!', packet_id)
 
     async def __handle_xml_data(self, data):
         self.logger.debug('Received XML data: %s', data)
