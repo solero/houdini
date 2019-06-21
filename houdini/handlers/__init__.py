@@ -217,6 +217,16 @@ def check_for_packet(listener, p):
 
 allow_once = check(check_for_packet)
 
+
+def depends_on_packet(*packets):
+    def check_for_packets(_, p):
+        for packet in packets:
+            if packet not in p.received_packets:
+                return False
+        return True
+    return check(check_for_packets)
+
+
 def player_attribute(**attrs):
     def check_for_attributes(_, p):
         for attr, value in attrs.items():

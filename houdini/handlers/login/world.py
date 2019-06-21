@@ -12,6 +12,7 @@ handle_random_key = login.handle_random_key
 
 @handlers.handler(XMLPacket('login'))
 @handlers.allow_once
+@handlers.depends_on_packet(XMLPacket('verChk'), XMLPacket('rndK'))
 async def handle_login(p, credentials: WorldCredentials):
     tr = p.server.redis.multi_exec()
     tr.get('{}.lkey'.format(credentials.id))
