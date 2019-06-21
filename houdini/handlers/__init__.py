@@ -54,13 +54,16 @@ class Priority(enum.Enum):
 
 class _Listener(_ArgumentDeserializer):
 
-    __slots__ = ['priority', 'packet', 'overrides']
+    __slots__ = ['priority', 'packet', 'overrides', 'before', 'after']
 
     def __init__(self, packet, callback, **kwargs):
         super().__init__(packet.id, callback, **kwargs)
         self.packet = packet
 
         self.priority = kwargs.get('priority', Priority.Low)
+        self.before = kwargs.get('before')
+        self.after = kwargs.get('after')
+
         self.overrides = kwargs.get('overrides', [])
 
         if type(self.overrides) is not list:
@@ -146,6 +149,14 @@ class _ListenerManager(_AbstractManager):
                         self[listener_object.packet].append(listener_object)
 
             for listener_name, listener_object in listener_objects:
+                if listener_object.before is not None:
+                    index_of_before = self[listener_object.packet].index(listener_object.before)
+                    old_index = self[listener_object.packet].index(listener_object)
+                    self[listener_object.packet].insert(index_of_before, self[listener_object.packet].pop(old_index))
+                if listener_object.after is not None:
+                    index_of_after = self[listener_object.packet].index(listener_object.after)
+                    old_index = self[listener_object.packet].index(listener_object)
+                    self[listener_object.packet].insert(index_of_after + 1, self[listener_object.packet].pop(old_index))
                 for override in listener_object.overrides:
                     self[override.packet].remove(override)
 
