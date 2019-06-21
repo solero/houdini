@@ -176,7 +176,8 @@ class RoomCrumbsCollection(BaseCrumbsCollection):
         super().__init__(model=Room,
                          key='id')
 
-    def get_spawn_rooms(self):
+    @property
+    def spawn_rooms(self):
         return [room for room in self.values() if room.spawn]
 
     async def setup_tables(self):

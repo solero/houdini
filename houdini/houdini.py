@@ -30,7 +30,7 @@ from houdini.data.permission import PermissionCrumbsCollection
 
 try:
     import uvloop
-    uvloop.install()
+    #uvloop.install()
 except ImportError:
     uvloop = None
 
@@ -184,7 +184,7 @@ class Houdini:
         self.logger.info('Loaded {} igloo flooring'.format(len(self.flooring)))
 
         self.rooms = await RoomCrumbsCollection.get_collection()
-        self.spawn_rooms = self.rooms.get_spawn_rooms()
+        self.spawn_rooms = self.rooms.spawn_rooms
         await self.rooms.setup_tables()
         await self.rooms.setup_waddles()
         self.logger.info('Loaded {} rooms ({} spawn)'.format(len(self.rooms), len(self.spawn_rooms)))
