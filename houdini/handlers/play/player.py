@@ -1,17 +1,24 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
 
+from aiocache import cached
 
-async def get_player_info_by_id(p, id):
-    if id in p.server.penguins_by_id:
-        player = p.server.penguins_by_id[id]
+
+def get_player_info_key(_, p, player_id):
+    return 'player.info.{}'.format(player_id)
+
+
+@cached(alias='default', key_builder=get_player_info_key)
+async def get_player_info_by_id(p, player_id):
+    if player_id in p.server.penguins_by_id:
+        player = p.server.penguins_by_id[player_id]
         player_tuple = (player.data.nickname, player.data.id, player.data.nickname)
     else:
-        player_tuple = await p.data.select('nickname', 'id', 'nickname').where(p.data.id == id).gino.first()
+        player_tuple = await p.data.select('nickname', 'id', 'nickname').where(
+            p.data.id == player_id).gino.first()
 
     if player_tuple is not None:
-        player_data = [str(player_detail) for player_detail in player_tuple]
-        return "|".join(player_data)
+        return "|".join(map(str, player_tuple))
 
     return str()
 
