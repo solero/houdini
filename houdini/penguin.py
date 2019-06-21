@@ -81,6 +81,27 @@ class Penguin(Spheniscidae):
 
         return True
 
+    async def add_puffle_item(self, care_item, quantity=1, notify=True):
+        if care_item.id in self.data.puffle_items:
+            penguin_care_item = self.data.puffle_items[care_item.id]
+            if penguin_care_item.quantity >= 100:
+                return False
+
+            await penguin_care_item.update(
+                quantity=penguin_care_item.quantity + quantity).apply()
+        else:
+            await self.data.puffle_items.set(care_item.id)
+
+        await self.data.update(coins=self.data.coins - care_item.cost).apply()
+
+        if notify:
+            await self.send_xt('papi', self.data.coins, care_item.id, quantity)
+
+        self.logger.info('{} added \'{}\' to their puffle care inventory'.format(
+            self.data.username, care_item.name))
+
+        return True
+
     async def add_furniture(self, furniture, quantity=1, notify=True):
         if furniture.id in self.data.furniture:
             penguin_furniture = self.data.furniture[furniture.id]
