@@ -24,6 +24,11 @@ class Language(enum.IntEnum):
     Ru = 64
 
 
+class ClientType(enum.Enum):
+    Legacy = 'legacy'
+    Vanilla = 'vanilla'
+
+
 class _AbstractManager(dict):
     def __init__(self, server):
         self.server = server

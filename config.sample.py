@@ -1,5 +1,4 @@
-from houdini import ConflictResolution
-from houdini import Language
+from houdini import ConflictResolution, Language, ClientType
 
 database = {
     'Address': 'localhost',
@@ -17,6 +16,13 @@ commands = {
     'Prefix': ['!', '?', '.'],
     'StringDelimiters': ['"', "'"],
     'ConflictMode': ConflictResolution.Silent
+}
+
+client_identifier = {
+    'LegacyVersionChk': 'legacy',
+    'VanillaVersionChk': 'vanilla',
+    'DefaultVersionChk': 152,
+    'DefaultClientVersion': ClientType.Vanilla
 }
 
 servers = {
