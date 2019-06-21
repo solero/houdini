@@ -14,7 +14,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 import aioredis
-from aiocache import SimpleMemoryCache
+from aiocache import SimpleMemoryCache, caches
 from watchdog.observers import Observer
 
 from houdini.data import db
@@ -152,7 +152,13 @@ class Houdini:
             await self.redis.delete('{}.players'.format(self.server_name))
             await self.redis.delete('{}.population'.format(self.server_name))
 
-            self.cache = SimpleMemoryCache(namespace='houdini', ttl=self.server_config['CacheExpiry'])
+            caches.set_config({
+                'default': {
+                    'cache': SimpleMemoryCache,
+                    'namespace': 'houdini',
+                    'ttl': self.server_config['CacheExpiry']
+                }})
+            self.cache = caches.get('default')
 
             self.client_class = Penguin
             self.penguin_string_compiler = PenguinStringCompiler()
