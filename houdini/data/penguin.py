@@ -146,4 +146,4 @@ class Login(db.Model):
     id = db.Column(db.Integer, primary_key=True, server_default=db.text("nextval('\"login_id_seq\"'::regclass)"))
     penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
     date = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
-    i_p_address = db.Column(db.CHAR(255), nullable=False)
+    ip_address = db.Column(db.CHAR(255), nullable=False)
