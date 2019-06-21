@@ -327,6 +327,90 @@ COMMENT ON TABLE puffle_treasure_puffle_item IS 'Puffle digging treasure puffle 
 COMMENT ON COLUMN puffle_treasure_puffle_item.puffle_id IS 'Puffle type ID';
 COMMENT ON COLUMN puffle_treasure_puffle_item.puffle_item_id IS 'Puffle care item ID';
 
+DROP TABLE IF EXISTS quest;
+CREATE TABLE quest (
+  id SERIAL,
+  name VARCHAR(30) NOT NULL,
+  PRIMARY KEY(id)
+);
+
+COMMENT ON TABLE quest IS 'Player map quests';
+
+COMMENT ON COLUMN quest.id IS 'Unique quest ID';
+COMMENT ON COLUMN quest.name IS 'Short name of quest';
+
+DROP TABLE IF EXISTS quest_award_item;
+CREATE TABLE quest_award_item (
+  quest_id INT NOT NULL,
+  item_id INT NOT NULL,
+  PRIMARY KEY (quest_id, item_id),
+  CONSTRAINT quest_award_item_ibfk_1 FOREIGN KEY (quest_id) REFERENCES quest (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT quest_award_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+COMMENT ON COLUMN quest_award_item.quest_id IS 'Quest ID';
+COMMENT ON COLUMN quest_award_item.item_id IS 'Clothing item ID';
+
+DROP TABLE IF EXISTS quest_award_furniture;
+CREATE TABLE quest_award_furniture (
+  quest_id INT NOT NULL,
+  furniture_id INT NOT NULL,
+  quantity SMALLINT NOT NULL DEFAULT 1,
+  PRIMARY KEY (quest_id, furniture_id),
+  CONSTRAINT quest_award_furniture_ibfk_1 FOREIGN KEY (quest_id) REFERENCES quest (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT quest_award_furniture_ibfk_2 FOREIGN KEY (furniture_id) REFERENCES furniture (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+COMMENT ON COLUMN quest_award_furniture.quest_id IS 'Quest ID';
+COMMENT ON COLUMN quest_award_furniture.item_id IS 'Furniture item ID';
+
+DROP TABLE IF EXISTS quest_award_puffle_item;
+CREATE TABLE quest_award_puffle_item (
+  quest_id INT NOT NULL,
+  puffle_item_id INT NOT NULL,
+  quantity SMALLINT NOT NULL DEFAULT 1,
+  PRIMARY KEY (quest_id, puffle_item_id),
+  CONSTRAINT quest_award_puffle_item_ibfk_1 FOREIGN KEY (quest_id) REFERENCES quest (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT quest_award_puffle_item_ibfk_2 FOREIGN KEY (puffle_item_id) REFERENCES puffle_item (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+COMMENT ON COLUMN quest_award_puffle_item.quest_id IS 'Quest ID';
+COMMENT ON COLUMN quest_award_puffle_item.item_id IS 'Puffle care item ID';
+
+DROP TABLE IF EXISTS quest_task;
+CREATE TABLE quest_task (
+  id SERIAL NOT NULL,
+  quest_id INT NOT NULL,
+  description VARCHAR(50) NOT NULL,
+  room_id INT DEFAULT NULL,
+  data VARCHAR(50) DEFAULT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT quest_task_ibfk_1 FOREIGN KEY (quest_id) REFERENCES quest (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT quest_task_ibfk_2 FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+COMMENT ON TABLE quest_task IS 'Player map quest tasks';
+
+COMMENT ON COLUMN quest_task.task_id IS 'Unique task ID';
+COMMENT ON COLUMN quest_task.quest_id IS 'Task quest ID';
+COMMENT ON COLUMN quest_task.description IS 'Description of task';
+COMMENT ON COLUMN quest_task.room_id IS 'Room ID for completion';
+
+DROP TABLE IF EXISTS penguin_quest_task;
+CREATE TABLE penguin_quest_task (
+  task_id INT NOT NULL,
+  penguin_id INT NOT NULL,
+  complete BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (task_id, penguin_id),
+  CONSTRAINT penguin_quest_task_ibfk_1 FOREIGN KEY (task_id) REFERENCES quest_task (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_quest_task_ibfk_2 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+COMMENT ON TABLE penguin_quest_task IS 'Completed quest tasks';
+
+COMMENT ON COLUMN penguin_quest_task.task_id IS 'Completed task ID';
+COMMENT ON COLUMN penguin_quest_task.penguin_id IS 'Task penguin ID';
+
 DROP TABLE IF EXISTS dance_song;
 CREATE TABLE dance_song (
   id INT NOT NULL,
@@ -421,6 +505,11 @@ CREATE TABLE penguin (
   rainbow_adoptability SMALLINT NOT NULL DEFAULT 0,
   has_dug BOOLEAN NOT NULL DEFAULT FALSE,
   nuggets SMALLINT NOT NULL DEFAULT 0,
+  opened_playercard BOOLEAN NOT NULL DEFAULT FALSE,
+  special_wave BOOLEAN NOT NULL DEFAULT FALSE,
+  special_dance BOOLEAN NOT NULL DEFAULT FALSE,
+  special_snowball BOOLEAN NOT NULL DEFAULT FALSE,
+  map_category SMALLINT NOT NULL DEFAULT 0,
   status_field INT NOT NULL DEFAULT 0,
   timer_active BOOLEAN NOT NULL DEFAULT FALSE,
   timer_start TIME NOT NULL DEFAULT '00:00:00',
@@ -506,6 +595,8 @@ COMMENT ON COLUMN penguin.water_matches_won IS 'JitsuWater matces won';
 COMMENT ON COLUMN penguin.rainbow_adoptability IS 'Rainbow puffle adoptability status';
 COMMENT ON COLUMN penguin.has_dug IS 'Puffle digging boolean';
 COMMENT ON COLUMN penguin.nuggets IS 'Golden puffle nuggets';
+COMMENT ON COLUMN penguin.opened_playercard IS 'Has player opened playercard?';
+COMMENT ON COLUMN penguin.map_category IS 'Currently selected map category';
 COMMENT ON COLUMN penguin.status_field IS 'New player status field';
 COMMENT ON COLUMN penguin.timer_active IS 'Is egg-timer active?';
 COMMENT ON COLUMN penguin.timer_start IS 'Egg-timer start time';
@@ -1253,6 +1344,18 @@ COMMENT ON TABLE penguin_membership IS 'Penguin membership records';
 COMMENT ON COLUMN penguin_membership.penguin_id IS 'Penguin ID of membership';
 COMMENT ON COLUMN penguin_membership.start IS 'Start time of membership';
 COMMENT ON COLUMN penguin_membership.expires IS 'End time of membership';
+
+INSERT INTO quest (id, name) VALUES (1, 'shopping');
+INSERT INTO quest (id, name) VALUES (2, 'puffle');
+INSERT INTO quest (id, name) VALUES (3, 'igloo');
+
+INSERT INTO quest_award_item (quest_id, item_id) VALUES (1, 24023);
+INSERT INTO quest_award_furniture (quest_id, furniture_id) VALUES (3, 2166);
+INSERT INTO quest_award_puffle_item (quest_id, puffle_item_id) VALUES (2, 146);
+
+INSERT INTO quest_task (quest_id, description, room_id) VALUES (1, 'Visit the Clothes Shop', 130);
+INSERT INTO quest_task (quest_id, description, room_id) VALUES (2, 'Visit the Pet Shop', 310);
+INSERT INTO quest_task (quest_id, description) VALUES (3, 'Visit your Igloo');
 
 INSERT INTO item (id, name, type, cost, member, bait, patched, epf, tour, release_date) VALUES
  (1, 'Blue', 1, 20, FALSE, FALSE, FALSE, FALSE, FALSE, now()),

@@ -4,7 +4,8 @@ from houdini.data import db
 
 from houdini.data.permission import PermissionCrumbsCollection
 from houdini.data.item import ItemCrumbsCollection
-from houdini.data.igloo import IglooCrumbsCollection, FlooringCrumbsCollection, LocationCrumbsCollection
+from houdini.data.igloo import IglooCrumbsCollection, FurnitureCrumbsCollection, FlooringCrumbsCollection, \
+    LocationCrumbsCollection
 from houdini.data.stamp import StampCrumbsCollection
 from houdini.data.ninja import CardCrumbsCollection
 from houdini.data.mail import PostcardCrumbsCollection
@@ -60,6 +61,11 @@ class Penguin(db.Model):
     rainbow_adoptability = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
     has_dug = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     nuggets = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    opened_playercard = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    special_wave = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    special_dance = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    special_snowball = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    map_category = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
     status_field = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
     timer_active = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     timer_start = db.Column(db.Time, nullable=False, server_default=db.text("'00:00:00'::time without time zone"))
