@@ -42,6 +42,6 @@ async def handle_join_server(p, penguin_id: int, login_key: str, lang: str):
 
 @handlers.handler(XTPacket('j', 'jr'))
 @handlers.cooldown(1)
-async def handle_join_room(p, room: RoomConverter, x: int, y: int):
+async def handle_join_room(p, room: Room, x: int, y: int):
     p.x, p.y = x, y
     await p.join_room(room)

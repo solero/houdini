@@ -8,6 +8,11 @@ import collections
 
 from houdini.cooldown import CooldownError
 
+from houdini.data.room import Room
+from houdini.data.item import Item
+from houdini.data.igloo import Igloo, Furniture, Flooring, Location
+from houdini.data.stamp import Stamp
+
 
 class ChecklistError(Exception):
     """Raised when a checklist fails"""
@@ -384,7 +389,13 @@ class _ConverterContext:
 
 ConverterTypes = {
     Credentials: CredentialsConverter,
-    WorldCredentials: WorldCredentialsConverter
+    WorldCredentials: WorldCredentialsConverter,
+
+    Room: RoomConverter,
+    Item: ItemConverter,
+    Furniture: FurnitureConverter,
+    Igloo: IglooConverter,
+    Flooring: FlooringConverter
 }
 
 
