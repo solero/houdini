@@ -31,7 +31,7 @@ class Room(db.Model):
         p.room = self
 
         await p.send_xt('jr', self.id, await self.get_string())
-        await self.send_xt('ap', await p.server.penguin_string_compiler.compile(p))
+        await self.send_xt('ap', await p.string)
 
     async def remove_penguin(self, p):
         await self.send_xt('rp', p.data.id)
@@ -40,7 +40,7 @@ class Room(db.Model):
         p.room = None
 
     async def get_string(self):
-        return '%'.join([await p.server.penguin_string_compiler.compile(p) for p in self.penguins])
+        return '%'.join([await p.string for p in self.penguins])
 
     async def send_xt(self, *data):
         for penguin in self.penguins:
