@@ -362,7 +362,7 @@ CREATE TABLE quest_award_furniture (
 );
 
 COMMENT ON COLUMN quest_award_furniture.quest_id IS 'Quest ID';
-COMMENT ON COLUMN quest_award_furniture.item_id IS 'Furniture item ID';
+COMMENT ON COLUMN quest_award_furniture.furniture_id IS 'Furniture item ID';
 
 DROP TABLE IF EXISTS quest_award_puffle_item;
 CREATE TABLE quest_award_puffle_item (
@@ -375,7 +375,7 @@ CREATE TABLE quest_award_puffle_item (
 );
 
 COMMENT ON COLUMN quest_award_puffle_item.quest_id IS 'Quest ID';
-COMMENT ON COLUMN quest_award_puffle_item.item_id IS 'Puffle care item ID';
+COMMENT ON COLUMN quest_award_puffle_item.puffle_item_id IS 'Puffle care item ID';
 
 DROP TABLE IF EXISTS quest_task;
 CREATE TABLE quest_task (
@@ -391,25 +391,10 @@ CREATE TABLE quest_task (
 
 COMMENT ON TABLE quest_task IS 'Player map quest tasks';
 
-COMMENT ON COLUMN quest_task.task_id IS 'Unique task ID';
+COMMENT ON COLUMN quest_task.id IS 'Unique task ID';
 COMMENT ON COLUMN quest_task.quest_id IS 'Task quest ID';
 COMMENT ON COLUMN quest_task.description IS 'Description of task';
 COMMENT ON COLUMN quest_task.room_id IS 'Room ID for completion';
-
-DROP TABLE IF EXISTS penguin_quest_task;
-CREATE TABLE penguin_quest_task (
-  task_id INT NOT NULL,
-  penguin_id INT NOT NULL,
-  complete BOOLEAN NOT NULL DEFAULT FALSE,
-  PRIMARY KEY (task_id, penguin_id),
-  CONSTRAINT penguin_quest_task_ibfk_1 FOREIGN KEY (task_id) REFERENCES quest_task (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_quest_task_ibfk_2 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-COMMENT ON TABLE penguin_quest_task IS 'Completed quest tasks';
-
-COMMENT ON COLUMN penguin_quest_task.task_id IS 'Completed task ID';
-COMMENT ON COLUMN penguin_quest_task.penguin_id IS 'Task penguin ID';
 
 DROP TABLE IF EXISTS dance_song;
 CREATE TABLE dance_song (
@@ -1195,7 +1180,7 @@ CREATE TABLE penguin_redemption (
 );
 
 CREATE INDEX penguin_redemption_code_id ON penguin_redemption (code_id);
-CREATE INDEX penguin_redemption_book_id ON penguin_redemption (book_id)
+CREATE INDEX penguin_redemption_book_id ON penguin_redemption (book_id);
 
 COMMENT ON TABLE penguin_redemption IS 'Redeemed codes';
 
@@ -1345,17 +1330,20 @@ COMMENT ON COLUMN penguin_membership.penguin_id IS 'Penguin ID of membership';
 COMMENT ON COLUMN penguin_membership.start IS 'Start time of membership';
 COMMENT ON COLUMN penguin_membership.expires IS 'End time of membership';
 
-INSERT INTO quest (id, name) VALUES (1, 'shopping');
-INSERT INTO quest (id, name) VALUES (2, 'puffle');
-INSERT INTO quest (id, name) VALUES (3, 'igloo');
+DROP TABLE IF EXISTS penguin_quest_task;
+CREATE TABLE penguin_quest_task (
+  task_id INT NOT NULL,
+  penguin_id INT NOT NULL,
+  complete BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (task_id, penguin_id),
+  CONSTRAINT penguin_quest_task_ibfk_1 FOREIGN KEY (task_id) REFERENCES quest_task (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_quest_task_ibfk_2 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
 
-INSERT INTO quest_award_item (quest_id, item_id) VALUES (1, 24023);
-INSERT INTO quest_award_furniture (quest_id, furniture_id) VALUES (3, 2166);
-INSERT INTO quest_award_puffle_item (quest_id, puffle_item_id) VALUES (2, 146);
+COMMENT ON TABLE penguin_quest_task IS 'Completed quest tasks';
 
-INSERT INTO quest_task (quest_id, description, room_id) VALUES (1, 'Visit the Clothes Shop', 130);
-INSERT INTO quest_task (quest_id, description, room_id) VALUES (2, 'Visit the Pet Shop', 310);
-INSERT INTO quest_task (quest_id, description) VALUES (3, 'Visit your Igloo');
+COMMENT ON COLUMN penguin_quest_task.task_id IS 'Completed task ID';
+COMMENT ON COLUMN penguin_quest_task.penguin_id IS 'Task penguin ID';
 
 INSERT INTO item (id, name, type, cost, member, bait, patched, epf, tour, release_date) VALUES
  (1, 'Blue', 1, 20, FALSE, FALSE, FALSE, FALSE, FALSE, now()),
@@ -9782,6 +9770,18 @@ INSERT INTO room_table (id, room_id, game) VALUES
  (305, 422, 'treasure'),
  (306, 422, 'treasure'),
  (307, 422, 'treasure');
+
+INSERT INTO quest (id, name) VALUES (1, 'shopping');
+INSERT INTO quest (id, name) VALUES (2, 'puffle');
+INSERT INTO quest (id, name) VALUES (3, 'igloo');
+
+INSERT INTO quest_award_item (quest_id, item_id) VALUES (1, 24023);
+INSERT INTO quest_award_furniture (quest_id, furniture_id) VALUES (3, 2166);
+INSERT INTO quest_award_puffle_item (quest_id, puffle_item_id) VALUES (2, 146);
+
+INSERT INTO quest_task (quest_id, description, room_id) VALUES (1, 'Visit the Clothes Shop', 130);
+INSERT INTO quest_task (quest_id, description, room_id) VALUES (2, 'Visit the Pet Shop', 310);
+INSERT INTO quest_task (quest_id, description) VALUES (3, 'Visit your Igloo');
 
 INSERT INTO redemption_book (id, name) VALUES
  (1, 'The Ultimate Official Guide to Club Penguin'),
