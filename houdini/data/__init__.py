@@ -28,7 +28,7 @@ class BaseCrumbsCollection(dict):
         try:
             return self[k]
         except KeyError as e:
-            query = self._inventory_model.load(parent=self._model).where(
+            query = self._inventory_model.query.where(
                 (self._inventory_key_column == self._inventory_id) & (self._inventory_value_column == k)
             ) if self._is_inventory else self._model.query.where(self._model_key_column == k)
             result = await query.gino.first()
@@ -58,7 +58,7 @@ class BaseCrumbsCollection(dict):
             del self[k]
 
     async def __collect(self):
-        query = self._inventory_model.load(parent=self._model).where(
+        query = self._inventory_model.query.where(
             self._inventory_key_column == self._inventory_id
         ) if self._is_inventory else self._model.query
 
