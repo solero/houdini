@@ -42,6 +42,9 @@ class Item(db.Model):
     def is_photo(self):
         return self.type == 9
 
+    def is_award(self):
+        return self.type == 10
+
 
 class PenguinItem(db.Model):
     __tablename__ = 'penguin_item'
