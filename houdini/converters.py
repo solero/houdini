@@ -395,7 +395,8 @@ ConverterTypes = {
     Item: ItemConverter,
     Furniture: FurnitureConverter,
     Igloo: IglooConverter,
-    Flooring: FlooringConverter
+    Flooring: FlooringConverter,
+    Stamp: StampConverter
 }
 
 
