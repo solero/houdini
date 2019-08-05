@@ -133,8 +133,10 @@ class Spheniscidae:
         self.logger.info('Client %s connected', self.peer_name)
 
     async def _client_disconnected(self):
-        del self.server.peers_by_ip[self.peer_name]
+        if self.room is not None:
+            return await self.room.remove_penguin(self)
 
+        del self.server.peers_by_ip[self.peer_name]
         self.logger.info('Client %s disconnected', self.peer_name)
 
     async def __data_received(self, data):
