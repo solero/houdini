@@ -30,7 +30,7 @@ from houdini.data.permission import PermissionCrumbsCollection
 
 try:
     import uvloop
-    #uvloop.install()
+    uvloop.install()
 except ImportError:
     uvloop = None
 
