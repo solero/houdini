@@ -30,4 +30,4 @@ class Example(IPlugin):
     @commands.command('ping')
     @permissions.has('houdini.ping')
     async def ping(self, p):
-        p.send_xt('cprompt', 'Pong')
+        await p.send_xt('cprompt', 'Pong')
