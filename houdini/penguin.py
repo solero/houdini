@@ -172,6 +172,20 @@ class Penguin(Spheniscidae):
 
         return True
 
+    async def add_stamp(self, stamp, notify=True):
+        if stamp.id in self.data.stamps:
+            return False
+
+        await self.data.stamps.set(stamp.id)
+
+        if notify:
+            await self.send_xt('aabs', stamp.id)
+
+        self.logger.info('{} earned stamp \'{}\''.format(self.data.username, stamp.name))
+        await self.server.cache.delete('stamps.{}'.format(self.data.id))
+
+        return True
+
     async def add_inbox(self, postcard, sender_name="sys", sender_id=None, details=""):
         penguin_postcard = await self.data.postcards.set(penguin_id=self.data.id,
                                                          sender_id=sender_id, postcard_id=postcard.id,
