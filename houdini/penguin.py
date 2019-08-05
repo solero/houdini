@@ -69,6 +69,9 @@ class Penguin(Spheniscidae):
         self.logger.info('{} added \'{}\' to their clothing inventory'.format(
             self.data.username, item.name))
 
+        await self.server.cache.delete('pins.{}'.format(self.data.id))
+        await self.server.cache.delete('awards.{}'.format(self.data.id))
+
         return True
 
     async def add_igloo(self, igloo, notify=True):
