@@ -1,6 +1,10 @@
+import config
+
 from houdini import handlers
 from houdini.handlers import XMLPacket
 from houdini.converters import VersionChkConverter
+
+from houdini.data.buddy import BuddyList
 
 
 @handlers.handler(XMLPacket('verChk'))
@@ -17,3 +21,31 @@ async def handle_version_check(p, version: VersionChkConverter):
 @handlers.allow_once
 async def handle_random_key(p, data):
     await p.send_xml({'body': {'action': 'rndK', 'r': '-1'}, 'k': 'houdini'})
+
+
+async def get_server_presence(p, pid):
+    buddy_worlds = []
+    world_populations = []
+
+    for server_name, server_config in config.servers.items():
+        if server_config['World']:
+            server_population = await p.server.redis.hget('population', server_name)
+            server_population = (7 if int(server_population) == server_config['Capacity']
+                                 else int(server_population) / (server_config['Capacity'] / 6)) \
+                if server_population else 0
+
+            world_populations.append('{},{}'.format(server_config['Id'], server_population))
+
+            server_key = '{}.players'.format(server_config['Id'])
+
+            if await p.server.redis.scard(server_key):
+                async with p.server.db.transaction():
+                    buddies = BuddyList.select('buddy_id').where(BuddyList.penguin_id == pid).gino.iterate()
+                    tr = p.server.redis.multi_exec()
+                    async for buddy_id, in buddies:
+                        tr.sismember(server_key, buddy_id)
+                    online_buddies = await tr.execute()
+                    if any(online_buddies):
+                        buddy_worlds.append(server_config['Id'])
+
+    return '|'.join(world_populations), '|'.join(buddy_worlds)

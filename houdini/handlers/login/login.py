@@ -1,8 +1,8 @@
 from houdini import handlers
 from houdini.handlers import XMLPacket, login
+from houdini.handlers.login import get_server_presence
 from houdini.converters import Credentials
 from houdini.data.penguin import Penguin
-from houdini.data.buddy import BuddyList
 from houdini.data.moderator import Ban
 from houdini.crypto import Crypto
 
@@ -88,35 +88,11 @@ async def handle_login(p, credentials: Credentials):
     tr.setex('{}.ckey'.format(data.id), p.server.server_config['KeyTTL'], confirmation_hash)
     await tr.execute()
 
-    buddy_worlds = []
-    world_populations = []
-
-    servers_config = config.servers
-
-    for server_name, server_config in servers_config.items():
-        if server_config['World']:
-            server_population = await p.server.redis.get('{}.population'.format(server_name))
-            server_population = (7 if int(server_population) == server_config['Capacity']
-                                 else int(server_population) / (server_config['Capacity'] / 6)) \
-                if server_population else 0
-
-            server_players = await p.server.redis.smembers('{}.players'.format(server_name))
-
-            world_populations.append('{},{}'.format(server_config['Id'], server_population))
-
-            if not len(server_players) > 0:
-                p.logger.debug('Skipping buddy iteration for {}'.format(server_name))
-                continue
-
-            buddies = await BuddyList.select('BuddyID').where(BuddyList.PenguinID == data.ID).gino.all()
-            for buddy_id in buddies:
-                if str(buddy_id) in server_players:
-                    buddy_worlds.append(server_config['Id'])
-                    break
+    world_populations, buddy_presence = await get_server_presence(p, data.id)
 
     raw_login_data = '|'.join([str(data.id), str(data.id), data.username, login_key, str(data.approval),
                                str(data.rejection)])
-    await p.send_xt('l', raw_login_data, confirmation_hash, '', '|'.join(world_populations), '|'.join(buddy_worlds),
+    await p.send_xt('l', raw_login_data, confirmation_hash, '', world_populations, buddy_presence,
                     data.email)
 
 handle_version_check = login.handle_version_check
