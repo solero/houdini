@@ -27,10 +27,21 @@ class CoverStamp(db.Model):
                            nullable=False)
     stamp_id = db.Column(db.ForeignKey('stamp.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
                          nullable=False)
-    item_id = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
     x = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
     y = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    type = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    rotation = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    depth = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+
+
+class CoverItem(db.Model):
+    __tablename__ = 'cover_item'
+
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False)
+    item_id = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
+    x = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    y = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
     rotation = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
     depth = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
 

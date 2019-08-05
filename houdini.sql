@@ -746,27 +746,45 @@ DROP TABLE IF EXISTS cover_stamp;
 CREATE TABLE cover_stamp (
   penguin_id INT NOT NULL,
   stamp_id INT NOT NULL,
-  item_id INT NOT NULL,
   x SMALLINT NOT NULL DEFAULT 0,
   y SMALLINT NOT NULL DEFAULT 0,
-  type SMALLINT NOT NULL DEFAULT 0,
   rotation SMALLINT NOT NULL DEFAULT 0,
   depth SMALLINT NOT NULL DEFAULT 0,
   PRIMARY KEY (penguin_id, stamp_id),
   CONSTRAINT cover_stamp_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT cover_stamp_ibfk_2 FOREIGN KEY (stamp_id) REFERENCES stamp (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT cover_stamp_ibfk_3 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT cover_stamp_ibfk_2 FOREIGN KEY (stamp_id) REFERENCES stamp (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE cover_stamp IS 'Stamps placed on book cover';
 
 COMMENT ON COLUMN cover_stamp.penguin_id IS 'Unique penguin ID';
-COMMENT ON COLUMN cover_stamp.stamp_id IS 'Cover stamp or item ID';
+COMMENT ON COLUMN cover_stamp.stamp_id IS 'Cover stamp ID';
 COMMENT ON COLUMN cover_stamp.x IS 'Cover X position';
 COMMENT ON COLUMN cover_stamp.y IS 'Cover Y position';
-COMMENT ON COLUMN cover_stamp.type IS 'Cover item type';
 COMMENT ON COLUMN cover_stamp.rotation IS 'Stamp cover rotation';
 COMMENT ON COLUMN cover_stamp.depth IS 'Stamp cover depth';
+
+DROP TABLE IF EXISTS cover_item;
+CREATE TABLE cover_item (
+  penguin_id INT NOT NULL,
+  item_id INT NOT NULL,
+  x SMALLINT NOT NULL DEFAULT 0,
+  y SMALLINT NOT NULL DEFAULT 0,
+  rotation SMALLINT NOT NULL DEFAULT 0,
+  depth SMALLINT NOT NULL DEFAULT 0,
+  PRIMARY KEY (penguin_id, item_id),
+  CONSTRAINT cover_item_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT cover_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+COMMENT ON TABLE cover_item IS 'Items placed on book cover';
+
+COMMENT ON COLUMN cover_item.penguin_id IS 'Unique penguin ID';
+COMMENT ON COLUMN cover_item.item_id IS 'Cover item ID';
+COMMENT ON COLUMN cover_item.x IS 'Cover X position';
+COMMENT ON COLUMN cover_item.y IS 'Cover Y position';
+COMMENT ON COLUMN cover_item.rotation IS 'Stamp cover rotation';
+COMMENT ON COLUMN cover_item.depth IS 'Stamp cover depth';
 
 DROP TABLE IF EXISTS penguin_card;
 CREATE TABLE penguin_card (
