@@ -10,7 +10,6 @@ import asyncio
 import bcrypt
 import time
 import os
-import config
 
 from datetime import datetime
 
@@ -29,41 +28,38 @@ async def handle_login(p, credentials: Credentials):
 
     if data is None:
         p.logger.info('{} failed to login: penguin does not exist')
-        await p.send_error_and_disconnect(100)
+        return await p.send_error_and_disconnect(100)
 
     password_correct = await loop.run_in_executor(None, bcrypt.checkpw,
                                                   password.encode('utf-8'), data.password.encode('utf-8'))
 
     ip_addr = p.peer_name[0]
+    flood_key = '{}.flood'.format(ip_addr)
 
     if not password_correct:
         p.logger.info('{} failed to login: incorrect password'.format(username))
 
-        if ip_addr in p.server.login_attempts:
-            last_failed_attempt, failure_count = p.server.login_attempts[ip_addr]
-
-            failure_count = 1 if login_timestamp - last_failed_attempt >= p.server.server_config['LoginFailureTimer'] \
-                else failure_count + 1
-
-            p.server.login_attempts[ip_addr] = [login_timestamp, failure_count]
+        if await p.server.redis.exists(flood_key):
+            tr = p.server.redis.multi_exec()
+            tr.incr(flood_key)
+            tr.expire(flood_key, p.server.server_config['LoginFailureTimer'])
+            failure_count, _ = await tr.execute()
 
             if failure_count >= p.server.server_config['LoginFailureLimit']:
                 return await p.send_error_and_disconnect(150)
         else:
-            p.server.login_attempts[ip_addr] = [login_timestamp, 1]
+            await p.server.redis.setex(flood_key, p.server.server_config['LoginFailureTimer'], 1)
 
         return await p.send_error_and_disconnect(101)
 
-    if ip_addr in p.server.login_attempts:
-        previous_attempt, failure_count = p.server.login_attempts[ip_addr]
+    failure_count = await p.server.redis.get(flood_key)
+    if failure_count:
+        max_attempts_exceeded = int(failure_count) >= p.server.server_config['LoginFailureLimit']
 
-        max_attempts_exceeded = failure_count >= p.server.server_config['LoginFailureLimit']
-        timer_surpassed = (login_timestamp - previous_attempt) > p.server.server_config['LoginFailureTimer']
-
-        if max_attempts_exceeded and not timer_surpassed:
+        if max_attempts_exceeded:
             return await p.send_error_and_disconnect(150)
         else:
-            del p.server.login_attempts[ip_addr]
+            await p.server.redis.delete(flood_key)
 
     if not data.active:
         return await p.send_error_and_disconnect(900)

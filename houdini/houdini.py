@@ -70,8 +70,6 @@ class Houdini:
         self.penguins_by_id = {}
         self.penguins_by_username = {}
 
-        self.login_attempts = {}
-
         self.xt_listeners = XTListenerManager(self)
         self.xml_listeners = XMLListenerManager(self)
         self.commands = CommandManager(self)
