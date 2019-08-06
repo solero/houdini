@@ -192,7 +192,7 @@ class CredentialsConverter(IConverter):
     async def convert(self, ctx):
         username = ctx.argument[0][0].text
         password = ctx.argument[0][1].text
-        return Credentials(username, password)
+        return Credentials(username.lower(), password)
 
 
 class WorldCredentialsConverter(IConverter):
@@ -204,7 +204,7 @@ class WorldCredentialsConverter(IConverter):
         password_hashes = ctx.argument[0][1].text
         penguin_id, _, username, login_key, language_approved, language_rejected = raw_login_data.split('|')
         client_key, confirmation_hash = password_hashes.split('#')
-        return WorldCredentials(int(penguin_id), username, login_key, int(language_approved), int(language_rejected),
+        return WorldCredentials(int(penguin_id), username.lower(), login_key, int(language_approved), int(language_rejected),
                                 client_key, confirmation_hash)
 
 

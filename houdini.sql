@@ -11437,37 +11437,37 @@ INSERT INTO character (id, name, gift_id, stamp_id) VALUES
  (35, 'Sam', 9277, NULL);
  
 INSERT INTO penguin (id, username, nickname, approval_en, password, email, color, character) VALUES
- (1, 'Rockhopper', 'Rockhopper', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 5, 1),
- (2, 'Aunt Arctic', 'Aunt Arctic', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 2, 2),
- (3, 'Cadence', 'Cadence', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 10, 3),
- (4, 'Gary', 'Gary', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 4),
- (5, 'Franky', 'Franky', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 7, 5),
- (6, 'Petey K', 'Petey K', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 2, 6),
- (7, 'G Billy', 'G Billy', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 7),
- (8, 'Stompin Bob', 'Stompin Bob', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 5, 8),
- (9, 'Sensei', 'Sensei', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 14, 9),
- (10, 'Herbert', 'Herbert P Bear', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 10),
- (11, 'Wheel Bot', 'Wheel Bot', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 11),
- (12, 'Jet Bot', 'Jet Bot', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 12),
- (13, 'Snow Bot', 'Snow Bot', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 13),
- (14, 'Protobot', 'Protobot', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 14),
- (15, 'Dot', 'Dot', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 15),
- (16, 'Rookie', 'Rookie', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 11, 16),
- (17, 'Jet Pack Guy', 'Jet Pack Guy', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 17),
- (18, 'Director', 'Director', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 18),
- (19, 'Klutzy', 'Klutzy', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 19),
- (20, 'G', 'G', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 25),
- (21, 'PH', 'PH', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 9, 28),
- (22, 'Brady', 'Brady', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 7, 31),
- (23, 'McKenzie', 'McKenzie', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 15, 32),
- (24, 'Kermit', 'Kermit The Frog', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 2, 33),
- (25, 'Sam', 'Sam', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 35),
- (26, 'Rocky', 'Rocky', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 15, NULL),
- (27, 'CeCe', 'CeCe', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 7, NULL),
- (28, 'Merry Walrus', 'Merry Walrus', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, NULL);
+ (1, 'rockhopper', 'Rockhopper', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 5, 1),
+ (2, 'aunt arctic', 'Aunt Arctic', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 2, 2),
+ (3, 'cadence', 'Cadence', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 10, 3),
+ (4, 'gary', 'Gary', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 4),
+ (5, 'franky', 'Franky', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 7, 5),
+ (6, 'petey k', 'Petey K', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 2, 6),
+ (7, 'g billy', 'G Billy', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 7),
+ (8, 'stompin bob', 'Stompin Bob', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 5, 8),
+ (9, 'sensei', 'Sensei', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 14, 9),
+ (10, 'herbert', 'Herbert P Bear', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 10),
+ (11, 'wheel bot', 'Wheel Bot', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 11),
+ (12, 'jet bot', 'Jet Bot', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 12),
+ (13, 'snow bot', 'Snow Bot', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 13),
+ (14, 'protobot', 'Protobot', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 14),
+ (15, 'dot', 'Dot', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 15),
+ (16, 'rookie', 'Rookie', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 11, 16),
+ (17, 'jet pack guy', 'Jet Pack Guy', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 17),
+ (18, 'director', 'Director', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 18),
+ (19, 'klutzy', 'Klutzy', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 19),
+ (20, 'g', 'G', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 25),
+ (21, 'ph', 'PH', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 9, 28),
+ (22, 'brady', 'Brady', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 7, 31),
+ (23, 'mckenzie', 'McKenzie', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 15, 32),
+ (24, 'kermit', 'Kermit The Frog', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 2, 33),
+ (25, 'sam', 'Sam', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 35),
+ (26, 'rocky', 'Rocky', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 15, NULL),
+ (27, 'cece', 'CeCe', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 7, NULL),
+ (28, 'merry walrus', 'Merry Walrus', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, NULL);
  
 INSERT INTO penguin (username, nickname, approval_en, active, password, email, color) VALUES
-  ('Basil', 'Basil', TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', 'basil@solero.me', 1);
+  ('basil', 'Basil', TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', 'basil@solero.me', 1);
   
 INSERT INTO penguin_item (penguin_id, item_id) VALUES
   (101, 1);
