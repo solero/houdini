@@ -293,6 +293,9 @@ class Penguin(Spheniscidae):
                              self.data.username))
 
     async def _client_connected(self):
+        if self.room is not None:
+            return await self.room.remove_penguin(self)
+
         await super()._client_connected()
         
     def __repr__(self):
