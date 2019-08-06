@@ -1,6 +1,6 @@
 import config
 
-from houdini import handlers
+from houdini import handlers, ClientType
 from houdini.handlers import XMLPacket
 from houdini.converters import VersionChkConverter
 
@@ -10,7 +10,15 @@ from houdini.data.buddy import BuddyList
 @handlers.handler(XMLPacket('verChk'))
 @handlers.allow_once
 async def handle_version_check(p, version: VersionChkConverter):
-    if not version == 153:
+    if config.client['MultiClientSupport']:
+        if config.client['LegacyVersionChk'] == version:
+            p.client_type = ClientType.Legacy
+        elif config.client['VanillaVersionChk'] == version:
+            p.client_type = ClientType.Vanilla
+    elif config.client['DefaultVersionChk'] == version:
+        p.client_type = config.client['DefaultClientType']
+
+    if p.client_type is None:
         await p.send_xml({'body': {'action': 'apiKO', 'r': '0'}})
         await p.close()
     else:
@@ -20,7 +28,7 @@ async def handle_version_check(p, version: VersionChkConverter):
 @handlers.handler(XMLPacket('rndK'))
 @handlers.allow_once
 async def handle_random_key(p, data):
-    await p.send_xml({'body': {'action': 'rndK', 'r': '-1'}, 'k': 'houdini'})
+    await p.send_xml({'body': {'action': 'rndK', 'r': '-1'}, 'k': config.client['AuthStaticKey']})
 
 
 async def get_server_presence(p, pid):

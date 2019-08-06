@@ -13,7 +13,8 @@ from houdini.cooldown import CooldownError
 class Spheniscidae:
 
     __slots__ = ['__reader', '__writer', 'server', 'logger',
-                 'peer_name', 'received_packets', 'joined_world']
+                 'peer_name', 'received_packets', 'joined_world',
+                 'client_type']
 
     Delimiter = b'\x00'
 
@@ -28,6 +29,7 @@ class Spheniscidae:
         self.server.peers_by_ip[self.peer_name] = self
 
         self.joined_world = False
+        self.client_type = None
 
         self.received_packets = set()
 
@@ -93,7 +95,8 @@ class Spheniscidae:
             packet_data = parsed_data[4:]
 
             for listener in xt_listeners:
-                await listener(self, packet_data)
+                if listener.client_type is None or listener.client_type == self.client_type:
+                    await listener(self, packet_data)
             self.received_packets.add(packet)
         else:
             self.logger.warn('Handler for %s doesn\'t exist!', packet_id)
@@ -118,7 +121,8 @@ class Spheniscidae:
                     xml_listeners = self.server.xml_listeners[packet]
 
                     for listener in xml_listeners:
-                        await listener(self, body_tag)
+                        if listener.client_type is None or listener.client_type == self.client_type:
+                            await listener(self, body_tag)
 
                     self.received_packets.add(packet)
                 else:

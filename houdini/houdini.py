@@ -58,6 +58,7 @@ class Houdini:
         self.database_config_override = kwargs.get('database')
         self.redis_config_override = kwargs.get('redis')
         self.commands_config_override = kwargs.get('commands')
+        self.client_config_override = kwargs.get('client')
         self.server_config_override = kwargs.get('server')
         self.server_config = None
 
@@ -100,6 +101,7 @@ class Houdini:
         self.config.database.update(self.database_config_override)
         self.config.redis.update(self.redis_config_override)
         self.config.commands.update(self.commands_config_override)
+        self.config.client.update(self.client_config_override)
 
         general_log_directory = os.path.dirname(self.server_config["Logging"]["General"])
         errors_log_directory = os.path.dirname(self.server_config["Logging"]["Errors"])
@@ -215,7 +217,13 @@ class Houdini:
         self.configure_observers([handlers_path, ListenerFileEventHandler],
                                  [plugins_path, PluginFileEventHandler])
 
+        self.logger.info('Multi-client support is {}'.format(
+            'enabled' if self.config.client['MultiClientSupport'] else 'disabled'))
         self.logger.info('Listening on {}:{}'.format(self.server_config['Address'], self.server_config['Port']))
+
+        if self.config.client['AuthStaticKey'] != 'houdini':
+            self.logger.warning('The static key has been changed from the default, '
+                                'this may cause authentication issues!')
 
         self.plugins.setup(houdini.plugins)
 

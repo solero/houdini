@@ -6,6 +6,7 @@ import config
 from houdini.houdini import Houdini
 from houdini import ConflictResolution
 from houdini import Language
+from houdini import ClientType
 
 if __name__ == '__main__':
     logger = logging.getLogger('houdini')
@@ -81,6 +82,33 @@ if __name__ == '__main__':
     command_group.add_argument('-ccm', '--command-conflict-mode', action='store', dest='command_conflict_mode',
                                default=config.commands['ConflictMode'].name,
                                help='Command conflict mode', choices=['Silent', 'Append', 'Exception'])
+
+    client_group = parser.add_argument_group('client')
+    client_mode = client_group.add_mutually_exclusive_group()
+    client_mode.add_argument('--multi-client-mode', action='store_true',
+                              help='Run server with support for both clients')
+    client_mode.add_argument('--single-client-mode', action='store_true',
+                              help='Run server with support for default client only')
+    client_group.add_argument('--legacy-version', action='store',
+                              type=int,
+                              default=config.client['LegacyVersionChk'],
+                              help='Legacy client version to identify legacy clients')
+    client_group.add_argument('--vanilla-version', action='store',
+                              type=int,
+                              default=config.client['VanillaVersionChk'],
+                              help='Vanilla client version to identify vanilla clients')
+    client_group.add_argument('--default-version', action='store',
+                              type=int,
+                              default=config.client['DefaultVersionChk'],
+                              help='Default version to identify clients when multi-client is off')
+    client_group.add_argument('--default-client', action='store',
+                              choices=['Legacy', 'Vanilla'],
+                              default=config.client['DefaultClientType'].name,
+                              help='Default client when multi-client is off')
+    client_group.add_argument('-k', '--auth-key', action='store',
+                              default='houdini',
+                              help='Static key to use in place of the deprecated random key')
+
     args = parser.parse_args()
 
     database = {
@@ -99,6 +127,18 @@ if __name__ == '__main__':
         'Prefix': args.command_prefix,
         'StringDelimiters': args.command_string_delimiters,
         'ConflictMode': getattr(ConflictResolution, args.command_conflict_mode)
+    }
+
+    client = {
+        'MultiClientSupport': True if args.multi_client_mode else False if args.single_client_mode
+        else config.client['MultiClientSupport'],
+        'LegacyVersionChk': args.legacy_version,
+        'VanillaVersionChk': args.vanilla_version,
+
+        'DefaultVersionChk': args.default_version,
+        'DefaultClientType': getattr(ClientType, args.default_client),
+
+        'AuthStaticKey': args.auth_key
     }
 
     server = {
@@ -129,6 +169,7 @@ if __name__ == '__main__':
                                database=database,
                                redis=redis,
                                commands=commands,
+                               client=client,
                                server=server)
     try:
         asyncio.run(factory_instance.start())

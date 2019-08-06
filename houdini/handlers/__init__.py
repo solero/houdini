@@ -3,6 +3,7 @@ import enum
 import itertools
 import importlib
 import sys
+import config
 from types import FunctionType
 
 from houdini.converters import _listener, _ArgumentDeserializer, get_converter, do_conversion, _ConverterContext
@@ -51,7 +52,7 @@ class Priority(enum.Enum):
 
 class _Listener(_ArgumentDeserializer):
 
-    __slots__ = ['priority', 'packet', 'overrides', 'before', 'after']
+    __slots__ = ['priority', 'packet', 'overrides', 'before', 'after', 'client_type']
 
     def __init__(self, packet, callback, **kwargs):
         super().__init__(packet.id, callback, **kwargs)
@@ -60,6 +61,7 @@ class _Listener(_ArgumentDeserializer):
         self.priority = kwargs.get('priority', Priority.Low)
         self.before = kwargs.get('before')
         self.after = kwargs.get('after')
+        self.client_type = kwargs.get('client')
 
         self.overrides = kwargs.get('overrides', [])
 

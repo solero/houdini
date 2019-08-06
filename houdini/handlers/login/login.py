@@ -1,4 +1,4 @@
-from houdini import handlers
+from houdini import handlers, ClientType
 from houdini.handlers import XMLPacket, login
 from houdini.handlers.login import get_server_presence
 from houdini.converters import Credentials
@@ -27,7 +27,7 @@ async def handle_login(p, credentials: Credentials):
     data = await Penguin.query.where(Penguin.username == username).gino.first()
 
     if data is None:
-        p.logger.info('{} failed to login: penguin does not exist')
+        p.logger.info('{} failed to login: penguin does not exist'.format(username))
         return await p.send_error_and_disconnect(100)
 
     password_correct = await loop.run_in_executor(None, bcrypt.checkpw,
@@ -84,16 +84,19 @@ async def handle_login(p, credentials: Credentials):
     confirmation_hash = Crypto.hash(os.urandom(24))
 
     tr = p.server.redis.multi_exec()
-    tr.setex('{}.lkey'.format(data.id), p.server.server_config['KeyTTL'], login_key)
-    tr.setex('{}.ckey'.format(data.id), p.server.server_config['KeyTTL'], confirmation_hash)
+    tr.setex('{}.lkey'.format(data.username), p.server.server_config['KeyTTL'], login_key)
+    tr.setex('{}.ckey'.format(data.username), p.server.server_config['KeyTTL'], confirmation_hash)
     await tr.execute()
 
     world_populations, buddy_presence = await get_server_presence(p, data.id)
 
-    raw_login_data = '|'.join([str(data.id), str(data.id), data.username, login_key, str(data.approval),
-                               str(data.rejection)])
-    await p.send_xt('l', raw_login_data, confirmation_hash, '', world_populations, buddy_presence,
-                    data.email)
+    if p.client_type == ClientType.Vanilla:
+        raw_login_data = '|'.join([str(data.id), str(data.id), data.username, login_key, str(data.approval),
+                                   str(data.rejection)])
+        await p.send_xt('l', raw_login_data, confirmation_hash, '', world_populations, buddy_presence,
+                        data.email)
+    else:
+        await p.send_xt('l', data.id, login_key, world_populations, buddy_presence)
 
 handle_version_check = login.handle_version_check
 handle_random_key = login.handle_random_key
