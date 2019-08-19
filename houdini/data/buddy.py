@@ -1,4 +1,4 @@
-from houdini.data import db
+from houdini.data import db, BaseCrumbsCollection
 
 
 class BuddyList(db.Model):
@@ -43,3 +43,53 @@ class CharacterBuddy(db.Model):
     character_id = db.Column(db.ForeignKey('character.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
                              nullable=False)
     best_buddy = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+
+
+class BuddyListCollection(BaseCrumbsCollection):
+
+    def __init__(self, inventory_id=None):
+        super().__init__(model=BuddyList,
+                         key='buddy_id',
+                         inventory_model=BuddyList,
+                         inventory_key='penguin_id',
+                         inventory_value='buddy_id',
+                         inventory_id=inventory_id)
+
+
+class IgnoreListCollection(BaseCrumbsCollection):
+
+    def __init__(self, inventory_id=None):
+        super().__init__(model=IgnoreList,
+                         key='ignore_id',
+                         inventory_model=IgnoreList,
+                         inventory_key='penguin_id',
+                         inventory_value='ignore_id',
+                         inventory_id=inventory_id)
+
+
+class BuddyRequestCollection(BaseCrumbsCollection):
+
+    def __init__(self, inventory_id=None):
+        super().__init__(model=BuddyRequest,
+                         key='requester_id',
+                         inventory_model=BuddyRequest,
+                         inventory_key='penguin_id',
+                         inventory_value='requester_id',
+                         inventory_id=inventory_id)
+
+
+class CharacterCrumbsCollection(BaseCrumbsCollection):
+
+    def __init__(self):
+        super().__init__(model=Character, key='id')
+
+
+class CharacterBuddyCollection(BaseCrumbsCollection):
+
+    def __init__(self, inventory_id=None):
+        super().__init__(model=CharacterBuddy,
+                         key='character_id',
+                         inventory_model=CharacterBuddy,
+                         inventory_key='penguin_id',
+                         inventory_value='character_id',
+                         inventory_id=inventory_id)
