@@ -136,7 +136,7 @@ class PenguinStringCompiler(OrderedDict):
             'Face': PenguinStringCompiler.attribute_by_name('face'),
             'Neck': PenguinStringCompiler.attribute_by_name('neck'),
             'Body': PenguinStringCompiler.attribute_by_name('body'),
-            'Hand': PenguinStringCompiler.attribute_by_name('name'),
+            'Hand': PenguinStringCompiler.attribute_by_name('hand'),
             'Feet': PenguinStringCompiler.attribute_by_name('feet'),
             'Flag': PenguinStringCompiler.attribute_by_name('flag'),
             'Photo': PenguinStringCompiler.attribute_by_name('photo')
