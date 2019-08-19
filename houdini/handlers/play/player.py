@@ -1,26 +1,36 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
+from houdini.data.penguin import Penguin
 
 from aiocache import cached
 
 
-def get_player_info_key(_, p, player_id):
-    return 'player.info.{}'.format(player_id)
+def get_player_string_key(_, p, player_id):
+    return 'player.{}'.format(player_id)
 
 
-@cached(alias='default', key_builder=get_player_info_key)
-async def get_player_info_by_id(p, player_id):
-    if player_id in p.server.penguins_by_id:
-        player = p.server.penguins_by_id[player_id]
-        player_tuple = (player.data.nickname, player.data.id, player.data.nickname)
+def get_mascot_string_key(_, p, mascot_id):
+    return 'mascot.{}'.format(mascot_id)
+
+
+@cached(alias='default', key_builder=get_player_string_key)
+async def get_player_string(p, penguin_id):
+    if penguin_id in p.server.penguins_by_id:
+        return await p.server.penguins_by_id[penguin_id].string
     else:
-        player_tuple = await p.data.select('nickname', 'id', 'nickname').where(
-            p.data.id == player_id).gino.first()
+        player_data = await Penguin.get(penguin_id)
+        string = await p.server.anonymous_penguin_string_compiler.compile(player_data)
+        return string
 
-    if player_tuple is not None:
-        return "|".join(map(str, player_tuple))
 
-    return str()
+@cached(alias='default', key_builder=get_mascot_string_key)
+async def get_mascot_string(p, mascot_id):
+    if mascot_id in p.server.penguins_by_character_id:
+        return await p.server.penguins_by_character_id[mascot_id].string
+    else:
+        player_data = await Penguin.query.where(Penguin.character == mascot_id).gino.first()
+        string = await p.server.anonymous_penguin_string_compiler.compile(player_data)
+        return string
 
 
 @handlers.handler(XTPacket('u', 'h'))
@@ -29,11 +39,16 @@ async def handle_heartbeat(p):
     await p.send_xt('h')
 
 
-@handlers.handler(XTPacket('u', 'pbi'))
-async def handle_get_player_info_by_id(p, penguin_id: int):
-    await p.send_xt('pbi', await get_player_info_by_id(p, penguin_id))
+@handlers.handler(XTPacket('u', 'gp'))
+@handlers.cooldown(1)
+async def handle_get_player(p, penguin_id: int):
+    await p.send_xt('gp', await get_player_string(p, penguin_id))
 
 
+@handlers.handler(XTPacket('u', 'gmo'), client=ClientType.Vanilla)
+@handlers.cooldown(1)
+async def handle_get_mascot(p, mascot_id: int):
+    await p.send_xt('gmo', await get_mascot_string(p, mascot_id))
 @handlers.handler(XTPacket('u', 'sp'))
 async def handle_set_player_position(p, x: int, y: int):
     p.x, p.y = x, y
