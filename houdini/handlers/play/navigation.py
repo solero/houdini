@@ -36,6 +36,9 @@ async def handle_join_server(p, penguin_id: int, login_key: str):
     p.server.penguins_by_id[p.data.id] = p
     p.server.penguins_by_username[p.data.username] = p
 
+    if p.data.character is not None:
+        p.server.penguins_by_character_id[p.data.character] = p
+
     p.joined_world = True
 
 

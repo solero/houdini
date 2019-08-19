@@ -71,6 +71,7 @@ class Houdini:
 
         self.penguins_by_id = {}
         self.penguins_by_username = {}
+        self.penguins_by_character_id = {}
 
         self.xt_listeners = XTListenerManager(self)
         self.xml_listeners = XMLListenerManager(self)
