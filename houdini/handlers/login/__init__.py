@@ -37,7 +37,7 @@ async def get_server_presence(p, pid):
 
     for server_name, server_config in config.servers.items():
         if server_config['World']:
-            server_population = await p.server.redis.hget('population', server_name)
+            server_population = await p.server.redis.hget('population', server_config['Id'])
             server_population = (7 if int(server_population) == server_config['Capacity']
                                  else int(server_population) / (server_config['Capacity'] / 6)) \
                 if server_population else 0
@@ -45,7 +45,6 @@ async def get_server_presence(p, pid):
             world_populations.append('{},{}'.format(server_config['Id'], server_population))
 
             server_key = '{}.players'.format(server_config['Id'])
-
             if await p.server.redis.scard(server_key):
                 async with p.server.db.transaction():
                     buddies = BuddyList.select('buddy_id').where(BuddyList.penguin_id == pid).gino.iterate()
