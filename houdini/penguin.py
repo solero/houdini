@@ -292,11 +292,17 @@ class Penguin(Spheniscidae):
                          '{} removed their background item'.format(
                              self.data.username))
 
-    async def _client_connected(self):
-        if self.room is not None:
-            return await self.room.remove_penguin(self)
+    async def _client_disconnected(self):
+        if self.joined_world:
+            if self.room is not None:
+                await self.room.remove_penguin(self)
 
-        await super()._client_connected()
+            del self.server.penguins_by_id[self.data.id]
+            del self.server.penguins_by_username[self.data.username]
+
+            await self.server.redis.hincrby('population', self.server.server_config['Id'], -1)
+
+        await super()._client_disconnected()
         
     def __repr__(self):
         if self.data is not None:
