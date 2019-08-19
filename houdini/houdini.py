@@ -27,6 +27,7 @@ from houdini.data.ninja import CardCrumbsCollection
 from houdini.data.mail import PostcardCrumbsCollection
 from houdini.data.pet import PuffleCrumbsCollection, PuffleItemCrumbsCollection
 from houdini.data.permission import PermissionCrumbsCollection
+from houdini.data.buddy import CharacterCrumbsCollection
 
 try:
     import uvloop
@@ -89,6 +90,7 @@ class Houdini:
         self.postcards = None
         self.puffles = None
         self.puffle_items = None
+        self.characters = None
 
         self.spawn_rooms = None
 
@@ -209,6 +211,9 @@ class Houdini:
 
         self.puffle_items = await PuffleItemCrumbsCollection.get_collection()
         self.logger.info('Loaded {} puffle care items'.format(len(self.puffle_items)))
+
+        self.characters = await CharacterCrumbsCollection.get_collection()
+        self.logger.info('Loaded {} characters'.format(len(self.characters)))
 
         self.permissions = await PermissionCrumbsCollection.get_collection()
 
