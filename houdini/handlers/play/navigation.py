@@ -41,6 +41,8 @@ async def handle_join_server(p, penguin_id: int, login_key: str):
 
     p.joined_world = True
 
+    server_key = '{}.players'.format(p.server.server_config['Id'])
+    await p.server.redis.sadd(server_key, p.data.id)
     await p.server.redis.hincrby('population', p.server.server_config['Id'], 1)
 
 
