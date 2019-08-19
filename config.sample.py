@@ -18,11 +18,15 @@ commands = {
     'ConflictMode': ConflictResolution.Silent
 }
 
-client_identifier = {
-    'LegacyVersionChk': 'legacy',
-    'VanillaVersionChk': 'vanilla',
-    'DefaultVersionChk': 152,
-    'DefaultClientVersion': ClientType.Vanilla
+client = {
+    'MultiClientSupport': True,
+    'LegacyVersionChk': 153,
+    'VanillaVersionChk': 253,
+
+    'DefaultVersionChk': 253,
+    'DefaultClientType': ClientType.Vanilla,
+
+    'AuthStaticKey': 'houdini'
 }
 
 servers = {
