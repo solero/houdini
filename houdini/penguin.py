@@ -5,7 +5,7 @@ from houdini.spheniscidae import Spheniscidae
 
 class Penguin(Spheniscidae):
 
-    __slots__ = ['x', 'y', 'frame', 'room', 'waddle', 'table', 'data', 'muted',
+    __slots__ = ['x', 'y', 'frame', 'toy', 'room', 'waddle', 'table',
                  'login_key', 'member', 'membership_days', 'avatar',
                  'walking_puffle', 'permissions', 'active_quests']
 
@@ -14,6 +14,7 @@ class Penguin(Spheniscidae):
 
         self.x, self.y = (0, 0)
         self.frame = 1
+        self.toy = None
         self.room = None
         self.waddle = None
         self.table = None

@@ -38,6 +38,8 @@ class Room(db.Model):
 
         self.penguins.remove(p)
         p.room = None
+        p.frame = 1
+        p.toy = None
 
     async def get_string(self):
         return '%'.join([await p.string for p in self.penguins])

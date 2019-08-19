@@ -102,6 +102,7 @@ async def handle_pbsm_finish(p):
 async def handle_set_player_position(p, x: int, y: int):
     p.x, p.y = x, y
     p.frame = 1
+    p.toy = None
     await p.room.send_xt('sp', p.data.id, x, y)
 
 
