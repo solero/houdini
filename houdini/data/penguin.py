@@ -10,6 +10,8 @@ from houdini.data.stamp import StampCrumbsCollection
 from houdini.data.ninja import CardCrumbsCollection
 from houdini.data.mail import PostcardCrumbsCollection
 from houdini.data.pet import PuffleCrumbsCollection, PuffleItemCrumbsCollection
+from houdini.data.buddy import BuddyListCollection, BuddyRequestCollection, CharacterBuddyCollection, \
+    IgnoreListCollection
 
 
 class Penguin(db.Model):
@@ -95,6 +97,10 @@ class Penguin(db.Model):
         self.postcards = None
         self.puffles = None
         self.puffle_items = None
+        self.buddies = None
+        self.buddy_requests = None
+        self.character_buddies = None
+        self.ignore = None
 
         super().__init__(*args, **kwargs)
 
@@ -110,6 +116,11 @@ class Penguin(db.Model):
         self.postcards = await PostcardCrumbsCollection.get_collection(self.id)
         self.puffles = await PuffleCrumbsCollection.get_collection(self.id)
         self.puffle_items = await PuffleItemCrumbsCollection.get_collection(self.id)
+
+        self.buddies = await BuddyListCollection.get_collection(self.id)
+        self.buddy_requests = await BuddyRequestCollection.get_collection(self.id)
+        self.character_buddies = await CharacterBuddyCollection.get_collection(self.id)
+        self.ignore = await IgnoreListCollection.get_collection(self.id)
 
     def safe_nickname(self, language_bitmask):
         return self.nickname if self.approval & language_bitmask else "P" + str(self.id)
