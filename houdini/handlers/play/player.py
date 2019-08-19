@@ -3,6 +3,7 @@ from houdini.handlers import XTPacket
 from houdini.data.penguin import Penguin
 
 from aiocache import cached
+import random
 
 
 def get_player_string_key(_, p, player_id):
@@ -81,6 +82,27 @@ async def handle_get_player_by_name(p, player_name: str):
             await p.send_xt('pbn', player_id, player_id, nickname)
         else:
             await p.send_xt('pbn')
+
+
+@handlers.handler(XTPacket('u', 'smi'), client=ClientType.Vanilla)
+@handlers.cooldown(10)
+async def handle_send_mascot_invite(p, num_invites: int, character_id: int):
+    if character_id in p.server.characters and p.data.character is not None:
+        for _ in range(min(num_invites, len(p.server.penguins_by_id))):
+            player = random.choice(list(p.server.penguins_by_id.values()))
+            await player.send_xt('smi', character_id)
+
+
+@handlers.handler(XTPacket('u', 'bf'), client=ClientType.Vanilla)
+async def handle_find_player(p, player_id: int):
+    if player_id in p.server.penguins_by_id:
+        player = p.server.penguins_by_id[player_id]
+        room_id = player.room.id
+        room_type = 'igloo' if player.room.igloo else 'invalid'
+        room_owner = player.room.penguin_id if player.room.igloo else -1
+    else:
+        room_id, room_type, room_owner = -1, 'invalid', -1
+    await p.send_xt('bf', room_id, room_type, room_owner)
 
 
 @handlers.handler(XTPacket('u', 'pbsms'), client=ClientType.Vanilla)

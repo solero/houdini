@@ -20,6 +20,8 @@ class Room(db.Model):
         super().__init__(*args, **kwargs)
         self.penguins = []
 
+        self.igloo = False
+
         self.tables = {}
         self.waddles = {}
 

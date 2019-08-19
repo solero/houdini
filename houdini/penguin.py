@@ -6,8 +6,9 @@ from houdini.spheniscidae import Spheniscidae
 class Penguin(Spheniscidae):
 
     __slots__ = ['x', 'y', 'frame', 'toy', 'room', 'waddle', 'table',
-                 'login_key', 'member', 'membership_days', 'avatar',
-                 'walking_puffle', 'permissions', 'active_quests']
+                 'data', 'muted', 'login_key', 'member', 'membership_days',
+                 'avatar', 'walking_puffle', 'permissions', 'active_quests',
+                 'buddy_requests']
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -31,6 +32,8 @@ class Penguin(Spheniscidae):
         self.walking_puffle = None
 
         self.active_quests = None
+
+        self.buddy_requests = set()
 
     @property
     def party_state(self):
@@ -300,6 +303,17 @@ class Penguin(Spheniscidae):
 
             del self.server.penguins_by_id[self.data.id]
             del self.server.penguins_by_username[self.data.username]
+
+            if self.data.character is not None:
+                del self.server.penguins_by_character_id[self.data.character]
+
+                for penguin in self.server.penguins_by_id.values():
+                    if self.data.character in penguin.data.character_buddies:
+                        await penguin.send_xt('caof', self.data.character)
+
+            for buddy_id in self.data.buddies:
+                if buddy_id in self.server.penguins_by_id:
+                    await self.server.penguins_by_id[buddy_id].send_xt('bof', self.data.id)
 
             await self.server.redis.hincrby('population', self.server.server_config['Id'], -1)
 
