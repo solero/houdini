@@ -22,7 +22,7 @@ class BuddyRequest(db.Model):
 class IgnoreList(db.Model):
     __tablename__ = 'ignore_list'
     penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                           nullable=False),
+                           nullable=False)
     ignore_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
                           nullable=False, index=True)
 
