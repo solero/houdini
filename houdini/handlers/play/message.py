@@ -1,6 +1,6 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
-from houdini.commands import invoke_command_string
+from houdini.commands import invoke_command_string, has_command_prefix
 
 
 @handlers.handler(XTPacket('m', 'sm'))
@@ -15,5 +15,7 @@ async def handle_send_message(p, penguin_id: int, message):
                 await room_player.sendXt("mm", message, penguin_id)
         return
 
-    await p.room.send_xt('sm', p.data.id, message)
-    await invoke_command_string(p.server.commands, p, message)
+    if has_command_prefix(message):
+        await invoke_command_string(p.server.commands, p, message)
+    else:
+        await p.room.send_xt('sm', p.data.id, message)
