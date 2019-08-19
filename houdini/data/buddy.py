@@ -42,3 +42,4 @@ class CharacterBuddy(db.Model):
                            nullable=False)
     character_id = db.Column(db.ForeignKey('character.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
                              nullable=False)
+    best_buddy = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))

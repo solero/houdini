@@ -735,6 +735,7 @@ DROP TABLE IF EXISTS character_buddy;
 CREATE TABLE character_buddy (
   penguin_id INT NOT NULL,
   character_id SMALLINT NOT NULL,
+  best_buddy BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (penguin_id, character_id),
   CONSTRAINT character_buddy_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT character_buddy_ibfk_2 FOREIGN KEY (character_id) REFERENCES character (id) ON DELETE CASCADE ON UPDATE CASCADE
