@@ -15,8 +15,8 @@ class AuthorityError(Exception):
 class _Packet:
     __slots__ = ['id']
 
-    def __init__(self):
-        self.id = None
+    def __init__(self, packet_id):
+        self.id = packet_id
 
     def __eq__(self, other):
         return self.id == other.id
@@ -27,17 +27,15 @@ class _Packet:
 
 class XTPacket(_Packet):
     def __init__(self, *packet_id):
-        super().__init__()
-        self.id = '#'.join(packet_id)
-
-    def __hash__(self):
-        return hash(self.id)
+        super().__init__('#'.join(packet_id))
 
 
 class XMLPacket(_Packet):
-    def __init__(self, packet_id):
-        super().__init__()
-        self.id = packet_id
+    pass
+
+
+class DummyEventPacket(_Packet):
+    pass
 
 
 class Priority(enum.Enum):
@@ -107,7 +105,15 @@ class _XMLListener(_Listener):
         return await self.callback(*handler_call_arguments)
 
 
+class _DummyListener(_Listener):
+    async def __call__(self, p, *_):
+        handler_call_arguments = [self.instance, p] if self.instance is not None else [p]
+        return await self.callback(*handler_call_arguments)
+
+
 class _ListenerManager(_AbstractManager):
+    ListenerClass = _Listener
+
     def __init__(self, server):
         self.strict_load = None
         self.exclude_load = None
@@ -153,19 +159,19 @@ class _ListenerManager(_AbstractManager):
 
     @classmethod
     def is_listener(cls, listener):
-        return issubclass(type(listener), _Listener)
+        return issubclass(type(listener), cls.ListenerClass)
 
 
 class XTListenerManager(_ListenerManager):
-    @classmethod
-    def is_listener(cls, listener):
-        return issubclass(type(listener), _XTListener)
+    ListenerClass = _XTListener
 
 
 class XMLListenerManager(_ListenerManager):
-    @classmethod
-    def is_listener(cls, listener):
-        return issubclass(type(listener), _XMLListener)
+    ListenerClass = _XMLListener
+
+
+class DummyEventListenerManager(_ListenerManager):
+    ListenerClass = _DummyListener
 
 
 def handler(packet, **kwargs):
@@ -174,6 +180,10 @@ def handler(packet, **kwargs):
 
     listener_class = _XTListener if isinstance(packet, XTPacket) else _XMLListener
     return _listener(listener_class, packet, **kwargs)
+
+
+connected = _listener(_DummyListener, DummyEventPacket('connected'))
+disconnected = _listener(_DummyListener, DummyEventPacket('disconnected'))
 
 
 def cooldown(per=1.0, rate=1, bucket_type=BucketType.Default, callback=None):

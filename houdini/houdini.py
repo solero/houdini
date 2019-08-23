@@ -35,7 +35,7 @@ except ImportError:
 import houdini.handlers
 import houdini.plugins
 
-from houdini.handlers import XTListenerManager, XMLListenerManager
+from houdini.handlers import XTListenerManager, XMLListenerManager, DummyEventListenerManager
 from houdini.plugins import PluginManager
 from houdini.commands import CommandManager
 
@@ -70,6 +70,7 @@ class Houdini:
 
         self.xt_listeners = XTListenerManager(self)
         self.xml_listeners = XMLListenerManager(self)
+        self.dummy_event_listeners = DummyEventListenerManager(self)
         self.commands = CommandManager(self)
         self.plugins = PluginManager(self)
 

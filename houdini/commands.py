@@ -64,7 +64,9 @@ player_in_room = handlers.player_in_room
 
 
 class CommandManager(_AbstractManager):
-    def load(self, module):
+    async def setup(self, module):
+        raise NotImplementedError('Commands can only be loaded from plugins')
+
     async def load(self, module):
         command_objects = inspect.getmembers(module, is_command)
         if not isinstance(module, plugins.IPlugin):
