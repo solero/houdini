@@ -43,6 +43,9 @@ class Room(db.Model):
         p.frame = 1
         p.toy = None
 
+    async def refresh(self, p):
+        await p.send_xt('grs', self.id, await self.get_string())
+
     async def get_string(self):
         return '%'.join([await p.string for p in self.penguins])
 
