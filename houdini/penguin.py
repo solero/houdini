@@ -79,6 +79,21 @@ class Penguin(Spheniscidae):
 
         return True
 
+    async def add_epf_inventory(self, item, notify=True):
+        if not item.epf:
+            return False
+
+        if item.id in self.data.inventory:
+            return False
+
+        await self.data.inventory.set(item.id)
+        await self.data.update(agent_medals=self.data.agent_medals - item.cost).apply()
+
+        if notify:
+            await self.send_xt('epfai', self.data.agent_medals)
+
+        return True
+
     async def add_igloo(self, igloo, notify=True):
         if igloo.id in self.data.igloos:
             return False
