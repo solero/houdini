@@ -39,7 +39,7 @@ class BaseCrumbsCollection(dict):
 
     async def set(self, k=None, **kwargs):
         if self._is_inventory:
-            kwargs = {self._inventory_key: self._inventory_id, self._inventory_value: k}
+            kwargs = {self._inventory_key: self._inventory_id, self._inventory_value: k, **kwargs}
             model_instance = await self._inventory_model.create(**kwargs)
             k = getattr(model_instance, self._inventory_value)
             self[k] = model_instance
