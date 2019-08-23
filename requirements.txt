@@ -1,7 +1,6 @@
 asyncio
 aioredis
 gino
-aiofiles
 aiocache
 ujson
 watchdog
