@@ -1,8 +1,9 @@
 import config
 
-from houdini import handlers, ClientType
+from houdini import handlers
 from houdini.handlers import XMLPacket
 from houdini.converters import VersionChkConverter
+from houdini.constants import ClientType
 
 from houdini.data.buddy import BuddyList
 

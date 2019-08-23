@@ -4,7 +4,7 @@ from houdini.handlers.play.navigation import handle_join_room
 
 from houdini.data.penguin import Penguin
 from houdini.data.buddy import BuddyList, BuddyRequest
-from houdini import ClientType
+from houdini.constants import ClientType
 
 
 async def update_player_presence(p):

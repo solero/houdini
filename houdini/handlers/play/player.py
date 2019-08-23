@@ -1,6 +1,7 @@
-from houdini import handlers, ClientType
+from houdini import handlers
 from houdini.handlers import XTPacket
 from houdini.data.penguin import Penguin
+from houdini.constants import ClientType
 
 from aiocache import cached
 import random

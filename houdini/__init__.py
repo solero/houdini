@@ -3,42 +3,22 @@ from types import FunctionType
 from abc import abstractmethod
 
 import asyncio
-import enum
 import logging
 import importlib
 import pkgutil
 
 
-class StatusField(enum.IntEnum):
-    OpenedIglooViewer = 1
-    ActiveIglooLayoutOpenFlag = 2
-    PuffleTreasureInfographic = 512
-    PlayerOptInAbTestDayZero = 1024
-    PlayerSwapPuffle = 2048
-    MoreThanTenPufflesBackyardMessage = 4096
-    VisitBackyardFirstTime = 8192
-    HasWalkedPuffleFirstTime = 65536
-    HasWalkedPuffleSecondTime = 131072
+def get_package_modules(package):
+    package_modules = []
+    for importer, module_name, is_package in pkgutil.iter_modules(package.__path__):
+        full_module_name = f'{package.__name__}.{module_name}'
+        subpackage_object = importlib.import_module(full_module_name, package=package.__path__)
+        if is_package:
+            sub_package_modules = get_package_modules(subpackage_object)
 
             package_modules = package_modules + sub_package_modules
-class ConflictResolution(enum.Enum):
-    Silent = 0
-    Append = 1
-    Exception = 2
-
-
-class Language(enum.IntEnum):
-    En = 1
-    Pt = 2
-    Fr = 4
-    Es = 8
-    De = 32
-    Ru = 64
-
-
-class ClientType(enum.Enum):
-    Legacy = 'legacy'
-    Vanilla = 'vanilla'
+        package_modules.append(subpackage_object)
+    return package_modules
 
 
 class _AbstractManager(dict):

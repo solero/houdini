@@ -1,11 +1,12 @@
 import config
 
-from houdini import handlers, ClientType
+from houdini import handlers
 from houdini.handlers import XMLPacket, login
 from houdini.converters import WorldCredentials, Credentials
 from houdini.data.penguin import Penguin
 from houdini.data.moderator import Ban
 from houdini.crypto import Crypto
+from houdini.constants import ClientType
 
 from datetime import datetime
 

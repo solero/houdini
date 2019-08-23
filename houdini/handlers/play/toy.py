@@ -1,5 +1,6 @@
-from houdini import handlers, ClientType
+from houdini import handlers
 from houdini.handlers import XTPacket
+from houdini.constants import ClientType
 
 
 @handlers.handler(XTPacket('t', 'at'))

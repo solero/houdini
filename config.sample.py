@@ -1,4 +1,4 @@
-from houdini import ConflictResolution, Language, ClientType
+from houdini.constants import ConflictResolution, Language, ClientType
 
 database = {
     'Address': 'localhost',

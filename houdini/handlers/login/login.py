@@ -1,10 +1,11 @@
-from houdini import handlers, ClientType
-from houdini.handlers import XMLPacket, login
+from houdini import handlers
+from houdini.handlers import XMLPacket
 from houdini.handlers.login import get_server_presence
 from houdini.converters import Credentials
 from houdini.data.penguin import Penguin
 from houdini.data.moderator import Ban
 from houdini.crypto import Crypto
+from houdini.constants import ClientType
 
 import asyncio
 import bcrypt
@@ -97,6 +98,3 @@ async def handle_login(p, credentials: Credentials):
                         data.email)
     else:
         await p.send_xt('l', data.id, login_key, world_populations, buddy_presence)
-
-handle_version_check = login.handle_version_check
-handle_random_key = login.handle_random_key

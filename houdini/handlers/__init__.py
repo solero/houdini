@@ -1,15 +1,11 @@
 import inspect
 import enum
 import itertools
-import importlib
-import sys
-import config
 from types import FunctionType
 
 from houdini.converters import _listener, _ArgumentDeserializer, get_converter, do_conversion, _ConverterContext
-
 from houdini.cooldown import _Cooldown, _CooldownMapping, BucketType
-from houdini import plugins, _AbstractManager
+from houdini import plugins, _AbstractManager, get_package_modules
 
 
 class AuthorityError(Exception):

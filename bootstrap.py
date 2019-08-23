@@ -4,9 +4,7 @@ import argparse
 import config
 
 from houdini.houdini import Houdini
-from houdini import ConflictResolution
-from houdini import Language
-from houdini import ClientType
+from houdini.constants import ConflictResolution, Language, ClientType
 
 if __name__ == '__main__':
     logger = logging.getLogger('houdini')

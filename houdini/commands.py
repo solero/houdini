@@ -3,7 +3,8 @@ import config
 
 from houdini import handlers
 from houdini import plugins
-from houdini import ConflictResolution, _AbstractManager
+from houdini import _AbstractManager
+from houdini.constants import ConflictResolution
 
 from houdini.converters import _ArgumentDeserializer, _listener
 
