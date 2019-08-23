@@ -1,8 +1,6 @@
 import asyncio
 import os
 import sys
-import pkgutil
-import importlib
 import copy
 
 from houdini.spheniscidae import Spheniscidae
@@ -15,7 +13,6 @@ from logging.handlers import RotatingFileHandler
 
 import aioredis
 from aiocache import SimpleMemoryCache, caches
-from watchdog.observers import Observer
 
 from houdini.data import db
 from houdini.data.item import ItemCrumbsCollection
@@ -37,8 +34,6 @@ except ImportError:
 
 import houdini.handlers
 import houdini.plugins
-from houdini.events.listener_file_event import ListenerFileEventHandler
-from houdini.events.plugin_file_event import PluginFileEventHandler
 
 from houdini.handlers import XTListenerManager, XMLListenerManager
 from houdini.plugins import PluginManager
@@ -170,11 +165,12 @@ class Houdini:
             PenguinStringCompiler.setup_default_builder(self.penguin_string_compiler)
             PenguinStringCompiler.setup_anonymous_default_builder(self.anonymous_penguin_string_compiler)
 
-            self.xml_listeners.setup(houdini.handlers, exclude_load='houdini.handlers.login.login')
-            self.xt_listeners.setup(houdini.handlers)
+            await self.xml_listeners.setup(houdini.handlers, exclude_load='houdini.handlers.login.login')
+            await self.xt_listeners.setup(houdini.handlers)
+            await self.dummy_event_listeners.setup(houdini.handlers)
             self.logger.info('World server started')
         else:
-            self.xml_listeners.setup(houdini.handlers, 'houdini.handlers.login.login')
+            await self.xml_listeners.setup(houdini.handlers, 'houdini.handlers.login.login')
             self.logger.info('Login server started')
 
         self.items = await ItemCrumbsCollection.get_collection()
@@ -218,11 +214,6 @@ class Houdini:
 
         self.permissions = await PermissionCrumbsCollection.get_collection()
 
-        handlers_path = os.path.join(os.path.dirname(__file__), 'handlers')
-        plugins_path = os.path.join(os.path.dirname(__file__), 'plugins')
-        self.configure_observers([handlers_path, ListenerFileEventHandler],
-                                 [plugins_path, PluginFileEventHandler])
-
         self.logger.info('Multi-client support is {}'.format(
             'enabled' if self.config.client['MultiClientSupport'] else 'disabled'))
         self.logger.info('Listening on {}:{}'.format(self.server_config['Address'], self.server_config['Port']))
@@ -231,7 +222,7 @@ class Houdini:
             self.logger.warning('The static key has been changed from the default, '
                                 'this may cause authentication issues!')
 
-        self.plugins.setup(houdini.plugins)
+        await self.plugins.setup(houdini.plugins)
 
         async with self.server:
             await self.server.serve_forever()
@@ -239,31 +230,3 @@ class Houdini:
     async def client_connected(self, reader, writer):
         client_object = self.client_class(self, reader, writer)
         await client_object.run()
-
-    def get_package_modules(self, package):
-        package_modules = []
-
-        for importer, module_name, is_package in pkgutil.iter_modules(package.__path__):
-            full_module_name = '{0}.{1}'.format(package.__name__, module_name)
-
-            if is_package:
-                subpackage_object = importlib.import_module(full_module_name, package=package.__path__)
-                subpackage_object_directory = dir(subpackage_object)
-
-                if houdini.plugins.IPlugin.__name__ in subpackage_object_directory:
-                    package_modules.append(subpackage_object)
-                    continue
-
-                sub_package_modules = self.get_package_modules(subpackage_object)
-
-                package_modules = package_modules + sub_package_modules
-            else:
-                package_modules.append(full_module_name)
-
-        return package_modules
-
-    def configure_observers(self, *observer_settings):
-        for observer_path, observer_class in observer_settings:
-            event_observer = Observer()
-            event_observer.schedule(observer_class(self), observer_path, recursive=True)
-            event_observer.start()

@@ -64,6 +64,7 @@ player_in_room = handlers.player_in_room
 
 class CommandManager(_AbstractManager):
     def load(self, module):
+    async def load(self, module):
         command_objects = inspect.getmembers(module, is_command)
         if not isinstance(module, plugins.IPlugin):
             raise TypeError('Commands can only be loaded from plugins')
@@ -93,12 +94,6 @@ class CommandManager(_AbstractManager):
                                 name, module.__class__.__name__, conflict_command.instance.__class__.__name__))
                 else:
                     parent_commands[name] = [command_object]
-
-    def remove(self, module):
-        for command_name, command_handlers in self.items():
-            for command_handler in command_handlers:
-                if module.__name__ == command_handler.callback.__module__:
-                    command_handlers.remove(command_handler)
 
 
 def is_command(command_object):

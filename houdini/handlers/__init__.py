@@ -118,16 +118,12 @@ class _ListenerManager(_AbstractManager):
 
         super().__init__(server)
 
-    def setup(self, module, strict_load=None, exclude_load=None):
+    async def setup(self, module, strict_load=None, exclude_load=None):
         self.strict_load, self.exclude_load = strict_load, exclude_load
-        for handler_module in self.server.get_package_modules(module):
-            module = sys.modules[handler_module] if handler_module in sys.modules.keys() \
-                else importlib.import_module(handler_module)
-            self.load(module)
+        for handler_module in get_package_modules(module):
+            await self.load(handler_module)
 
-        self.logger.debug('Loaded {} listeners'.format(len(self)))
-
-    def load(self, module):
+    async def load(self, module):
         module_name = module.__module__ if isinstance(module, plugins.IPlugin) else module.__name__
         if not (self.strict_load and module_name not in self.strict_load or
                 self.exclude_load and module_name in self.exclude_load):
@@ -158,12 +154,6 @@ class _ListenerManager(_AbstractManager):
                     self[listener_object.packet].insert(index_of_after + 1, self[listener_object.packet].pop(old_index))
                 for override in listener_object.overrides:
                     self[override.packet].remove(override)
-
-    def remove(self, module):
-        for handler_id, handler_listeners in self.items():
-            for handler_listener in handler_listeners:
-                if module.__name__ == handler_listener.callback.__module__:
-                    handler_listeners.remove(handler_listener)
 
     @classmethod
     def is_listener(cls, listener):

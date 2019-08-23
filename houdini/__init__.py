@@ -5,7 +5,8 @@ from abc import abstractmethod
 import asyncio
 import enum
 import logging
-import copy
+import importlib
+import pkgutil
 
 
 class StatusField(enum.IntEnum):
@@ -19,7 +20,7 @@ class StatusField(enum.IntEnum):
     HasWalkedPuffleFirstTime = 65536
     HasWalkedPuffleSecondTime = 131072
 
-
+            package_modules = package_modules + sub_package_modules
 class ConflictResolution(enum.Enum):
     Silent = 0
     Append = 1
@@ -45,24 +46,15 @@ class _AbstractManager(dict):
         self.server = server
         self.logger = logging.getLogger('houdini')
 
-        self.__backup = None
         super().__init__()
 
     @abstractmethod
-    def load(self, module):
-        """Loads entries from module"""
+    async def setup(self, module):
+        """Setup manager class"""
 
     @abstractmethod
-    def remove(self, module):
-        """Removes all entries by module"""
-
-    def backup(self):
-        self.__backup = copy.copy(self)
-
-    def restore(self):
-        if self.__backup is not None:
-            self.update(self.__backup)
-            self.__backup = None
+    async def load(self, module):
+        """Loads entries from module"""
 
 
 class PenguinStringCompiler(OrderedDict):

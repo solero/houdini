@@ -2,9 +2,8 @@ from abc import ABC
 from abc import abstractmethod
 
 import inspect
-import asyncio
 
-from houdini import _AbstractManager
+from houdini import _AbstractManager, get_package_modules
 
 
 class IPlugin(ABC):
@@ -37,11 +36,11 @@ class IPlugin(ABC):
 
 
 class PluginManager(_AbstractManager):
-    def setup(self, module):
-        for plugin_package in self.server.get_package_modules(module):
-            self.load(plugin_package)
+    async def setup(self, module):
+        for plugin_package in get_package_modules(module):
+            await self.load(plugin_package)
 
-    def load(self, module):
+    async def load(self, module):
         plugin_class, plugin_type = inspect.getmembers(module, is_plugin).pop()
 
         if self.server.server_config['Plugins'] is not True and \
@@ -51,19 +50,12 @@ class PluginManager(_AbstractManager):
         plugin_object = plugin_type(self.server)
         self[module.__name__] = plugin_object
 
-        self.server.commands.load(plugin_object)
-        self.server.xt_listeners.load(plugin_object)
-        self.server.xml_listeners.load(plugin_object)
+        await self.server.commands.load(plugin_object)
+        await self.server.xt_listeners.load(plugin_object)
+        await self.server.xml_listeners.load(plugin_object)
+        await self.server.dummy_event_listeners.load(plugin_object)
 
-        asyncio.run_coroutine_threadsafe(plugin_object.ready(), self.server.server.get_loop())
-
-    def remove(self, module):
-        if module.__name__ in self:
-            del self[module.__name__]
-
-            self.server.commands.remove(module)
-            self.server.xt_listeners.remove(module)
-            self.server.xml_listeners.remove(module)
+        await plugin_object.ready()
 
 
 def is_plugin(plugin_class):
