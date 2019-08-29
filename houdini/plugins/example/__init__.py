@@ -24,7 +24,7 @@ class Example(IPlugin):
 
     @handlers.handler(XTPacket('m', 'sm'))
     @handlers.cooldown(1, callback=message_cooling)
-    async def handle_send_message(self, p, message: str):
+    async def handle_send_message(self, p, penguin_id: int, message: str):
         print('Do stuff with {}'.format(message))
 
     @commands.command('ping')
