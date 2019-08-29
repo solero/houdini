@@ -5,7 +5,7 @@ from houdini.commands import invoke_command_string, has_command_prefix
 
 @handlers.handler(XTPacket('m', 'sm'))
 @handlers.cooldown(.5)
-async def handle_send_message(p, penguin_id: int, message):
+async def handle_send_message(p, penguin_id: int, message: str):
     if penguin_id != p.data.id:
         return await p.close()
 

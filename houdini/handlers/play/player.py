@@ -16,7 +16,7 @@ def get_mascot_string_key(_, p, mascot_id):
 
 
 @cached(alias='default', key_builder=get_player_string_key)
-async def get_player_string(p, penguin_id):
+async def get_player_string(p, penguin_id: int):
     if penguin_id in p.server.penguins_by_id:
         return await p.server.penguins_by_id[penguin_id].string
     else:
@@ -26,7 +26,7 @@ async def get_player_string(p, penguin_id):
 
 
 @cached(alias='default', key_builder=get_mascot_string_key)
-async def get_mascot_string(p, mascot_id):
+async def get_mascot_string(p, mascot_id: int):
     if mascot_id in p.server.penguins_by_character_id:
         return await p.server.penguins_by_character_id[mascot_id].string
     else:
