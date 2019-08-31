@@ -690,11 +690,8 @@ COMMENT ON COLUMN ban.comment IS 'Ban comment';
 DROP TABLE IF EXISTS warning;
 CREATE TABLE warning (
   penguin_id INT NOT NULL,
-  issued TIMESTAMP NOT NULL,
   expires TIMESTAMP NOT NULL,
-  type SMALLINT NOT NULL,
-  comment TEXT NOT NULL,
-  PRIMARY KEY (penguin_id, issued, expires),
+  PRIMARY KEY (penguin_id, expires),
   CONSTRAINT warning_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
