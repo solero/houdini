@@ -40,7 +40,7 @@ class Penguin(db.Model):
     feet = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'))
     photo = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'))
     flag = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'))
-    permaban = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    permaban = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     book_modified = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
     book_color = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
     book_highlight = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
