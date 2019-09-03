@@ -28,6 +28,7 @@ class Penguin(db.Model):
     last_paycheck = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
     minutes_played = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
     moderator = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    stealth_moderator = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     character = db.Column(db.ForeignKey('character.id', ondelete='CASCADE', onupdate='CASCADE'))
     igloo = db.Column(db.ForeignKey('penguin_igloo_room.id', ondelete='CASCADE', onupdate='CASCADE'))
     coins = db.Column(db.Integer, nullable=False, server_default=db.text("500"))

@@ -455,6 +455,7 @@ CREATE TABLE penguin (
   last_paycheck TIMESTAMP NOT NULL,
   minutes_played INT NOT NULL DEFAULT 0,
   moderator BOOLEAN NOT NULL DEFAULT FALSE,
+  stealth_moderator BOOLEAN NOT NULL DEFAULT FALSE,
   character INT DEFAULT NULL,
   igloo INT DEFAULT NULL,
   coins INT NOT NULL DEFAULT 500,

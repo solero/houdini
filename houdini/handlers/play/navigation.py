@@ -16,8 +16,11 @@ async def handle_join_server(p, penguin_id: int, login_key: str):
         return await p.close()
 
     await p.send_xt('activefeatures')
+
+    moderator_status = 3 if p.data.character else 2 if p.data.stealth_moderator else 1 if p.data.moderator else 0
+
     await p.send_xt('js', int(p.data.agent_status), int(0),
-                    int(p.data.moderator), int(p.data.book_modified))
+                    moderator_status, int(p.data.book_modified))
 
     current_time = int(time.time())
     penguin_standard_time = current_time * 1000

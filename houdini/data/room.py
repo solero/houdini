@@ -1,4 +1,5 @@
 from houdini.data import db, BaseCrumbsCollection
+from houdini.constants import ClientType
 
 
 class Room(db.Model):
@@ -31,12 +32,23 @@ class Room(db.Model):
         self.penguins.append(p)
 
         p.room = self
-
-        await p.send_xt('jr', self.id, await self.get_string())
-        await self.send_xt('ap', await p.string)
+        if p.client_type == ClientType.Vanilla:
+            if p.data.stealth_moderator:
+                await p.send_xt('jr', self.id, (await self.get_string(p) + await p.string))
+                await p.send_xt('ap', await p.string)
+            else:
+                await p.send_xt('jr', self.id, await self.get_string(p))
+                await self.send_xt('ap', await p.string)
+        else:
+            await p.send_xt('jr', self.id, await self.get_string(p))
+            await self.send_xt('ap', await p.string)
 
     async def remove_penguin(self, p):
-        await self.send_xt('rp', p.data.id)
+        if p.client_type == ClientType.Vanilla:
+            if not p.data.stealth_moderator:
+                await self.send_xt('rp', p.data.id)
+        else:
+            await self.send_xt('rp', p.data.id)
 
         self.penguins.remove(p)
         p.room = None
@@ -44,9 +56,13 @@ class Room(db.Model):
         p.toy = None
 
     async def refresh(self, p):
-        await p.send_xt('grs', self.id, await self.get_string())
+        if p.client_type == ClientType.Vanilla:
+            return await p.send_xt('grs', self.id, (await self.get_string(p) + await p.string))
+        await p.send_xt('grs', self.id, await self.get_string(p))
 
-    async def get_string(self):
+    async def get_string(self, p):
+        if p.client_type == ClientType.Vanilla:
+            return '%'.join([await p.string for p in self.penguins if not p.data.stealth_moderator])
         return '%'.join([await p.string for p in self.penguins])
 
     async def send_xt(self, *data):
