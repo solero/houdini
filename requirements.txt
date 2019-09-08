@@ -3,7 +3,6 @@ aioredis
 gino
 aiocache
 ujson
-watchdog
 defusedxml
 msgpack
 bcrypt
