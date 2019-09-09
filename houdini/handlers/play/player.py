@@ -200,3 +200,19 @@ async def handle_send_action(p, action: int):
 @handlers.cooldown(1)
 async def handle_follow_path(p, path: int):
     await p.room.send_xt('followpath', p.data.id, path)
+
+
+@handlers.handler(XTPacket('u', 'ss'))
+async def handle_send_safe_message(p, message_id: int):
+    await p.room.send_xt('ss', p.data.id, message_id)
+
+
+@handlers.handler(XTPacket('u', 'sma'))
+async def handle_send_mascot_message(p, message_id: int):
+    if p.data.character:
+        await p.room.send_xt('sma', p.data.id, message_id)
+
+
+@handlers.handler(XTPacket('u', 'glr'))
+async def handle_get_last_revision(p):
+    await p.send_xt('glr', 'houdini')
