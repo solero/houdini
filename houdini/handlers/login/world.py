@@ -18,6 +18,9 @@ handle_random_key = login.handle_random_key
 @handlers.allow_once
 @handlers.depends_on_packet(XMLPacket('verChk'), XMLPacket('rndK'))
 async def handle_login(p, credentials: WorldCredentials):
+    if len(p.server.penguins_by_id) >= p.server.server_config['Capacity']:
+        return await p.send_error_and_disconnect(103)
+
     tr = p.server.redis.multi_exec()
     tr.get('{}.lkey'.format(credentials.username))
     tr.get('{}.ckey'.format(credentials.username))
@@ -65,6 +68,9 @@ async def handle_login(p, credentials: WorldCredentials):
 @handlers.allow_once
 @handlers.depends_on_packet(XMLPacket('verChk'), XMLPacket('rndK'))
 async def handle_legacy_login(p, credentials: Credentials):
+    if len(p.server.penguins_by_id) >= p.server.server_config['Capacity']:
+        return await p.send_error_and_disconnect(103)
+
     tr = p.server.redis.multi_exec()
     tr.get('{}.lkey'.format(credentials.username))
     tr.delete('{}.lkey'.format(credentials.username), '{}.ckey'.format(credentials.username))
