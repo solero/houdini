@@ -9,7 +9,6 @@ from houdini.constants import ClientType
 
 import asyncio
 import bcrypt
-import time
 import os
 
 from datetime import datetime
@@ -21,7 +20,6 @@ from datetime import datetime
 async def handle_login(p, credentials: Credentials):
     loop = asyncio.get_event_loop()
 
-    login_timestamp = time.time()
     username, password = credentials.username, credentials.password
     p.logger.info('{} is logging in!'.format(username))
 
@@ -62,8 +60,13 @@ async def handle_login(p, credentials: Credentials):
         else:
             await p.server.redis.delete(flood_key)
 
+    preactivation_hours = 0
     if not data.active:
-        return await p.send_error_and_disconnect(900)
+        preactivation_expiry = data.registration_date + timedelta(days=7)
+        preactivation_expiry = preactivation_expiry - datetime.now()
+        preactivation_hours = preactivation_expiry.total_seconds() // 3600
+        if preactivation_hours <= 0 or p.client_type == ClientType.Legacy:
+            return await p.send_error_and_disconnect(900)
 
     if data.permaban:
         return await p.send_error_and_disconnect(603)
@@ -96,7 +99,10 @@ async def handle_login(p, credentials: Credentials):
     if p.client_type == ClientType.Vanilla:
         raw_login_data = '|'.join([str(data.id), str(data.id), data.username, login_key, str(data.approval),
                                    str(data.rejection)])
-        await p.send_xt('l', raw_login_data, confirmation_hash, '', world_populations, buddy_presence,
-                        data.email)
+        if not data.active:
+            await p.send_xt('l', raw_login_data, confirmation_hash, '', world_populations, buddy_presence,
+                            data.email, int(preactivation_hours))
+        else:
+            await p.send_xt('l', raw_login_data, confirmation_hash, '', world_populations, buddy_presence, data.email)
     else:
         await p.send_xt('l', data.id, login_key, world_populations, buddy_presence)
