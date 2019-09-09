@@ -58,7 +58,7 @@ async def handle_buy_inventory(p, item: Item):
     if item.id in p.data.inventory:
         return await p.send_error(400)
 
-    if item.epf:
+    if item.tour:
         return await p.add_inbox(p.server.postcards[126])
 
     if p.data.coins < item.cost:
