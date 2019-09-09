@@ -51,7 +51,6 @@ async def handle_get_inventory(p):
 
 @handlers.handler(XTPacket('i', 'ai'))
 @handlers.depends_on_packet(XTPacket('i', 'gi'))
-@handlers.cooldown(1)
 async def handle_buy_inventory(p, item: Item):
     if item.id not in p.server.items:
         return await p.send_error(402)
