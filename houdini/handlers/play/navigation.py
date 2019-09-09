@@ -42,6 +42,7 @@ async def handle_join_server(p, penguin_id: int, login_key: str):
     if p.data.character is not None:
         p.server.penguins_by_character_id[p.data.character] = p
 
+    p.login_timestamp = datetime.now()
     p.joined_world = True
 
     server_key = '{}.players'.format(p.server.server_config['Id'])
@@ -65,6 +66,14 @@ async def handle_refresh_room(p):
 @handlers.player_attribute(joined_world=True)
 async def handle_disconnect_room(p):
     await p.room.remove_penguin(p)
+
+    minutes_played = (datetime.now() - p.login_timestamp).total_seconds() / 60.0
+    await Login.create(penguin_id=p.data.id,
+                       date=p.login_timestamp,
+                       ip_address=p.peer_name[0],
+                       minutes_played=minutes_played)
+
+    await p.data.update(minutes_played=p.data.minutes_played + minutes_played).apply()
 
     del p.server.penguins_by_id[p.data.id]
     del p.server.penguins_by_username[p.data.username]

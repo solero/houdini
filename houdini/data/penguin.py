@@ -124,6 +124,15 @@ class Penguin(db.Model):
         return self.nickname if self.approval & language_bitmask else "P" + str(self.id)
 
     @property
+    def minutes_played_today(self):
+        async def get_minutes():
+            yesterday = datetime.combine(date.today(), datetime.min.time())
+            minutes_played_today = await db.select([db.func.sum(Login.minutes_played)]) \
+                .where((Login.penguin_id == self.id) & (Login.date > yesterday)).gino.scalar()
+            return minutes_played_today or 0
+        return get_minutes()
+
+    @property
     def age(self):
         return (datetime.now() - self.registration_date).days
 
@@ -162,3 +171,4 @@ class Login(db.Model):
     penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
     date = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
     ip_address = db.Column(db.CHAR(255), nullable=False)
+    minutes_played = db.Column(db.Integer, nullable=False, server_default=db.text("0"))

@@ -8,7 +8,7 @@ class Penguin(Spheniscidae):
     __slots__ = ['x', 'y', 'frame', 'toy', 'room', 'waddle', 'table',
                  'data', 'muted', 'login_key', 'member', 'membership_days',
                  'avatar', 'walking_puffle', 'permissions', 'active_quests',
-                 'buddy_requests']
+                 'buddy_requests', 'heartbeat', 'login_timestamp',
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -33,7 +33,7 @@ class Penguin(Spheniscidae):
 
         self.active_quests = None
 
-        self.buddy_requests = set()
+        self.login_timestamp = None
 
     @property
     def party_state(self):
