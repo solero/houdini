@@ -8,7 +8,6 @@ from houdini.data.igloo import IglooCrumbsCollection, FurnitureCrumbsCollection,
     LocationCrumbsCollection
 from houdini.data.stamp import StampCrumbsCollection
 from houdini.data.ninja import CardCrumbsCollection
-from houdini.data.mail import PostcardCrumbsCollection
 from houdini.data.pet import PuffleCrumbsCollection, PuffleItemCrumbsCollection
 from houdini.data.buddy import BuddyListCollection, BuddyRequestCollection, CharacterBuddyCollection, \
     IgnoreListCollection
@@ -96,7 +95,6 @@ class Penguin(db.Model):
         self.locations = None
         self.stamps = None
         self.cards = None
-        self.postcards = None
         self.puffles = None
         self.puffle_items = None
         self.buddies = None
@@ -115,10 +113,8 @@ class Penguin(db.Model):
         self.locations = await LocationCrumbsCollection.get_collection(self.id)
         self.stamps = await StampCrumbsCollection.get_collection(self.id)
         self.cards = await CardCrumbsCollection.get_collection(self.id)
-        self.postcards = await PostcardCrumbsCollection.get_collection(self.id)
         self.puffles = await PuffleCrumbsCollection.get_collection(self.id)
         self.puffle_items = await PuffleItemCrumbsCollection.get_collection(self.id)
-
         self.buddies = await BuddyListCollection.get_collection(self.id)
         self.buddy_requests = await BuddyRequestCollection.get_collection(self.id)
         self.character_buddies = await CharacterBuddyCollection.get_collection(self.id)
