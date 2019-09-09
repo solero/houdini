@@ -49,6 +49,12 @@ class Room(db.Model):
             await p.send_xt('jr', self.id, await self.get_string(p))
             await self.send_xt('ap', await p.string)
 
+        if self.game:
+            await p.send_xt('jg', self.id)
+        else:
+            await p.send_xt('jr', self.id, await self.get_string())
+            await self.send_xt('ap', await p.string)
+
     async def remove_penguin(self, p):
         if p.client_type == ClientType.Vanilla:
             if not p.data.stealth_moderator:
