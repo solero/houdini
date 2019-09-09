@@ -10,9 +10,9 @@ async def handle_send_message(p, penguin_id: int, message: str):
         return await p.close()
 
     if p.muted:
-        for room_player in p.room.penguins:
-            if room_player.data.moderator:
-                await room_player.sendXt("mm", message, penguin_id)
+        for penguin in p.room.penguins_by_id.values():
+            if penguin.data.moderator:
+                await penguin.send_xt("mm", message, penguin_id)
         return
 
     if has_command_prefix(message):

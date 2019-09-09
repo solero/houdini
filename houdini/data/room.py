@@ -19,7 +19,9 @@ class Room(db.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.penguins = []
+        self.penguins_by_id = {}
+        self.penguins_by_username = {}
+        self.penguins_by_character_id = {}
 
         self.igloo = False
 
@@ -29,7 +31,11 @@ class Room(db.Model):
     async def add_penguin(self, p):
         if p.room:
             await p.room.remove_penguin(p)
-        self.penguins.append(p)
+        self.penguins_by_id[p.data.id] = p
+        self.penguins_by_username[p.data.username] = p
+
+        if p.data.character:
+            self.penguins_by_character_id[p.data.character] = p
 
         p.room = self
         if p.client_type == ClientType.Vanilla:
@@ -50,7 +56,12 @@ class Room(db.Model):
         else:
             await self.send_xt('rp', p.data.id)
 
-        self.penguins.remove(p)
+        del self.penguins_by_id[p.data.id]
+        del self.penguins_by_username[p.data.username]
+
+        if p.data.character:
+            del self.penguins_by_character_id[p.data.character]
+
         p.room = None
         p.frame = 1
         p.toy = None
@@ -60,13 +71,11 @@ class Room(db.Model):
             return await p.send_xt('grs', self.id, (await self.get_string(p) + await p.string))
         await p.send_xt('grs', self.id, await self.get_string(p))
 
-    async def get_string(self, p):
-        if p.client_type == ClientType.Vanilla:
-            return '%'.join([await p.string for p in self.penguins if not p.data.stealth_moderator])
-        return '%'.join([await p.string for p in self.penguins])
+    async def get_string(self):
+        return '%'.join([await p.string for p in self.penguins_by_id.values()])
 
     async def send_xt(self, *data):
-        for penguin in self.penguins:
+        for penguin in self.penguins_by_id.values():
             await penguin.send_xt(*data)
 
 

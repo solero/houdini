@@ -17,7 +17,7 @@ async def handle_close_book(p):
 
 @handlers.handler(XTPacket('j', 'jr'), client=ClientType.Legacy)
 async def handle_join_room_toy(p):
-    for penguin in p.room.penguins:
+    for penguin in p.room.penguins_by_id.values():
         if penguin.toy is not None:
             await p.send_xt('at', penguin.data.id, penguin.toy)
 
@@ -25,6 +25,6 @@ async def handle_join_room_toy(p):
 @handlers.handler(XTPacket('j', 'crl'), client=ClientType.Vanilla)
 @handlers.depends_on_packet(XTPacket('j', 'jr'))
 async def handle_client_room_loaded_toy(p):
-    for penguin in p.room.penguins:
+    for penguin in p.room.penguins_by_id.values():
         if penguin.toy is not None:
             await p.send_xt('at', penguin.data.id, penguin.toy)
