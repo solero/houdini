@@ -45,6 +45,37 @@ async def server_heartbeat(server):
         for penguin in server.penguins_by_id.values():
             if penguin.heartbeat < timer:
                 await penguin.close()
+
+
+async def server_egg_timer(server):
+    while True:
+        await asyncio.sleep(60)
+        for p in server.penguins_by_id.values():
+            if p.data.timer_active:
+                p.egg_timer_minutes -= 1
+                if p.client_type == ClientType.Vanilla:
+                    minutes_until_timer_end = datetime.combine(datetime.today(), p.data.timer_end) - datetime.now()
+                    minutes_until_timer_end = minutes_until_timer_end.total_seconds() // 60
+
+                    if minutes_until_timer_end <= p.egg_timer_minutes + 1:
+                        if p.egg_timer_minutes == 7:
+                            await p.send_error(915, p.egg_timer_minutes, p.data.timer_start, p.data.timer_end)
+                        elif p.egg_timer_minutes == 5:
+                            await p.send_error(915, p.egg_timer_minutes, p.data.timer_start, p.data.timer_end)
+                    else:
+                        if p.egg_timer_minutes == 7:
+                            await p.send_error(914, p.egg_timer_minutes, p.data.timer_total)
+                        elif p.egg_timer_minutes == 5:
+                            await p.send_error(914, p.egg_timer_minutes, p.data.timer_total)
+
+                    await p.send_xt('uet', p.egg_timer_minutes)
+                    if p.egg_timer_minutes <= 0:
+                        await p.send_error_and_disconnect(916, p.data.timer_start, p.data.timer_end)
+                else:
+                    if p.egg_timer_minutes <= 0:
+                        await p.send_error_and_disconnect(910)
+
+
 @handlers.handler(XTPacket('u', 'h'))
 @handlers.cooldown(59)
 async def handle_heartbeat(p):

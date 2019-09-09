@@ -40,6 +40,7 @@ from houdini.plugins import PluginManager
 from houdini.commands import CommandManager
 
 from houdini.handlers.play.player import server_heartbeat
+from houdini.handlers.play.player import server_egg_timer
 
 class Houdini:
 
@@ -93,6 +94,7 @@ class Houdini:
         self.spawn_rooms = None
 
         self.heartbeat = None
+        self.egg_timer = None
     async def start(self):
         self.config = config
 
@@ -228,6 +230,8 @@ class Houdini:
         await self.plugins.setup(houdini.plugins)
 
         self.heartbeat = asyncio.create_task(server_heartbeat(self))
+        self.egg_timer = asyncio.create_task(server_egg_timer(self))
+
         async with self.server:
             await self.server.serve_forever()
 

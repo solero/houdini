@@ -11,7 +11,7 @@ import asyncio
 import bcrypt
 import os
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 @handlers.handler(XMLPacket('login'))
@@ -73,6 +73,14 @@ async def handle_login(p, credentials: Credentials):
 
     if data.grounded:
         return await p.send_error_and_disconnect(913)
+
+    if data.timer_active:
+        if not data.timer_start < datetime.now().time() < data.timer_end:
+            return await p.send_error_and_disconnect(911, data.timer_start, data.timer_end)
+
+        if await data.minutes_played_today >= data.timer_total.total_seconds() // 60:
+            return await p.send_error_and_disconnect(910, data.timer_total)
+
     active_ban = await Ban.query.where(Ban.penguin_id == data.id and Ban.expires >= datetime.now()).gino.first()
 
     if active_ban is not None:

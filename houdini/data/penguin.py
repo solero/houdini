@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from houdini.data import db
 
@@ -72,6 +72,7 @@ class Penguin(db.Model):
     timer_active = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     timer_start = db.Column(db.Time, nullable=False, server_default=db.text("'00:00:00'::time without time zone"))
     timer_end = db.Column(db.Time, nullable=False, server_default=db.text("'23:59:59'::time without time zone"))
+    timer_total = db.Column(db.Interval, nullable=False, server_default=db.text("'01:00:00'::interval"))
     grounded = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     approval_en = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     approval_pt = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))

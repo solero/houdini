@@ -1,9 +1,11 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
 from houdini.data.room import Room
+from houdini.data.penguin import Login
 
 import random
 import time
+from datetime import datetime
 
 
 @handlers.handler(XTPacket('j', 'js'), pre_login=True)
@@ -26,7 +28,17 @@ async def handle_join_server(p, penguin_id: int, login_key: str):
     penguin_standard_time = current_time * 1000
     server_time_offset = 7
 
-    await p.send_xt('lp', await p.string, p.data.coins, int(p.data.safe_chat), 1440,
+    if p.data.timer_active:
+        minutes_until_timer_end = datetime.combine(datetime.today(), p.data.timer_end) - datetime.now()
+        minutes_until_timer_end = minutes_until_timer_end.total_seconds() // 60
+
+        minutes_played_today = await p.data.minutes_played_today
+        minutes_left_today = (p.data.timer_total.total_seconds() // 60) - minutes_played_today
+        p.egg_timer_minutes = int(min(minutes_until_timer_end, minutes_left_today))
+    else:
+        p.egg_timer_minutes = 24 * 60
+
+    await p.send_xt('lp', await p.string, p.data.coins, int(p.data.safe_chat), p.egg_timer_minutes,
                     penguin_standard_time, p.data.age, 0, p.data.minutes_played,
                     "membership_days", server_time_offset, int(p.data.opened_playercard),
                     p.data.map_category, p.data.status_field)

@@ -9,6 +9,7 @@ class Penguin(Spheniscidae):
                  'data', 'muted', 'login_key', 'member', 'membership_days',
                  'avatar', 'walking_puffle', 'permissions', 'active_quests',
                  'buddy_requests', 'heartbeat', 'login_timestamp',
+                 'egg_timer_minutes']
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -28,12 +29,14 @@ class Penguin(Spheniscidae):
         self.membership_days = 1
 
         self.avatar = None
-
         self.walking_puffle = None
-
         self.active_quests = None
+        self.buddy_requests = set()
+
+        self.heartbeat = time.time()
 
         self.login_timestamp = None
+        self.egg_timer_minutes = None
 
     @property
     def party_state(self):

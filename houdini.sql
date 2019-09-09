@@ -500,6 +500,8 @@ CREATE TABLE penguin (
   timer_active BOOLEAN NOT NULL DEFAULT FALSE,
   timer_start TIME NOT NULL DEFAULT '00:00:00',
   timer_end TIME NOT NULL DEFAULT '23:59:59',
+  timer_total INTERVAL NOT NULL DEFAULT '01:00:00',
+  grounded BOOLEAN NOT NULL DEFAULT FALSE,
   approval_en BOOLEAN NOT NULL DEFAULT FALSE,
   approval_pt BOOLEAN NOT NULL DEFAULT FALSE,
   approval_fr BOOLEAN NOT NULL DEFAULT FALSE,
@@ -587,6 +589,8 @@ COMMENT ON COLUMN penguin.status_field IS 'New player status field';
 COMMENT ON COLUMN penguin.timer_active IS 'Is egg-timer active?';
 COMMENT ON COLUMN penguin.timer_start IS 'Egg-timer start time';
 COMMENT ON COLUMN penguin.timer_end IS 'Egg-timer end time';
+COMMENT ON COLUMN penguin.timer_total IS 'Egg-timer total play time';
+COMMENT ON COLUMN penguin.grounded IS 'Is player grounded?';
 COMMENT ON COLUMN penguin.approval_en IS 'English username approval';
 COMMENT ON COLUMN penguin.approval_pt IS 'Portuguese username approval';
 COMMENT ON COLUMN penguin.approval_fr IS 'French username approval';
