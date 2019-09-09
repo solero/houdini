@@ -4,6 +4,5 @@ gino
 aiocache
 ujson
 defusedxml
-msgpack
 bcrypt
 uvloop; sys_platform != 'win32'
