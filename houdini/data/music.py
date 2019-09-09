@@ -1,4 +1,4 @@
-from houdini.data import db
+from houdini.data import db, BaseCrumbsCollection
 
 
 class PenguinTrack(db.Model):
@@ -19,4 +19,4 @@ class TrackLike(db.Model):
                            nullable=False)
     track_id = db.Column(db.ForeignKey('penguin_track.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
                          nullable=False, index=True)
-    date = db.Column(db.DateTime, primary_key=True, nullable=False)
+    date = db.Column(db.DateTime, primary_key=True, nullable=False, server_default=db.text("now()"))

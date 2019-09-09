@@ -971,6 +971,8 @@ CREATE TABLE track_like (
 
 CREATE INDEX track_like_track_id ON track_like (track_id);
 
+ALTER TABLE track_like ALTER COLUMN date SET DEFAULT now();
+
 COMMENT ON TABLE track_like IS 'SoundStudio likes';
 
 COMMENT ON COLUMN track_like.track_id IS 'Liked track ID';
