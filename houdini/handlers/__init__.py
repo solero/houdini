@@ -107,6 +107,7 @@ class _XMLListener(_Listener):
 
 class _DummyListener(_Listener):
     async def __call__(self, p, *_):
+        super()._check_list(p)
         handler_call_arguments = [self.instance, p] if self.instance is not None else [p]
         return await self.callback(*handler_call_arguments)
 
