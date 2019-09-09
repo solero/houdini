@@ -191,3 +191,18 @@ async def handle_toggle_best_character(p, character_id: int):
     if character_id in p.data.character_buddies:
         character_buddy_record = p.data.character_buddies[character_id]
         await character_buddy_record.update(best_buddy=not character_buddy_record.best_buddy).apply()
+
+
+@handlers.disconnected
+@handlers.player_attribute(joined_world=True)
+async def handle_disconnect_buddy(p):
+    if p.data.character is not None:
+        del p.server.penguins_by_character_id[p.data.character]
+
+        for penguin in p.server.penguins_by_id.values():
+            if p.data.character in penguin.data.character_buddies:
+                await penguin.send_xt('caof', p.data.character)
+
+    for buddy_id in p.data.buddies:
+        if buddy_id in p.server.penguins_by_id:
+            await p.server.penguins_by_id[buddy_id].send_xt('bof', p.data.id)
