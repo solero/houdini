@@ -59,3 +59,16 @@ async def handle_join_room(p, room: Room, x: int, y: int):
 @handlers.handler(XTPacket('j', 'grs'))
 async def handle_refresh_room(p):
     await p.room.refresh(p)
+
+
+@handlers.disconnected
+@handlers.player_attribute(joined_world=True)
+async def handle_disconnect_room(p):
+    await p.room.remove_penguin(p)
+
+    del p.server.penguins_by_id[p.data.id]
+    del p.server.penguins_by_username[p.data.username]
+
+    server_key = '{}.players'.format(p.server.server_config['Id'])
+    await p.server.redis.srem(server_key, p.data.id)
+    await p.server.redis.hincrby('population', p.server.server_config['Id'], -1)
