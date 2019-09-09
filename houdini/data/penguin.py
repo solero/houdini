@@ -73,6 +73,7 @@ class Penguin(db.Model):
     timer_active = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     timer_start = db.Column(db.Time, nullable=False, server_default=db.text("'00:00:00'::time without time zone"))
     timer_end = db.Column(db.Time, nullable=False, server_default=db.text("'23:59:59'::time without time zone"))
+    grounded = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     approval_en = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     approval_pt = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     approval_fr = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))

@@ -68,6 +68,8 @@ async def handle_login(p, credentials: Credentials):
     if data.permaban:
         return await p.send_error_and_disconnect(603)
 
+    if data.grounded:
+        return await p.send_error_and_disconnect(913)
     active_ban = await Ban.query.where(Ban.penguin_id == data.id and Ban.expires >= datetime.now()).gino.first()
 
     if active_ban is not None:
