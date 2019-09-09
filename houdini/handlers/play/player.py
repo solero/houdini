@@ -4,7 +4,10 @@ from houdini.data.penguin import Penguin
 from houdini.constants import ClientType
 
 from aiocache import cached
+from datetime import datetime
 import random
+import asyncio
+import time
 
 
 def get_player_string_key(_, p, player_id):
@@ -35,9 +38,17 @@ async def get_mascot_string(p, mascot_id: int):
         return string
 
 
+async def server_heartbeat(server):
+    while True:
+        timer = time.time()
+        await asyncio.sleep(61)
+        for penguin in server.penguins_by_id.values():
+            if penguin.heartbeat < timer:
+                await penguin.close()
 @handlers.handler(XTPacket('u', 'h'))
 @handlers.cooldown(59)
 async def handle_heartbeat(p):
+    p.heartbeat = time.time()
     await p.send_xt('h')
 
 
