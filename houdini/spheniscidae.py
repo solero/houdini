@@ -136,21 +136,27 @@ class Spheniscidae:
     async def _client_connected(self):
         self.logger.info('Client %s connected', self.peer_name)
 
-        dummy_event = DummyEventPacket('connected')
-        if dummy_event in self.server.dummy_event_listeners:
-            dummy_event_listeners = self.server.dummy_event_listeners[dummy_event]
-            for listener in dummy_event_listeners:
-                await listener(self)
+        try:
+            dummy_event = DummyEventPacket('connected')
+            if dummy_event in self.server.dummy_event_listeners:
+                dummy_event_listeners = self.server.dummy_event_listeners[dummy_event]
+                for listener in dummy_event_listeners:
+                    await listener(self)
+        except ChecklistError:
+            self.logger.debug('{} sent a packet without meeting checklist requirements'.format(self))
 
     async def _client_disconnected(self):
         del self.server.peers_by_ip[self.peer_name]
         self.logger.info('Client %s disconnected', self.peer_name)
 
-        dummy_event = DummyEventPacket('disconnected')
-        if dummy_event in self.server.dummy_event_listeners:
-            dummy_event_listeners = self.server.dummy_event_listeners[dummy_event]
-            for listener in dummy_event_listeners:
-                await listener(self)
+        try:
+            dummy_event = DummyEventPacket('disconnected')
+            if dummy_event in self.server.dummy_event_listeners:
+                dummy_event_listeners = self.server.dummy_event_listeners[dummy_event]
+                for listener in dummy_event_listeners:
+                    await listener(self)
+        except ChecklistError:
+            self.logger.debug('{} sent a packet without meeting checklist requirements'.format(self))
 
     async def __data_received(self, data):
         data = data.decode()[:-1]
