@@ -4,6 +4,7 @@ from houdini.data.item import Item, ItemCrumbsCollection
 
 import time
 from aiocache import cached
+import operator
 
 
 def get_pin_string_key(_, p, player_id):
@@ -22,12 +23,13 @@ async def get_pin_string(p, player_id):
         inventory = await ItemCrumbsCollection.get_collection(player_id)
 
     def get_string(pin):
-        pin = p.server.items[pin]
-        release_unix = int(time.mktime(pin.release_date.timetuple()))
-        return '|'.join(map(str, [pin.id, release_unix, int(pin.member)]))
+        unix = int(time.mktime(pin.release_date.timetuple()))
+        return f'{pin.id}|{unix}|{int(pin.member)}'
 
-    pins = [get_string(pin) for pin in inventory.keys() if p.server.items[pin].is_flag()]
-    return '%'.join(pins)
+    pins = sorted((p.server.items[pin] for pin in inventory.keys()
+                   if (p.server.items[pin].is_flag() and p.server.items[pin].cost == 0)),
+                  key=operator.attrgetter('release_date'))
+    return '%'.join(get_string(pin) for pin in pins)
 
 
 @cached(alias='default', key_builder=get_awards_string_key)
