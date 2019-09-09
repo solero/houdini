@@ -42,6 +42,9 @@ from houdini.commands import CommandManager
 from houdini.handlers.play.player import server_heartbeat
 from houdini.handlers.play.player import server_egg_timer
 
+from houdini.handlers.play.music import SoundStudio
+
+
 class Houdini:
 
     def __init__(self, server_name,  **kwargs):
@@ -95,6 +98,9 @@ class Houdini:
 
         self.heartbeat = None
         self.egg_timer = None
+
+        self.music = None
+
     async def start(self):
         self.config = config
 
@@ -231,6 +237,8 @@ class Houdini:
 
         self.heartbeat = asyncio.create_task(server_heartbeat(self))
         self.egg_timer = asyncio.create_task(server_egg_timer(self))
+
+        self.music = SoundStudio(self)
 
         async with self.server:
             await self.server.serve_forever()

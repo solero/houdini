@@ -11,6 +11,19 @@ class PenguinTrack(db.Model):
     sharing = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     pattern = db.Column(db.Text, nullable=False)
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self._likes = 0
+
+    @property
+    def likes(self):
+        return self._likes
+
+    @likes.setter
+    def likes(self, like_count):
+        self._likes = like_count
+
 
 class TrackLike(db.Model):
     __tablename__ = 'track_like'
