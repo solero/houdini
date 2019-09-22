@@ -40,13 +40,13 @@ class Room(db.Model):
         p.room = self
         if p.client_type == ClientType.Vanilla:
             if p.data.stealth_moderator:
-                await p.send_xt('jr', self.id, (await self.get_string(p) + await p.string))
+                await p.send_xt('jr', self.id, (await self.get_string() + await p.string))
                 await p.send_xt('ap', await p.string)
             else:
-                await p.send_xt('jr', self.id, await self.get_string(p))
+                await p.send_xt('jr', self.id, await self.get_string())
                 await self.send_xt('ap', await p.string)
         else:
-            await p.send_xt('jr', self.id, await self.get_string(p))
+            await p.send_xt('jr', self.id, await self.get_string())
             await self.send_xt('ap', await p.string)
 
         if self.game:
@@ -74,8 +74,8 @@ class Room(db.Model):
 
     async def refresh(self, p):
         if p.client_type == ClientType.Vanilla:
-            return await p.send_xt('grs', self.id, (await self.get_string(p) + await p.string))
-        await p.send_xt('grs', self.id, await self.get_string(p))
+            return await p.send_xt('grs', self.id, (await self.get_string() + await p.string))
+        await p.send_xt('grs', self.id, await self.get_string())
 
     async def get_string(self):
         return '%'.join([await p.string for p in self.penguins_by_id.values()])
