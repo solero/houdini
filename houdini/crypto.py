@@ -6,9 +6,9 @@ class Crypto:
 
     @staticmethod
     def hash(undigested):
-        if type(undigested) == str:
-            undigested = undigested.encode('utf-8')
-        return hashlib.md5(undigested).hexdigest()
+        if type(undigested) == int:
+            undigested = str(undigested)
+        return hashlib.md5(undigested.encode('utf-8')).hexdigest()
 
     @staticmethod
     def generate_random_key():
