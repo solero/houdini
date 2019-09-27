@@ -1,8 +1,5 @@
 import hashlib
 import secrets
-import string
-
-_alphabet = string.ascii_letters + string.digits
 
 
 class Crypto:
@@ -15,7 +12,7 @@ class Crypto:
 
     @staticmethod
     def generate_random_key():
-        return ''.join(secrets.choice(_alphabet) for _ in range(16))
+        return secrets.token_hex(8)
 
     @staticmethod
     def encrypt_password(password, digest=True):
