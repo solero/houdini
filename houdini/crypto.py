@@ -1,18 +1,16 @@
-import hashlib
-import secrets
+from hashlib import md5
+from secrets import token_hex
 
 
 class Crypto:
 
     @staticmethod
     def hash(undigested):
-        if type(undigested) == int:
-            undigested = str(undigested)
-        return hashlib.md5(undigested.encode('utf-8')).hexdigest()
+        return md5(str(undigested).encode('utf-8')).hexdigest()
 
     @staticmethod
     def generate_random_key():
-        return secrets.token_hex(8)
+        return token_hex(8)
 
     @staticmethod
     def encrypt_password(password, digest=True):
