@@ -5,6 +5,7 @@ from asyncio import IncompleteReadError, CancelledError
 import defusedxml.cElementTree as Et
 from xml.etree.cElementTree import Element, SubElement, tostring
 
+from houdini.constants import ClientType
 from houdini.handlers import AuthorityError, DummyEventPacket
 from houdini.converters import ChecklistError
 from houdini.cooldown import CooldownError
@@ -49,20 +50,15 @@ class Spheniscidae:
         await self.send_xt('e', error, *args)
 
     async def send_policy_file(self):
-        await self.send_line('<cross-domain-policy><allow-access-from domain="*" to-ports="{}" /></cross-domain-policy>'
-                             .format(self.server.server_config['Port']))
+        await self.send_line(f'<cross-domain-policy><allow-access-from domain="*" to-ports="'
+                             f'{self.server.server_config["Port"]}" /></cross-domain-policy>')
         await self.close()
 
-    async def send_xt(self, *data):
-        data = list(data)
-
-        handler_id = data.pop(0)
+    async def send_xt(self, handler_id, *data):
         internal_id = -1
 
-        mapped_data = map(str, data)
-
-        xt_data = '%'.join(mapped_data)
-        line = '%xt%{0}%{1}%{2}%'.format(handler_id, internal_id, xt_data)
+        xt_data = '%'.join(str(d) for d in data)
+        line = f'%xt%{handler_id}%{internal_id}%{xt_data}%'
         await self.send_line(line)
 
     async def send_xml(self, xml_dict):
@@ -151,7 +147,7 @@ class Spheniscidae:
                 for listener in dummy_event_listeners:
                     await listener(self)
         except ChecklistError:
-            self.logger.debug('{} sent a packet without meeting checklist requirements'.format(self))
+            self.logger.debug(f'{self} sent a packet without meeting checklist requirements')
 
     async def _client_disconnected(self):
         del self.server.peers_by_ip[self.peer_name]
@@ -164,7 +160,7 @@ class Spheniscidae:
                 for listener in dummy_event_listeners:
                     await listener(self)
         except ChecklistError:
-            self.logger.debug('{} sent a packet without meeting checklist requirements'.format(self))
+            self.logger.debug(f'{self} sent a packet without meeting checklist requirements')
 
     async def __data_received(self, data):
         data = data.decode()[:-1]
@@ -174,11 +170,11 @@ class Spheniscidae:
             else:
                 await self.__handle_xt_data(data)
         except AuthorityError:
-            self.logger.debug('{} tried to send game packet before authentication'.format(self))
+            self.logger.debug(f'{self} tried to send game packet before authentication')
         except CooldownError:
-            self.logger.debug('{} tried to send a packet during a cooldown'.format(self))
+            self.logger.debug(f'{self} tried to send a packet during a cooldown')
         except ChecklistError:
-            self.logger.debug('{} sent a packet without meeting checklist requirements'.format(self))
+            self.logger.debug(f'{self} sent a packet without meeting checklist requirements')
 
     async def run(self):
         await self._client_connected()
@@ -203,4 +199,4 @@ class Spheniscidae:
         await self._client_disconnected()
 
     def __repr__(self):
-        return '<Spheniscidae {}>'.format(self.peer_name)
+        return f'<Spheniscidae {self.peer_name}>'
