@@ -159,7 +159,7 @@ class Houdini:
 
         if self.server_config['World']:
             await self.redis.delete(f'houdini.players.{self.server_config["Id"]}')
-            await self.redis.delete('{}.population'.format(self.server_name))
+            await self.redis.hdel(f'houdini.population', self.server_config["Id"])
 
             caches.set_config({
                 'default': {

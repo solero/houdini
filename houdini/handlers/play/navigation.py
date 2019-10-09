@@ -59,7 +59,7 @@ async def handle_join_server(p, penguin_id: int, login_key: str):
 
     server_key = f'houdini.players.{p.server.server_config["Id"]}'
     await p.server.redis.sadd(server_key, p.data.id)
-    await p.server.redis.hincrby('population', p.server.server_config['Id'], 1)
+    await p.server.redis.hincrby('houdini.population', p.server.server_config['Id'], 1)
 
 
 @handlers.handler(XTPacket('j', 'jr'))
@@ -92,4 +92,4 @@ async def handle_disconnect_room(p):
 
     server_key = f'houdini.players.{p.server.server_config["Id"]}'
     await p.server.redis.srem(server_key, p.data.id)
-    await p.server.redis.hincrby('population', p.server.server_config['Id'], -1)
+    await p.server.redis.hincrby('houdini.population', p.server.server_config['Id'], -1)
