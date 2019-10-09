@@ -33,6 +33,14 @@ class Spheniscidae:
 
         self.received_packets = set()
 
+    @property
+    def is_vanilla_client(self):
+        return self.client_type == ClientType.Vanilla
+
+    @property
+    def is_legacy_client(self):
+        return self.client_type == ClientType.Legacy
+
     async def send_error_and_disconnect(self, error, *args):
         await self.send_xt('e', error, *args)
         await self.close()
