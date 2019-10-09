@@ -73,6 +73,9 @@ class Houdini:
         self.penguins_by_username = {}
         self.penguins_by_character_id = {}
 
+        self.igloos_by_penguin_id = {}
+        self.open_igloos_by_penguin_id = {}
+
         self.xt_listeners = XTListenerManager(self)
         self.xml_listeners = XMLListenerManager(self)
         self.dummy_event_listeners = DummyEventListenerManager(self)
