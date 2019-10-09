@@ -1,8 +1,87 @@
 from houdini.data import db, BaseCrumbsCollection
-from houdini.constants import ClientType
 
 
-class Room(db.Model):
+class RoomMixin:
+
+    def __init__(self, *args, **kwargs):
+        self.penguins_by_id = {}
+        self.penguins_by_username = {}
+        self.penguins_by_character_id = {}
+
+        self.igloo = isinstance(self, PenguinIglooRoom)
+        self.backyard = isinstance(self, PenguinBackyardRoom)
+
+        self.tables = {}
+        self.waddles = {}
+
+    async def add_penguin(self, p):
+        if p.room:
+            await p.room.remove_penguin(p)
+        self.penguins_by_id[p.data.id] = p
+        self.penguins_by_username[p.data.username] = p
+
+        if p.data.character:
+            self.penguins_by_character_id[p.data.character] = p
+
+        p.room = self
+
+    async def remove_penguin(self, p):
+        if not (p.is_vanilla_client and p.data.stealth_moderator):
+            await self.send_xt('rp', p.data.id)
+
+        del self.penguins_by_id[p.data.id]
+        del self.penguins_by_username[p.data.username]
+
+        if p.data.character:
+            del self.penguins_by_character_id[p.data.character]
+
+        p.room = None
+        p.frame = 1
+        p.toy = None
+
+    async def refresh(self, p):
+        if p.is_vanilla_client and p.data.stealth_moderator:
+            return await p.send_xt('grs', self.id, await self.get_string(is_stealth=True))
+        await p.send_xt('grs', self.id, await self.get_string())
+
+    async def get_string(self, is_stealth=False):
+        return '%'.join([await p.string for p in self.penguins_by_id.values()
+                         if is_stealth or not p.data.stealth_moderator])
+
+    async def send_xt(self, *data):
+        for penguin in self.penguins_by_id.values():
+            await penguin.send_xt(*data)
+
+
+class PenguinBackyardRoom(RoomMixin):
+
+    def __init__(self):
+        super().__init__()
+
+        self.id = 1000
+        self.name = 'Backyard'
+        self.member = False
+        self.max_users = 1
+        self.required_item = None
+        self.game = False
+        self.blackhole = False
+        self.spawn = False
+        self.stamp_group = None
+
+    async def add_penguin(self, p):
+        if p.room:
+            await p.room.remove_penguin(p)
+        p.room = self
+
+        await p.send_xt('jr', self.id, await p.string)
+
+    async def remove_penguin(self, p):
+        p.room = None
+        p.frame = 1
+        p.toy = None
+
+
+class Room(db.Model, RoomMixin):
     __tablename__ = 'room'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -18,74 +97,22 @@ class Room(db.Model):
     stamp_group = db.Column(db.ForeignKey('stamp_group.id', ondelete='CASCADE', onupdate='CASCADE'))
 
     def __init__(self, *args, **kwargs):
+        RoomMixin.__init__(self, *args, **kwargs)
         super().__init__(*args, **kwargs)
-        self.penguins_by_id = {}
-        self.penguins_by_username = {}
-        self.penguins_by_character_id = {}
-
-        self.igloo = False
-
-        self.tables = {}
-        self.waddles = {}
 
     async def add_penguin(self, p):
-        if p.room:
-            await p.room.remove_penguin(p)
-        self.penguins_by_id[p.data.id] = p
-        self.penguins_by_username[p.data.username] = p
-
-        if p.data.character:
-            self.penguins_by_character_id[p.data.character] = p
-
-        p.room = self
-        if p.client_type == ClientType.Vanilla:
-            if p.data.stealth_moderator:
-                await p.send_xt('jr', self.id, (await self.get_string() + await p.string))
-                await p.send_xt('ap', await p.string)
-            else:
-                await p.send_xt('jr', self.id, await self.get_string())
-                await self.send_xt('ap', await p.string)
-        else:
-            await p.send_xt('jr', self.id, await self.get_string())
-            await self.send_xt('ap', await p.string)
+        await RoomMixin.add_penguin(self, p)
 
         if self.game:
             await p.send_xt('jg', self.id)
+        elif p.is_vanilla_client and p.data.stealth_moderator:
+            await p.send_xt('jr', self.id, await self.get_string(is_stealth=True))
         else:
             await p.send_xt('jr', self.id, await self.get_string())
             await self.send_xt('ap', await p.string)
 
-    async def remove_penguin(self, p):
-        if p.client_type == ClientType.Vanilla:
-            if not p.data.stealth_moderator:
-                await self.send_xt('rp', p.data.id)
-        else:
-            await self.send_xt('rp', p.data.id)
 
-        del self.penguins_by_id[p.data.id]
-        del self.penguins_by_username[p.data.username]
-
-        if p.data.character:
-            del self.penguins_by_character_id[p.data.character]
-
-        p.room = None
-        p.frame = 1
-        p.toy = None
-
-    async def refresh(self, p):
-        if p.client_type == ClientType.Vanilla:
-            return await p.send_xt('grs', self.id, (await self.get_string() + await p.string))
-        await p.send_xt('grs', self.id, await self.get_string())
-
-    async def get_string(self):
-        return '%'.join([await p.string for p in self.penguins_by_id.values()])
-
-    async def send_xt(self, *data):
-        for penguin in self.penguins_by_id.values():
-            await penguin.send_xt(*data)
-
-
-class PenguinIglooRoom(db.Model):
+class PenguinIglooRoom(db.Model, RoomMixin):
     __tablename__ = 'penguin_igloo_room'
 
     id = db.Column(db.Integer, primary_key=True,
@@ -96,6 +123,40 @@ class PenguinIglooRoom(db.Model):
     music = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
     location = db.Column(db.ForeignKey('location.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
     locked = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+
+    internal_id = 2000
+    name = 'Igloo'
+    member = False
+    max_users = 80
+    required_item = None
+    game = False
+    blackhole = False
+    spawn = False
+    stamp_group = None
+
+    def __init__(self, *args, **kwargs):
+        RoomMixin.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
+
+    @property
+    def external_id(self):
+        return self.penguin_id + PenguinIglooRoom.internal_id
+
+    async def add_penguin(self, p):
+        await RoomMixin.add_penguin(self, p)
+
+        if p.is_vanilla_client and p.data.stealth_moderator:
+            await p.send_xt('jr', self.external_id, await self.get_string(is_stealth=True))
+        else:
+            await p.send_xt('jr', self.external_id, await self.get_string())
+            await self.send_xt('ap', await p.string)
+
+    async def remove_penguin(self, p):
+        await RoomMixin.remove_penguin(self, p)
+
+        if not self.penguins_by_id:
+            del p.server.igloos_by_penguin_id[self.penguin_id]
+
 
 
 class RoomTable(db.Model):
