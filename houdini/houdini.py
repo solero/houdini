@@ -158,7 +158,7 @@ class Houdini:
             minsize=5, maxsize=10)
 
         if self.server_config['World']:
-            await self.redis.delete('{}.players'.format(self.server_name))
+            await self.redis.delete(f'houdini.players.{self.server_config["Id"]}')
             await self.redis.delete('{}.population'.format(self.server_name))
 
             caches.set_config({
@@ -185,43 +185,43 @@ class Houdini:
             self.logger.info('Login server started')
 
         self.items = await ItemCrumbsCollection.get_collection()
-        self.logger.info('Loaded {} clothing items'.format(len(self.items)))
+        self.logger.info(f'Loaded {len(self.items)} clothing items')
 
         self.igloos = await IglooCrumbsCollection.get_collection()
-        self.logger.info('Loaded {} igloos'.format(len(self.igloos)))
+        self.logger.info(f'Loaded {len(self.igloos)} igloos')
 
         self.furniture = await FurnitureCrumbsCollection.get_collection()
-        self.logger.info('Loaded {} furniture items'.format(len(self.furniture)))
+        self.logger.info(f'Loaded {len(self.furniture)} furniture items')
 
         self.locations = await LocationCrumbsCollection.get_collection()
-        self.logger.info('Loaded {} igloo locations'.format(len(self.locations)))
+        self.logger.info(f'Loaded {len(self.locations)} igloo locations')
 
         self.flooring = await FlooringCrumbsCollection.get_collection()
-        self.logger.info('Loaded {} igloo flooring'.format(len(self.flooring)))
+        self.logger.info(f'Loaded {len(self.flooring)} igloo flooring')
 
         self.rooms = await RoomCrumbsCollection.get_collection()
         self.spawn_rooms = self.rooms.spawn_rooms
         await self.rooms.setup_tables()
         await self.rooms.setup_waddles()
-        self.logger.info('Loaded {} rooms ({} spawn)'.format(len(self.rooms), len(self.spawn_rooms)))
+        self.logger.info(f'Loaded {len(self.rooms)} rooms ({len(self.spawn_rooms)} spawn)')
 
         self.postcards = await PostcardCrumbsCollection.get_collection()
-        self.logger.info('Loaded {} postcards'.format(len(self.postcards)))
+        self.logger.info(f'Loaded {len(self.postcards)} postcards')
 
         self.stamps = await StampCrumbsCollection.get_collection()
-        self.logger.info('Loaded {} stamps'.format(len(self.stamps)))
+        self.logger.info(f'Loaded {len(self.stamps)} stamps')
 
         self.cards = await CardCrumbsCollection.get_collection()
-        self.logger.info('Loaded {} ninja cards'.format(len(self.cards)))
+        self.logger.info(f'Loaded {len(self.cards)} ninja cards')
 
         self.puffles = await PuffleCrumbsCollection.get_collection()
-        self.logger.info('Loaded {} puffles'.format(len(self.puffles)))
+        self.logger.info(f'Loaded {len(self.puffles)} puffles')
 
         self.puffle_items = await PuffleItemCrumbsCollection.get_collection()
-        self.logger.info('Loaded {} puffle care items'.format(len(self.puffle_items)))
+        self.logger.info(f'Loaded {len(self.puffle_items)} puffle care items')
 
         self.characters = await CharacterCrumbsCollection.get_collection()
-        self.logger.info('Loaded {} characters'.format(len(self.characters)))
+        self.logger.info(f'Loaded {len(self.characters)} characters')
 
         self.permissions = await PermissionCrumbsCollection.get_collection()
 

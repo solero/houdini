@@ -61,8 +61,7 @@ class Penguin(Spheniscidae):
     async def join_room(self, room):
         await room.add_penguin(self)
 
-        self.logger.info('{} joined room \'{}\''.format(
-            self.data.username, room.name))
+        self.logger.info(f'{self.data.username} joined room \'{room.name}\'')
 
     async def add_inventory(self, item, notify=True):
         if item.id in self.data.inventory:
@@ -74,11 +73,10 @@ class Penguin(Spheniscidae):
         if notify:
             await self.send_xt('ai', item.id, self.data.coins)
 
-        self.logger.info('{} added \'{}\' to their clothing inventory'.format(
-            self.data.username, item.name))
+        self.logger.info(f'{self.data.username} added \'{item.name}\' to their clothing inventory')
 
-        await self.server.cache.delete('pins.{}'.format(self.data.id))
-        await self.server.cache.delete('awards.{}'.format(self.data.id))
+        await self.server.cache.delete(f'pins.{self.data.id}')
+        await self.server.cache.delete(f'awards.{self.data.id}')
 
         return True
 

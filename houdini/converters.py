@@ -58,7 +58,7 @@ class _ArgumentDeserializer:
                     else:
                         await self.cooldown.callback(p)
                 else:
-                    raise CooldownError('{} invoked listener during cooldown'.format(p))
+                    raise CooldownError(f'{p} invoked listener during cooldown')
 
     def _check_list(self, p):
         if not self._can_run(p):
@@ -137,7 +137,7 @@ class _ArgumentDeserializer:
         return hash(self.__name__())
 
     def __name__(self):
-        return "{}.{}".format(self.callback.__module__, self.callback.__name__)
+        return f'{self.callback.__module__}.{self.callback.__name__}'
 
 
 def _listener(cls, name, **kwargs):

@@ -45,7 +45,7 @@ async def get_server_presence(p, pid):
 
             world_populations.append('{},{}'.format(server_config['Id'], server_population))
 
-            server_key = '{}.players'.format(server_config['Id'])
+            server_key = f'houdini.players.{server_config["Id"]}'
             if await p.server.redis.scard(server_key):
                 async with p.server.db.transaction():
                     buddies = BuddyList.select('buddy_id').where(BuddyList.penguin_id == pid).gino.iterate()
