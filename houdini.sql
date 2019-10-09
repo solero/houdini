@@ -709,8 +709,9 @@ COMMENT ON COLUMN ban.comment IS 'Ban comment';
 DROP TABLE IF EXISTS warning;
 CREATE TABLE warning (
   penguin_id INT NOT NULL,
+  issued TIMESTAMP NOT NULL,
   expires TIMESTAMP NOT NULL,
-  PRIMARY KEY (penguin_id, expires),
+  PRIMARY KEY (penguin_id, issued, expires),
   CONSTRAINT warning_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
@@ -719,8 +720,6 @@ COMMENT ON TABLE warning IS 'Penguin moderator warnings';
 COMMENT ON COLUMN warning.penguin_id IS 'Warning penguin ID';
 COMMENT ON COLUMN warning.issued IS 'Warning issue date';
 COMMENT ON COLUMN warning.expires IS 'Warning expiry date';
-COMMENT ON COLUMN warning.type IS 'Type of warning';
-COMMENT ON COLUMN warning.comment IS 'Warning moderator comment';
 
 DROP TABLE IF EXISTS buddy_list;
 CREATE TABLE buddy_list (
