@@ -442,6 +442,20 @@ COMMENT ON COLUMN room_table.id IS 'Table ID';
 COMMENT ON COLUMN room_table.room_id IS 'Room ID of table';
 COMMENT ON COLUMN room_table.game IS 'Game of table';
 
+CREATE TABLE chat_filter_rule (
+  word TEXT,
+  filter BOOLEAN NOT NULL DEFAULT FALSE,
+  warn BOOLEAN NOT NULL DEFAULT FALSE,
+  ban BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE UNIQUE INDEX chat_filter_rule_word ON chat_filter_rule(word);
+
+COMMENT ON COLUMN chat_filter_rule.word IS 'Word to filter';
+COMMENT ON COLUMN chat_filter_rule.filter IS 'Hide word from players';
+COMMENT ON COLUMN chat_filter_rule.warn IS 'Warn player for word';
+COMMENT ON COLUMN chat_filter_rule.ban IS 'Ban player for word';
+
 DROP TABLE IF EXISTS penguin;
 CREATE TABLE penguin (
   id SERIAL,
