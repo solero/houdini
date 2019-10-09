@@ -158,6 +158,16 @@ class PenguinIglooRoom(db.Model, RoomMixin):
             del p.server.igloos_by_penguin_id[self.penguin_id]
 
 
+class PenguinIglooRoomCollection(BaseCrumbsCollection):
+
+    def __init__(self, inventory_id=None):
+        super().__init__(model=PenguinIglooRoom,
+                         key='id',
+                         inventory_model=PenguinIglooRoom,
+                         inventory_key='penguin_id',
+                         inventory_value='id',
+                         inventory_id=inventory_id)
+
 
 class RoomTable(db.Model):
     __tablename__ = 'room_table'

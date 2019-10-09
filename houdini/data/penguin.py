@@ -11,6 +11,7 @@ from houdini.data.ninja import CardCrumbsCollection
 from houdini.data.pet import PuffleCrumbsCollection, PuffleItemCrumbsCollection
 from houdini.data.buddy import BuddyListCollection, BuddyRequestCollection, CharacterBuddyCollection, \
     IgnoreListCollection
+from houdini.data.room import PenguinIglooRoomCollection
 
 
 class Penguin(db.Model):
@@ -91,6 +92,7 @@ class Penguin(db.Model):
         self.inventory = None
         self.permissions = None
         self.igloos = None
+        self.igloo_rooms = None
         self.furniture = None
         self.flooring = None
         self.locations = None
@@ -109,6 +111,7 @@ class Penguin(db.Model):
         self.inventory = await ItemCrumbsCollection.get_collection(self.id)
         self.permissions = await PermissionCrumbsCollection.get_collection(self.id)
         self.igloos = await IglooCrumbsCollection.get_collection(self.id)
+        self.igloo_rooms = await PenguinIglooRoomCollection.get_collection(self.id)
         self.furniture = await FurnitureCrumbsCollection.get_collection(self.id)
         self.flooring = await FlooringCrumbsCollection.get_collection(self.id)
         self.locations = await LocationCrumbsCollection.get_collection(self.id)
