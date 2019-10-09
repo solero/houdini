@@ -141,7 +141,7 @@ async def handle_find_player(p, player_id: int):
     if player_id in p.server.penguins_by_id:
         player = p.server.penguins_by_id[player_id]
         room_id = player.room.id
-        room_type = 'igloo' if player.room.igloo else 'invalid'
+        room_type = 'backyard' if player.room.backyard else 'igloo' if player.room.igloo else 'invalid'
         room_owner = player.room.penguin_id if player.room.igloo else -1
     else:
         room_id, room_type, room_owner = -1, 'invalid', -1

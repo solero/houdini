@@ -102,7 +102,7 @@ async def handle_get_buddies_legacy(p):
 async def handle_find_buddy(p, buddy_id: int):
     if buddy_id in p.data.buddies and buddy_id in p.server.penguins_by_id:
         buddy = p.server.penguins_by_id[buddy_id]
-        await p.send_xt('bf', buddy.room.id)
+        await p.send_xt('bf', buddy.room.external_id if buddy.room.igloo else buddy.room.id)
 
 
 @handlers.handler(XTPacket('b', 'br'))
