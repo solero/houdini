@@ -171,7 +171,6 @@ async def handle_broadcasting_tracks(p):
 
 
 @handlers.handler(XTPacket('musictrack', 'getmymusictracks'), client=ClientType.Vanilla)
-@handlers.player_in_room(SoundStudio.StudioRoomId, SoundStudio.DeckRoomId)
 async def handle_get_my_music_tracks(p):
     player_tracks = await get_player_tracks(p)
     await p.send_xt('getmymusictracks', len(player_tracks), ','.join(player_tracks))
