@@ -71,7 +71,6 @@ async def handle_get_recent_stamps(p):
 
 
 @handlers.handler(XTPacket('st', 'sse'))
-@handlers.allow_once
 async def handle_stamp_add(p, stamp: Stamp):
     await p.add_stamp(stamp)
 
