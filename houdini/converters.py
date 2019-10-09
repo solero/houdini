@@ -65,7 +65,7 @@ class _ArgumentDeserializer:
             raise ChecklistError('Could not invoke listener due to checklist failure')
 
     def _consume_separated_string(self, ctx):
-        if ctx.argument[0] in self.string_delimiter:
+        if ctx.argument and ctx.argument[0] in self.string_delimiter:
             while not ctx.argument.endswith(ctx.argument[0]):
                 ctx.argument += self.string_separator + next(ctx.arguments)
             ctx.argument = ctx.argument[1:-1]
