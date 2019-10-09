@@ -148,6 +148,11 @@ async def handle_find_player(p, player_id: int):
     await p.send_xt('bf', room_id, room_type, room_owner)
 
 
+@handlers.handler(XTPacket('u', 'gbffl'))
+async def handle_get_best_friends(p):
+    await p.send_xt('gbffl', ','.join((str(buddy.buddy_id) for buddy in p.data.buddies.values() if buddy.best_buddy)))
+
+
 @handlers.handler(XTPacket('u', 'pbsms'), client=ClientType.Vanilla)
 async def handle_pbsm_start(p):
     await p.send_xt('pbsms')
