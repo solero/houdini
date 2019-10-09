@@ -295,6 +295,17 @@ class FlooringConverter(IConverter):
         return None
 
 
+class LocationConverter(IConverter):
+
+    description = """Converts a location ID into a houdini.data.Location instance"""
+
+    async def convert(self, ctx):
+        location_id = int(ctx.argument)
+        if location_id in ctx.p.server.locations:
+            return await ctx.p.server.locations.get(location_id)
+        return None
+
+
 class StampConverter(IConverter):
 
     description = """Converts a stamp ID into a houdini.data.Stamp instance"""
@@ -396,6 +407,7 @@ ConverterTypes = {
     Furniture: FurnitureConverter,
     Igloo: IglooConverter,
     Flooring: FlooringConverter,
+    Location: LocationConverter,
     Stamp: StampConverter
 }
 
