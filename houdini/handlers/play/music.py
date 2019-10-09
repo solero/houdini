@@ -181,7 +181,7 @@ async def handle_get_my_music_tracks(p):
 @handlers.player_in_room(SoundStudio.StudioRoomId, SoundStudio.DeckRoomId)
 async def handle_get_shared_music_tracks(p):
     shared_tracks = await get_shared_tracks(p)
-    await p.send_xt('getsharedmusictracks', len(shared_tracks), shared_tracks)
+    await p.send_xt('getsharedmusictracks', len(shared_tracks), ','.join(shared_tracks))
 
 
 @handlers.handler(XTPacket('musictrack', 'loadmusictrack'), client=ClientType.Vanilla)
