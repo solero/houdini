@@ -2,6 +2,9 @@ from houdini import handlers
 from houdini.handlers import XTPacket
 from houdini.data.room import Room
 from houdini.data.penguin import Login
+from houdini.data.penguin import Penguin
+from houdini.data.room import PenguinIglooRoom, PenguinBackyardRoom
+from houdini.constants import ClientType
 
 import random
 import time
@@ -67,6 +70,42 @@ async def handle_join_server(p, penguin_id: int, login_key: str):
 async def handle_join_room(p, room: Room, x: int, y: int):
     p.x, p.y = x, y
     await p.join_room(room)
+
+
+async def create_temporary_room(p, penguin_id):
+    igloo = None
+    if penguin_id in p.server.penguins_by_id:
+        igloo_owner = p.server.penguins_by_id[penguin_id]
+        igloo = igloo_owner.data.igloo_rooms[igloo_owner.data.igloo]
+        p.server.igloos_by_penguin_id[penguin_id] = igloo
+    elif penguin_id not in p.server.igloos_by_penguin_id:
+        igloo = await PenguinIglooRoom.load(parent=Penguin.on(Penguin.igloo == PenguinIglooRoom.id)) \
+            .where(PenguinIglooRoom.penguin_id == penguin_id).gino.first()
+        if igloo is not None:
+            p.server.igloos_by_penguin_id[penguin_id] = igloo
+    return igloo
+
+
+@handlers.handler(XTPacket('j', 'jp'), client=ClientType.Vanilla)
+@handlers.cooldown(1)
+async def handle_join_player_room(p, penguin_id: int, room_type: str):
+    if room_type == 'backyard' and p.room.igloo and p.room.penguin_id == p.data.id:
+        backyard = PenguinBackyardRoom()
+        await p.send_xt('jp', backyard.id, backyard.id, room_type)
+        await p.join_room(backyard)
+    elif room_type == 'igloo':
+        igloo = await create_temporary_room(p, penguin_id)
+        await p.send_xt('jp', igloo.external_id, igloo.external_id, room_type)
+
+        await p.join_room(igloo)
+
+
+@handlers.handler(XTPacket('j', 'jp'), client=ClientType.Legacy)
+@handlers.cooldown(1)
+async def handle_join_player_room_legacy(p, penguin_id: int):
+    penguin_id = penguin_id - 1000
+    igloo = await create_temporary_room(p, penguin_id)
+    await p.join_room(igloo)
 
 
 @handlers.handler(XTPacket('j', 'grs'))
