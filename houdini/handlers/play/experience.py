@@ -1,6 +1,6 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
-from houdini.handlers.play.navigation import handle_join_server, handle_join_room
+from houdini.handlers.play.navigation import handle_join_server, handle_join_room, handle_join_player_room
 
 from houdini.data import db
 from houdini.data.quest import Quest, QuestAwardItem, QuestAwardFurniture, QuestAwardPuffleItem, QuestTask
@@ -135,19 +135,34 @@ async def handle_quest_join_server(p):
     await p.send_xt('nxquestdata', await get_player_quest_status(p))
 
 
+async def set_task_cleared(p, task_id):
+    await p.server.cache.delete(f'quest.status.{p.data.id}')
+
+    await PenguinQuestTask.update.values(complete=True) \
+        .where((PenguinQuestTask.task_id == task_id) &
+               (PenguinQuestTask.penguin_id == p.data.id)).gino.status()
+    return await p.send_xt('nxquestdata', await get_player_quest_status(p))
+
+
 @handlers.handler(XTPacket('j', 'jr'), after=handle_join_room)
 async def handle_quest_join_room(p):
     if p.active_quests is not None:
         for quest in p.active_quests:
             for task in quest.tasks:
                 if task.id in quest.in_progress and task.room_id == p.room.id:
-                    await p.server.cache.delete('quest.status.{}'.format(p.data.id))
-
-                    await PenguinQuestTask.update.values(complete=True)\
-                        .where((PenguinQuestTask.task_id == task.id) &
-                               (PenguinQuestTask.penguin_id == p.data.id)).gino.status()
+                    await set_task_cleared(p, task.id)
                     p.active_quests.remove(quest)
-                    return await p.send_xt('nxquestdata', await get_player_quest_status(p))
+
+
+@handlers.handler(XTPacket('j', 'jp'), after=handle_join_player_room)
+async def handle_quest_join_room(p):
+    if p.active_quests is not None:
+        for quest in p.active_quests:
+            for task in quest.tasks:
+                igloo_quest_completed = task.id == 3 and p.room.igloo and p.room.penguin_id == p.data.id
+                if task.id in quest.in_progress and igloo_quest_completed:
+                    await set_task_cleared(p, task.id)
+                    p.active_quests.remove(quest)
 
 
 @handlers.handler(XTPacket('nx', 'nxquestaward'))
