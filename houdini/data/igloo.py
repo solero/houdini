@@ -51,12 +51,10 @@ class IglooLike(db.Model):
 
     igloo_id = db.Column(db.ForeignKey('penguin_igloo_room.id', ondelete='CASCADE', onupdate='CASCADE'),
                          primary_key=True, nullable=False)
-    owner_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                         nullable=False)
     player_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
                           nullable=False)
-    count = db.Column(db.SmallInteger, nullable=False)
-    date = db.Column(db.Date, nullable=False, server_default=db.text("now()"))
+    count = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
+    date = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
 
 
 class Location(db.Model):

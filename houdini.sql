@@ -881,13 +881,12 @@ COMMENT ON COLUMN penguin_igloo_room.locked IS 'Is igloo locked?';
 DROP TABLE IF EXISTS igloo_like;
 CREATE TABLE igloo_like (
   igloo_id INT NOT NULL,
-  owner_id INT NOT NULL,
   player_id INT NOT NULL,
-  count SMALLiNT NOT NULL,
-  date DATE NOT NULL,
-  PRIMARY KEY (igloo_id, owner_id, player_id),
+  count SMALLINT NOT NULL DEFAULT 1,
+  date TIMESTAMP NOT NULL,
+  PRIMARY KEY (igloo_id, player_id),
   CONSTRAINT igloo_like_ibfk_1 FOREIGN KEY (igloo_id) REFERENCES penguin_igloo_room (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT igloo_like_ibfk_2 FOREIGN KEY (owner_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT igloo_like_ibfk_2 FOREIGN KEY (player_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 ALTER TABLE igloo_like ALTER COLUMN date SET DEFAULT now();
@@ -895,7 +894,6 @@ ALTER TABLE igloo_like ALTER COLUMN date SET DEFAULT now();
 COMMENT ON TABLE igloo_like IS 'Player igloo likes';
 
 COMMENT ON COLUMN igloo_like.igloo_id IS 'Igloo unique ID';
-COMMENT ON COLUMN igloo_like.owner_id IS 'Owner unique ID';
 COMMENT ON COLUMN igloo_like.player_id IS 'Liker unique ID';
 COMMENT ON COLUMN igloo_like.count IS 'Number of likes';
 COMMENT ON COLUMN igloo_like.date IS 'Date of like';
