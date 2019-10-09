@@ -103,7 +103,7 @@ async def handle_join_player_room(p, penguin_id: int, room_type: str):
 @handlers.handler(XTPacket('j', 'jp'), client=ClientType.Legacy)
 @handlers.cooldown(1)
 async def handle_join_player_room_legacy(p, penguin_id: int):
-    penguin_id = penguin_id - 1000
+    penguin_id -= 1000
     igloo = await create_temporary_room(p, penguin_id)
     await p.join_room(igloo)
 
