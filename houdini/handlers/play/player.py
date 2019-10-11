@@ -119,9 +119,10 @@ async def handle_get_player_by_name(p, player_name: str):
         player = p.server.penguins_by_username[player_name]
         await p.send_xt('pbn', player.data.id, player.data.id, player.data.nickname)
     else:
-        player_id, nickname = await Penguin.select('id', 'nickname').where(
+        result = await Penguin.select('id', 'nickname').where(
             Penguin.username == player_name).gino.first()
-        if player_id is not None:
+        if result is not None:
+            player_id, nickname = result
             await p.send_xt('pbn', player_id, player_id, nickname)
         else:
             await p.send_xt('pbn')
