@@ -32,5 +32,5 @@ async def handle_ignore_add(p, ignored_id: int):
             nickname = p.server.penguins_by_id[ignored_id].data.nickname
         else:
             nickname = await Penguin.select('nickname').where(Penguin.id == ignored_id).gino.scalar()
-        await p.data.ignore.set(ignored_id)
+        await p.data.ignore.insert(ignore_id=ignored_id)
         await p.send_xt('an', ignored_id, nickname)

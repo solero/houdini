@@ -1,4 +1,4 @@
-from houdini.data import db, BaseCrumbsCollection
+from houdini.data import db, AbstractDataCollection
 
 
 class Item(db.Model):
@@ -55,12 +55,13 @@ class PenguinItem(db.Model):
                         primary_key=True, nullable=False)
 
 
-class ItemCrumbsCollection(BaseCrumbsCollection):
+class ItemCollection(AbstractDataCollection):
+    __model__ = Item
+    __indexby__ = 'id'
+    __filterby__ = 'id'
 
-    def __init__(self, inventory_id=None):
-        super().__init__(model=Item,
-                         key='id',
-                         inventory_model=PenguinItem,
-                         inventory_key='penguin_id',
-                         inventory_value='item_id',
-                         inventory_id=inventory_id)
+
+class PenguinItemCollection(AbstractDataCollection):
+    __model__ = PenguinItem
+    __indexby__ = 'item_id'
+    __filterby__ = 'penguin_id'

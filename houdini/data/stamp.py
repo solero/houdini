@@ -1,4 +1,4 @@
-from houdini.data import db, BaseCrumbsCollection
+from houdini.data import db, AbstractDataCollection
 
 
 class Stamp(db.Model):
@@ -56,12 +56,13 @@ class PenguinStamp(db.Model):
     recent = db.Column(db.Boolean, nullable=False, server_default=db.text("true"))
 
 
-class StampCrumbsCollection(BaseCrumbsCollection):
+class StampCollection(AbstractDataCollection):
+    __model__ = Stamp
+    __indexby__ = 'id'
+    __filterby__ = 'id'
 
-    def __init__(self, inventory_id=None):
-        super().__init__(model=Stamp,
-                         key='id',
-                         inventory_model=PenguinStamp,
-                         inventory_key='penguin_id',
-                         inventory_value='stamp_id',
-                         inventory_id=inventory_id)
+
+class PenguinStampCollection(AbstractDataCollection):
+    __model__ = PenguinStamp
+    __indexby__ = 'stamp_id'
+    __filterby__ = 'penguin_id'

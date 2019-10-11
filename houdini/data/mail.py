@@ -1,4 +1,4 @@
-from houdini.data import db, BaseCrumbsCollection
+from houdini.data import db, AbstractDataCollection
 
 
 class Postcard(db.Model):
@@ -24,12 +24,7 @@ class PenguinPostcard(db.Model):
     has_read = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
 
 
-class PostcardCrumbsCollection(BaseCrumbsCollection):
-
-    def __init__(self, inventory_id=None):
-        super().__init__(model=Postcard,
-                         key='id',
-                         inventory_model=PenguinPostcard,
-                         inventory_key='penguin_id',
-                         inventory_value='id',
-                         inventory_id=inventory_id)
+class PostcardCollection(AbstractDataCollection):
+    __model__ = Postcard
+    __indexby__ = 'id'
+    __filterby__ = 'id'

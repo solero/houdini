@@ -1,4 +1,4 @@
-from houdini.data import db, BaseCrumbsCollection
+from houdini.data import db
 
 
 class PenguinTrack(db.Model):

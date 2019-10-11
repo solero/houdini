@@ -67,7 +67,7 @@ class Penguin(Spheniscidae):
         if item.id in self.data.inventory:
             return False
 
-        await self.data.inventory.set(item.id)
+        await self.data.inventory.insert(item_id=item.id)
         await self.data.update(coins=self.data.coins - item.cost).apply()
 
         if notify:
@@ -87,7 +87,7 @@ class Penguin(Spheniscidae):
         if item.id in self.data.inventory:
             return False
 
-        await self.data.inventory.set(item.id)
+        await self.data.inventory.insert(item_id=item.id)
         await self.data.update(agent_medals=self.data.agent_medals - item.cost).apply()
 
         if notify:
@@ -99,7 +99,7 @@ class Penguin(Spheniscidae):
         if igloo.id in self.data.igloos:
             return False
 
-        await self.data.igloos.set(igloo.id)
+        await self.data.igloos.insert(igloo_id=igloo.id)
         await self.data.update(coins=self.data.coins - igloo.cost).apply()
 
         if notify:
@@ -118,7 +118,7 @@ class Penguin(Spheniscidae):
             await penguin_care_item.update(
                 quantity=penguin_care_item.quantity + quantity).apply()
         else:
-            await self.data.puffle_items.set(care_item.id)
+            await self.data.puffle_items.insert(item_id=care_item.id)
 
         await self.data.update(coins=self.data.coins - care_item.cost).apply()
 
@@ -138,7 +138,7 @@ class Penguin(Spheniscidae):
             await penguin_furniture.update(
                 quantity=penguin_furniture.quantity + quantity).apply()
         else:
-            await self.data.furniture.set(furniture.id)
+            await self.data.furniture.insert(furniture_id=furniture.id)
 
         await self.data.update(coins=self.data.coins - furniture.cost).apply()
 
@@ -156,7 +156,7 @@ class Penguin(Spheniscidae):
             await penguin_card.update(
                 quantity=penguin_card.quantity + quantity).apply()
         else:
-            await self.data.cards.set(card.id)
+            await self.data.cards.insert(card_id=card.id)
 
         self.logger.info(f'{self.data.username} added \'{card.name}\' to their ninja deck')
 
@@ -166,7 +166,7 @@ class Penguin(Spheniscidae):
         if flooring.id in self.data.flooring:
             return False
 
-        await self.data.flooring.set(flooring.id)
+        await self.data.flooring.insert(flooring_id=flooring.id)
         await self.data.update(coins=self.data.coins - flooring.cost).apply()
 
         if notify:
@@ -180,7 +180,7 @@ class Penguin(Spheniscidae):
         if location.id in self.data.locations:
             return False
 
-        await self.data.locations.set(location.id)
+        await self.data.locations.insert(location_id=location.id)
         await self.data.update(coins=self.data.coins - location.cost).apply()
 
         if notify:
@@ -194,7 +194,7 @@ class Penguin(Spheniscidae):
         if stamp.id in self.data.stamps:
             return False
 
-        await self.data.stamps.set(stamp.id)
+        await self.data.stamps.insert(stamp_id=stamp.id)
 
         if notify:
             await self.send_xt('aabs', stamp.id)
@@ -205,15 +205,13 @@ class Penguin(Spheniscidae):
         return True
 
     async def add_inbox(self, postcard, sender_name="sys", sender_id=None, details=""):
-        penguin_postcard = await self.data.postcards.set(penguin_id=self.data.id,
-                                                         sender_id=sender_id, postcard_id=postcard.id,
-                                                         details=details)
+        penguin_postcard = await self.data.postcards.insert(penguin_id=self.data.id, sender_id=sender_id, postcard_id=postcard.id, details=details)
 
         await self.send_xt('mr', sender_name, 0, postcard.id, details, int(time.time()), penguin_postcard.id)
 
     async def add_permission(self, permission):
         if permission not in self.data.permissions:
-            await self.data.permissions.set(permission)
+            await self.data.permissions.insert(name=permission)
 
         self.logger.info(f'{self.data.username} was assigned permission \'{permission}\'')
 

@@ -1,4 +1,4 @@
-from houdini.data import db, BaseCrumbsCollection
+from houdini.data import db, AbstractDataCollection
 
 
 class Flooring(db.Model):
@@ -103,45 +103,49 @@ class PenguinFlooring(db.Model):
                             nullable=False)
 
 
-class IglooCrumbsCollection(BaseCrumbsCollection):
-
-    def __init__(self, inventory_id=None):
-        super().__init__(model=Igloo,
-                         key='id',
-                         inventory_model=PenguinIgloo,
-                         inventory_key='penguin_id',
-                         inventory_value='igloo_id',
-                         inventory_id=inventory_id)
+class IglooCollection(AbstractDataCollection):
+    __model__ = Igloo
+    __indexby__ = 'id'
+    __filterby__ = 'id'
 
 
-class LocationCrumbsCollection(BaseCrumbsCollection):
-
-    def __init__(self, inventory_id=None):
-        super().__init__(model=Location,
-                         key='id',
-                         inventory_model=PenguinLocation,
-                         inventory_key='penguin_id',
-                         inventory_value='location_id',
-                         inventory_id=inventory_id)
+class PenguinIglooCollection(AbstractDataCollection):
+    __model__ = PenguinIgloo
+    __indexby__ = 'igloo_id'
+    __filterby__ = 'penguin_id'
 
 
-class FurnitureCrumbsCollection(BaseCrumbsCollection):
-
-    def __init__(self, inventory_id=None):
-        super().__init__(model=Furniture,
-                         key='id',
-                         inventory_model=PenguinFurniture,
-                         inventory_key='penguin_id',
-                         inventory_value='furniture_id',
-                         inventory_id=inventory_id)
+class LocationCollection(AbstractDataCollection):
+    __model__ = Location
+    __indexby__ = 'id'
+    __filterby__ = 'id'
 
 
-class FlooringCrumbsCollection(BaseCrumbsCollection):
+class PenguinLocationCollection(AbstractDataCollection):
+    __model__ = PenguinLocation
+    __indexby__ = 'location_id'
+    __filterby__ = 'penguin_id'
 
-    def __init__(self, inventory_id=None):
-        super().__init__(model=Flooring,
-                         key='id',
-                         inventory_model=PenguinFlooring,
-                         inventory_key='penguin_id',
-                         inventory_value='flooring_id',
-                         inventory_id=inventory_id)
+
+class FurnitureCollection(AbstractDataCollection):
+    __model__ = Furniture
+    __indexby__ = 'id'
+    __filterby__ = 'id'
+
+
+class PenguinFurnitureCollection(AbstractDataCollection):
+    __model__ = PenguinFurniture
+    __indexby__ = 'furniture_id'
+    __filterby__ = 'penguin_id'
+
+
+class FlooringCollection(AbstractDataCollection):
+    __model__ = Flooring
+    __indexby__ = 'id'
+    __filterby__ = 'id'
+
+
+class PenguinFlooringCollection(AbstractDataCollection):
+    __model__ = PenguinFlooring
+    __indexby__ = 'flooring_id'
+    __filterby__ = 'penguin_id'

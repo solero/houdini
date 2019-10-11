@@ -15,16 +15,16 @@ import aioredis
 from aiocache import SimpleMemoryCache, caches
 
 from houdini.data import db
-from houdini.data.item import ItemCrumbsCollection
-from houdini.data.igloo import IglooCrumbsCollection, FurnitureCrumbsCollection, \
-    LocationCrumbsCollection, FlooringCrumbsCollection
-from houdini.data.room import RoomCrumbsCollection
-from houdini.data.stamp import StampCrumbsCollection
-from houdini.data.ninja import CardCrumbsCollection
-from houdini.data.mail import PostcardCrumbsCollection
-from houdini.data.pet import PuffleCrumbsCollection, PuffleItemCrumbsCollection
-from houdini.data.permission import PermissionCrumbsCollection
-from houdini.data.buddy import CharacterCrumbsCollection
+from houdini.data.item import ItemCollection
+from houdini.data.igloo import IglooCollection, FurnitureCollection, \
+    LocationCollection, FlooringCollection
+from houdini.data.room import RoomCollection
+from houdini.data.stamp import StampCollection
+from houdini.data.ninja import CardCollection
+from houdini.data.mail import PostcardCollection
+from houdini.data.pet import PuffleCollection, PuffleItemCollection
+from houdini.data.permission import PermissionCollection
+from houdini.data.buddy import CharacterCollection
 
 try:
     import uvloop
@@ -187,46 +187,46 @@ class Houdini:
             await self.xml_listeners.setup(houdini.handlers, 'houdini.handlers.login.login')
             self.logger.info('Login server started')
 
-        self.items = await ItemCrumbsCollection.get_collection()
+        self.items = await ItemCollection.get_collection()
         self.logger.info(f'Loaded {len(self.items)} clothing items')
 
-        self.igloos = await IglooCrumbsCollection.get_collection()
+        self.igloos = await IglooCollection.get_collection()
         self.logger.info(f'Loaded {len(self.igloos)} igloos')
 
-        self.furniture = await FurnitureCrumbsCollection.get_collection()
+        self.furniture = await FurnitureCollection.get_collection()
         self.logger.info(f'Loaded {len(self.furniture)} furniture items')
 
-        self.locations = await LocationCrumbsCollection.get_collection()
+        self.locations = await LocationCollection.get_collection()
         self.logger.info(f'Loaded {len(self.locations)} igloo locations')
 
-        self.flooring = await FlooringCrumbsCollection.get_collection()
+        self.flooring = await FlooringCollection.get_collection()
         self.logger.info(f'Loaded {len(self.flooring)} igloo flooring')
 
-        self.rooms = await RoomCrumbsCollection.get_collection()
+        self.rooms = await RoomCollection.get_collection()
         self.spawn_rooms = self.rooms.spawn_rooms
         await self.rooms.setup_tables()
         await self.rooms.setup_waddles()
         self.logger.info(f'Loaded {len(self.rooms)} rooms ({len(self.spawn_rooms)} spawn)')
 
-        self.postcards = await PostcardCrumbsCollection.get_collection()
+        self.postcards = await PostcardCollection.get_collection()
         self.logger.info(f'Loaded {len(self.postcards)} postcards')
 
-        self.stamps = await StampCrumbsCollection.get_collection()
+        self.stamps = await StampCollection.get_collection()
         self.logger.info(f'Loaded {len(self.stamps)} stamps')
 
-        self.cards = await CardCrumbsCollection.get_collection()
+        self.cards = await CardCollection.get_collection()
         self.logger.info(f'Loaded {len(self.cards)} ninja cards')
 
-        self.puffles = await PuffleCrumbsCollection.get_collection()
+        self.puffles = await PuffleCollection.get_collection()
         self.logger.info(f'Loaded {len(self.puffles)} puffles')
 
-        self.puffle_items = await PuffleItemCrumbsCollection.get_collection()
+        self.puffle_items = await PuffleItemCollection.get_collection()
         self.logger.info(f'Loaded {len(self.puffle_items)} puffle care items')
 
-        self.characters = await CharacterCrumbsCollection.get_collection()
+        self.characters = await CharacterCollection.get_collection()
         self.logger.info(f'Loaded {len(self.characters)} characters')
 
-        self.permissions = await PermissionCrumbsCollection.get_collection()
+        self.permissions = await PermissionCollection.get_collection()
 
         self.logger.info(f'Multi-client support is '
                          f'{"enabled" if self.config.client["MultiClientSupport"] else "disabled"}')

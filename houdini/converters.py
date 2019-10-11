@@ -247,7 +247,7 @@ class RoomConverter(IConverter):
     async def convert(self, ctx):
         room_id = int(ctx.argument)
         if room_id in ctx.p.server.rooms:
-            return await ctx.p.server.rooms.get(room_id)
+            return ctx.p.server.rooms[room_id]
         return None
 
 
@@ -258,7 +258,7 @@ class ItemConverter(IConverter):
     async def convert(self, ctx):
         item_id = int(ctx.argument)
         if item_id in ctx.p.server.items:
-            return await ctx.p.server.items.get(item_id)
+            return ctx.p.server.items[item_id]
         return None
 
 
@@ -269,7 +269,7 @@ class IglooConverter(IConverter):
     async def convert(self, ctx):
         igloo_id = int(ctx.argument)
         if igloo_id in ctx.p.server.igloos:
-            return await ctx.p.server.igloos.get(igloo_id)
+            return ctx.p.server.igloos[igloo_id]
         return None
 
 
@@ -280,7 +280,7 @@ class FurnitureConverter(IConverter):
     async def convert(self, ctx):
         furniture_id = int(ctx.argument)
         if furniture_id in ctx.p.server.furniture:
-            return await ctx.p.server.furniture.get(furniture_id)
+            return ctx.p.server.furniture[furniture_id]
         return None
 
 
@@ -291,7 +291,7 @@ class FlooringConverter(IConverter):
     async def convert(self, ctx):
         flooring_id = int(ctx.argument)
         if flooring_id in ctx.p.server.flooring:
-            return await ctx.p.server.flooring.get(flooring_id)
+            return ctx.p.server.flooring[flooring_id]
         return None
 
 
@@ -302,7 +302,7 @@ class LocationConverter(IConverter):
     async def convert(self, ctx):
         location_id = int(ctx.argument)
         if location_id in ctx.p.server.locations:
-            return await ctx.p.server.locations.get(location_id)
+            return ctx.p.server.locations[location_id]
         return None
 
 
@@ -313,7 +313,7 @@ class StampConverter(IConverter):
     async def convert(self, ctx):
         stamp_id = int(ctx.argument)
         if stamp_id in ctx.p.server.stamps:
-            return await ctx.p.server.stamps.get(stamp_id)
+            return ctx.p.server.stamps[stamp_id]
         return None
 
 

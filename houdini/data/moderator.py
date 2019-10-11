@@ -1,4 +1,4 @@
-from houdini.data import db
+from houdini.data import db, AbstractDataCollection
 
 
 class Ban(db.Model):
@@ -21,7 +21,6 @@ class Warning(db.Model):
     expires = db.Column(db.DateTime, primary_key=True, nullable=False)
 
 
-
 class Report(db.Model):
     __tablename__ = 'report'
 
@@ -33,3 +32,17 @@ class Report(db.Model):
     server_id = db.Column(db.Integer, nullable=False)
     room_id = db.Column(db.ForeignKey('room.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
 
+
+class ChatFilterRule(db.Model):
+    __tablename__ = 'chat_filter_rule'
+
+    word = db.Column(db.Text, primary_key=True)
+    filter = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    warn = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    ban = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+
+
+class ChatFilterRuleCollection(AbstractDataCollection):
+    __model__ = ChatFilterRule
+    __filterby__ = 'word'
+    __indexby__ = 'word'

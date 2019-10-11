@@ -95,8 +95,7 @@ async def create_first_igloo(p, penguin_id):
     if igloo is None:
         if penguin_id in p.server.penguins_by_id:
             penguin = p.server.penguins_by_id[penguin_id]
-            igloo = await penguin.data.igloo_rooms.set(PenguinIglooRoom.id, penguin_id=penguin_id, type=1,
-                                                       flooring=0, location=1)
+            igloo = await penguin.data.igloo_rooms.insert(penguin_id=penguin_id, type=1, flooring=0, location=1)
             await penguin.data.update(igloo=igloo.id).apply()
         else:
             igloo = await PenguinIglooRoom.create(penguin_id=penguin_id, type=1, flooring=0, location=1)
@@ -319,7 +318,7 @@ async def handle_is_player_igloo_open(p, penguin_id: int):
 @handlers.handler(XTPacket('g', 'al'), client=ClientType.Vanilla)
 async def handle_add_igloo_layout(p):
     if len(p.data.igloo_rooms) < 4:
-        igloo = await p.data.igloo_rooms.set(PenguinIglooRoom.id, penguin_id=p.data.id, type=1, flooring=0, location=1)
+        igloo = await p.data.igloo_rooms.insert(penguin_id=p.data.id, type=1, flooring=0, location=1)
         slot_id = len(p.data.igloo_rooms)
 
         await p.send_xt('al', p.data.id, f'{igloo.id}:{slot_id}:0:{int(igloo.locked)}:{igloo.music}:{igloo.flooring}:'

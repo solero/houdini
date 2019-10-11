@@ -1,4 +1,4 @@
-from houdini.data import db, BaseCrumbsCollection
+from houdini.data import db, AbstractDataCollection
 
 
 class RoomMixin:
@@ -158,17 +158,6 @@ class PenguinIglooRoom(db.Model, RoomMixin):
             del p.server.igloos_by_penguin_id[self.penguin_id]
 
 
-class PenguinIglooRoomCollection(BaseCrumbsCollection):
-
-    def __init__(self, inventory_id=None):
-        super().__init__(model=PenguinIglooRoom,
-                         key='id',
-                         inventory_model=PenguinIglooRoom,
-                         inventory_key='penguin_id',
-                         inventory_value='id',
-                         inventory_id=inventory_id)
-
-
 class RoomTable(db.Model):
     __tablename__ = 'room_table'
 
@@ -279,22 +268,29 @@ class RoomWaddle(db.Model):
         return self.penguins.index(p)
 
 
-class RoomCrumbsCollection(BaseCrumbsCollection):
+class PenguinIglooRoomCollection(AbstractDataCollection):
+    __model__ = PenguinIglooRoom
+    __indexby__ = 'id'
+    __filterby__ = 'penguin_id'
 
-    def __init__(self):
-        super().__init__(model=Room,
-                         key='id')
+
+class RoomCollection(AbstractDataCollection):
+    __model__ = Room
+    __indexby__ = 'id'
+    __filterby__ = 'id'
 
     @property
     def spawn_rooms(self):
         return [room for room in self.values() if room.spawn]
 
     async def setup_tables(self):
-        async with self._db.transaction():
+        async with db.transaction():
             async for table in RoomTable.query.gino.iterate():
                 self[table.room_id].tables[table.id] = table
 
     async def setup_waddles(self):
-        async with self._db.transaction():
+        async with db.transaction():
             async for waddle in RoomWaddle.query.gino.iterate():
                 self[waddle.room_id].waddles[waddle.id] = waddle
+
+

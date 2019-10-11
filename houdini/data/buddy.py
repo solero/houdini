@@ -1,4 +1,4 @@
-from houdini.data import db, BaseCrumbsCollection
+from houdini.data import db, AbstractDataCollection
 
 
 class BuddyList(db.Model):
@@ -45,51 +45,31 @@ class CharacterBuddy(db.Model):
     best_buddy = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
 
 
-class BuddyListCollection(BaseCrumbsCollection):
-
-    def __init__(self, inventory_id=None):
-        super().__init__(model=BuddyList,
-                         key='buddy_id',
-                         inventory_model=BuddyList,
-                         inventory_key='penguin_id',
-                         inventory_value='buddy_id',
-                         inventory_id=inventory_id)
+class BuddyListCollection(AbstractDataCollection):
+    __model__ = BuddyList
+    __filterby__ = 'penguin_id'
+    __indexby__ = 'buddy_id'
 
 
-class IgnoreListCollection(BaseCrumbsCollection):
-
-    def __init__(self, inventory_id=None):
-        super().__init__(model=IgnoreList,
-                         key='ignore_id',
-                         inventory_model=IgnoreList,
-                         inventory_key='penguin_id',
-                         inventory_value='ignore_id',
-                         inventory_id=inventory_id)
+class IgnoreListCollection(AbstractDataCollection):
+    __model__ = IgnoreList
+    __filterby__ = 'penguin_id'
+    __indexby__ = 'ignore_id'
 
 
-class BuddyRequestCollection(BaseCrumbsCollection):
-
-    def __init__(self, inventory_id=None):
-        super().__init__(model=BuddyRequest,
-                         key='requester_id',
-                         inventory_model=BuddyRequest,
-                         inventory_key='penguin_id',
-                         inventory_value='requester_id',
-                         inventory_id=inventory_id)
+class BuddyRequestCollection(AbstractDataCollection):
+    __model__ = BuddyRequest
+    __filterby__ = 'penguin_id'
+    __indexby__ = 'requester_id'
 
 
-class CharacterCrumbsCollection(BaseCrumbsCollection):
+class CharacterCollection(AbstractDataCollection):
+    __model__ = Character
+    __filterby__ = 'id'
+    __indexby__ = 'id'
 
-    def __init__(self):
-        super().__init__(model=Character, key='id')
 
-
-class CharacterBuddyCollection(BaseCrumbsCollection):
-
-    def __init__(self, inventory_id=None):
-        super().__init__(model=CharacterBuddy,
-                         key='character_id',
-                         inventory_model=CharacterBuddy,
-                         inventory_key='penguin_id',
-                         inventory_value='character_id',
-                         inventory_id=inventory_id)
+class CharacterBuddyCollection(AbstractDataCollection):
+    __model__ = CharacterBuddy
+    __filterby__ = 'penguin_id'
+    __indexby__ = 'character_id'

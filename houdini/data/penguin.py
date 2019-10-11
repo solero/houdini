@@ -2,15 +2,15 @@ from datetime import datetime, date
 
 from houdini.data import db
 
-from houdini.data.permission import PermissionCrumbsCollection
-from houdini.data.item import ItemCrumbsCollection
-from houdini.data.igloo import IglooCrumbsCollection, FurnitureCrumbsCollection, FlooringCrumbsCollection, \
-    LocationCrumbsCollection
-from houdini.data.stamp import StampCrumbsCollection
-from houdini.data.ninja import CardCrumbsCollection
-from houdini.data.pet import PuffleCrumbsCollection, PuffleItemCrumbsCollection
-from houdini.data.buddy import BuddyListCollection, BuddyRequestCollection, CharacterBuddyCollection, \
-    IgnoreListCollection
+from houdini.data.permission import PenguinPermissionCollection
+from houdini.data.item import PenguinItemCollection
+from houdini.data.igloo import PenguinIglooCollection, PenguinFurnitureCollection, \
+    PenguinFlooringCollection, PenguinLocationCollection
+from houdini.data.stamp import PenguinStampCollection
+from houdini.data.ninja import PenguinCardCollection
+from houdini.data.pet import PenguinPuffleCollection, PenguinPuffleItemCollection
+from houdini.data.buddy import BuddyListCollection, BuddyRequestCollection, \
+    CharacterBuddyCollection, IgnoreListCollection
 from houdini.data.room import PenguinIglooRoomCollection
 
 
@@ -108,17 +108,17 @@ class Penguin(db.Model):
         super().__init__(*args, **kwargs)
 
     async def load_inventories(self):
-        self.inventory = await ItemCrumbsCollection.get_collection(self.id)
-        self.permissions = await PermissionCrumbsCollection.get_collection(self.id)
-        self.igloos = await IglooCrumbsCollection.get_collection(self.id)
+        self.inventory = await PenguinItemCollection.get_collection(self.id)
+        self.permissions = await PenguinPermissionCollection.get_collection(self.id)
+        self.igloos = await PenguinIglooCollection.get_collection(self.id)
         self.igloo_rooms = await PenguinIglooRoomCollection.get_collection(self.id)
-        self.furniture = await FurnitureCrumbsCollection.get_collection(self.id)
-        self.flooring = await FlooringCrumbsCollection.get_collection(self.id)
-        self.locations = await LocationCrumbsCollection.get_collection(self.id)
-        self.stamps = await StampCrumbsCollection.get_collection(self.id)
-        self.cards = await CardCrumbsCollection.get_collection(self.id)
-        self.puffles = await PuffleCrumbsCollection.get_collection(self.id)
-        self.puffle_items = await PuffleItemCrumbsCollection.get_collection(self.id)
+        self.furniture = await PenguinFurnitureCollection.get_collection(self.id)
+        self.flooring = await PenguinFlooringCollection.get_collection(self.id)
+        self.locations = await PenguinLocationCollection.get_collection(self.id)
+        self.stamps = await PenguinStampCollection.get_collection(self.id)
+        self.cards = await PenguinCardCollection.get_collection(self.id)
+        self.puffles = await PenguinPuffleCollection.get_collection(self.id)
+        self.puffle_items = await PenguinPuffleItemCollection.get_collection(self.id)
         self.buddies = await BuddyListCollection.get_collection(self.id)
         self.buddy_requests = await BuddyRequestCollection.get_collection(self.id)
         self.character_buddies = await CharacterBuddyCollection.get_collection(self.id)
@@ -142,13 +142,13 @@ class Penguin(db.Model):
 
     @property
     def approval(self):
-        return int('{}{}0{}{}{}{}'.format(self.approval_ru * 1, self.approval_de * 1, self.approval_es * 1,
-                                          self.approval_fr * 1, self.approval_pt * 1, self.approval_en * 1), 2)
+        return int(f'{self.approval_ru * 1}{self.approval_de * 1}0{self.approval_es * 1}'
+                   f'{self.approval_fr * 1}{self.approval_pt * 1}{self.approval_en * 1}', 2)
 
     @property
     def rejection(self):
-        return int('{}{}0{}{}{}{}'.format(self.rejection_ru * 1, self.rejection_de * 1, self.rejection_es * 1,
-                                          self.rejection_fr * 1, self.rejection_pt * 1, self.rejection_en * 1), 2)
+        return int(f'{self.rejection_ru * 1}{self.rejection_de * 1}0{self.rejection_es * 1}'
+                   f'{self.rejection_fr * 1}{self.rejection_pt * 1}{self.rejection_en * 1}', 2)
 
 
 class ActivationKey(db.Model):

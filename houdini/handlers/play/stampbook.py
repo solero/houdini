@@ -1,7 +1,7 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
 from houdini.handlers.play.navigation import handle_join_server
-from houdini.data.stamp import Stamp, CoverStamp, CoverItem, StampCrumbsCollection
+from houdini.data.stamp import Stamp, CoverStamp, CoverItem, PenguinStampCollection
 from houdini.data.penguin import Penguin
 
 from aiocache import cached
@@ -43,7 +43,7 @@ async def get_player_stamps_string(p, player_id):
     if player_id in p.server.penguins_by_id:
         stamp_inventory = p.server.penguins_by_id[player_id].data.stamps
     else:
-        stamp_inventory = await StampCrumbsCollection.get_collection(player_id)
+        stamp_inventory = await PenguinStampCollection.get_collection(player_id)
     return '|'.join(map(str, stamp_inventory.keys()))
 
 

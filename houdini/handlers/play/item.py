@@ -1,6 +1,6 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
-from houdini.data.item import Item, ItemCrumbsCollection
+from houdini.data.item import Item, PenguinItemCollection
 
 import time
 from aiocache import cached
@@ -20,7 +20,7 @@ async def get_pin_string(p, player_id):
     if player_id in p.server.penguins_by_id:
         inventory = p.server.penguins_by_id[player_id].data.inventory
     else:
-        inventory = await ItemCrumbsCollection.get_collection(player_id)
+        inventory = await PenguinItemCollection.get_collection(player_id)
 
     def get_string(pin):
         unix = int(time.mktime(pin.release_date.timetuple()))
@@ -37,7 +37,7 @@ async def get_awards_string(p, player_id):
     if player_id in p.server.penguins_by_id:
         inventory = p.server.penguins_by_id[player_id].data.inventory
     else:
-        inventory = await ItemCrumbsCollection.get_collection(player_id)
+        inventory = await PenguinItemCollection.get_collection(player_id)
 
     awards = [str(award) for award in inventory.keys() if p.server.items[award].is_award()]
     return '%'.join(awards)

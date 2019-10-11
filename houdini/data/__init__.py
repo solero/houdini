@@ -1,73 +1,57 @@
 from gino import Gino
+from collections.abc import Mapping
 
 db = Gino()
 
 
-class BaseCrumbsCollection(dict):
+class AbstractDataCollection(Mapping):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__()
+    def __init__(self, filter_lookup=None):
+        self.__collection = dict()
 
-        self._db = db
-        self._model = kwargs.get('model')
-        self._key = kwargs.get('key')
-        self._inventory_model = kwargs.get('inventory_model')
-        self._inventory_key = kwargs.get('inventory_key')
-        self._inventory_value = kwargs.get('inventory_value')
-        self._inventory_id = kwargs.get('inventory_id')
+        self.__model = getattr(self.__class__, '__model__')
+        self.__indexby = getattr(self.__class__, '__indexby__')
 
-        self._model_key_column = getattr(self._model, self._key)
+        self.__filterby = getattr(self.__class__, '__filterby__')
+        self.__filter_lookup = getattr(self.__model, self.__filterby)
+        self.__filter_lookup = filter_lookup or self.__filter_lookup
 
-        self._is_inventory = self._inventory_model is not None and self._inventory_id is not None
+    def __delitem__(self, key):
+        raise TypeError(f'Use {self.__class__.__name__}.delete to remove an item from this collection')
 
-        if self._is_inventory:
-            self._inventory_key_column = getattr(self._inventory_model, self._inventory_key)
-            self._inventory_value_column = getattr(self._inventory_model, self._inventory_value)
+    def __setitem__(self, key, value):
+        raise TypeError(f'Use {self.__class__.__name__}.insert to add an item to this collection')
 
-    async def get(self, k):
-        try:
-            return self[k]
-        except KeyError as e:
-            query = self._inventory_model.query.where(
-                (self._inventory_key_column == self._inventory_id) & (self._inventory_value_column == k)
-            ) if self._is_inventory else self._model.query.where(self._model_key_column == k)
-            result = await query.gino.first()
-            if result:
-                self[k] = result
-                return result
-            raise e
+    def __len__(self):
+        return len(self.__collection)
 
-    async def set(self, k=None, **kwargs):
-        if self._is_inventory:
-            kwargs = {self._inventory_key: self._inventory_id, self._inventory_value: k, **kwargs}
-            model_instance = await self._inventory_model.create(**kwargs)
-            k = getattr(model_instance, self._inventory_value)
-            self[k] = model_instance
-        else:
-            model_instance = await self._model.create(**kwargs)
-            k = getattr(model_instance, self._key)
-            self[k] = model_instance
-        return self[k]
+    def __iter__(self):
+        return iter(self.__collection)
 
-    async def delete(self, k):
-        query = self._inventory_model.delete.where(
-            (self._inventory_key_column == self._inventory_id) & (self._inventory_value_column == k)
-        ) if self._is_inventory else self._model.delete.where(self._model_key_column == k)
-        await query.gino.status()
-        if k in self:
-            del self[k]
+    def __getitem__(self, item):
+        return self.__collection[item]
+
+    async def insert(self, **kwargs):
+        kwargs = {self.__filterby: self.__filter_lookup, **kwargs}
+        model_instance = await self.__model.create(**kwargs)
+        key = getattr(model_instance, self.__indexby)
+
+        self.__collection[key] = model_instance
+        return model_instance
+
+    async def delete(self, key):
+        model_instance = self.__collection.pop(key)
+        await model_instance.delete()
 
     async def __collect(self):
-        query = self._inventory_model.query.where(
-            self._inventory_key_column == self._inventory_id
-        ) if self._is_inventory else self._model.query
+        filter_column = getattr(self.__model, self.__filterby)
+        query = self.__model.query.where(filter_column == self.__filter_lookup)
 
         async with db.transaction():
             collected = query.gino.iterate()
-            self.update({
-                getattr(model_instance, self._inventory_value if self._is_inventory else self._key): model_instance
-                async for model_instance in collected
-            })
+            async for model_instance in collected:
+                collection_index = getattr(model_instance, self.__indexby)
+                self.__collection[collection_index] = model_instance
 
     @classmethod
     async def get_collection(cls, *args, **kwargs):

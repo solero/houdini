@@ -1,4 +1,4 @@
-from houdini.data import db, BaseCrumbsCollection
+from houdini.data import db, AbstractDataCollection
 
 
 class Puffle(db.Model):
@@ -110,23 +110,25 @@ class PenguinLaunchGame(db.Model):
     turbo = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
 
 
-class PuffleCrumbsCollection(BaseCrumbsCollection):
-
-    def __init__(self, inventory_id=None):
-        super().__init__(model=Puffle,
-                         key='id',
-                         inventory_model=PenguinPuffle,
-                         inventory_key='penguin_id',
-                         inventory_value='id',
-                         inventory_id=inventory_id)
+class PuffleCollection(AbstractDataCollection):
+    __model__ = Puffle
+    __indexby__ = 'id'
+    __filterby__ = 'id'
 
 
-class PuffleItemCrumbsCollection(BaseCrumbsCollection):
+class PenguinPuffleCollection(AbstractDataCollection):
+    __model__ = PenguinPuffle
+    __indexby__ = 'id'
+    __filterby__ = 'penguin_id'
 
-    def __init__(self, inventory_id=None):
-        super().__init__(model=PuffleItem,
-                         key='id',
-                         inventory_model=PenguinPuffleItem,
-                         inventory_key='penguin_id',
-                         inventory_value='item_id',
-                         inventory_id=inventory_id)
+
+class PuffleItemCollection(AbstractDataCollection):
+    __model__ = PuffleItem
+    __indexby__ = 'id'
+    __filterby__ = 'id'
+
+
+class PenguinPuffleItemCollection(AbstractDataCollection):
+    __model__ = PenguinPuffleItem
+    __indexby__ = 'item_id'
+    __filterby__ = 'penguin_id'

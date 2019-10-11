@@ -1,4 +1,4 @@
-from houdini.data import db, BaseCrumbsCollection
+from houdini.data import db, AbstractDataCollection
 
 
 class Permission(db.Model):
@@ -16,19 +16,13 @@ class PenguinPermission(db.Model):
     permission_id = db.Column(db.ForeignKey(u'permission.id', ondelete=u'CASCADE', onupdate=u'CASCADE'), nullable=False)
 
 
-class PermissionCrumbsCollection(BaseCrumbsCollection):
+class PermissionCollection(AbstractDataCollection):
+    __model__ = Permission
+    __indexby__ = 'name'
+    __filterby__ = 'name'
 
-    def __init__(self, inventory_id=None):
-        super().__init__(model=Permission,
-                         key='name',
-                         inventory_model=PenguinPermission,
-                         inventory_key='penguin_id',
-                         inventory_value='permission_id',
-                         inventory_id=inventory_id)
 
-    async def register(self, permission_name):
-        try:
-            permission = await self.get(permission_name)
-        except KeyError:
-            permission = await self.set(name=permission_name)
-        return permission
+class PenguinPermissionCollection(AbstractDataCollection):
+    __model__ = PenguinPermission
+    __indexby__ = 'permission_id'
+    __filterby__ = 'penguin_id'

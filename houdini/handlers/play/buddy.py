@@ -113,7 +113,7 @@ async def handle_buddy_request(p, buddy_id: int):
             buddy = p.server.penguins_by_id[buddy_id]
 
             if buddy.client_type == ClientType.Vanilla and p.data.id not in buddy.data.buddy_requests:
-                await buddy.data.buddy_requests.set(p.data.id)
+                await buddy.data.buddy_requests.insert(buddy_id=p.data.id)
             elif p.data.id not in buddy.buddy_requests:
                 buddy.buddy_requests.add(p.data.id)
             else:
@@ -133,11 +133,11 @@ async def handle_buddy_accept(p, buddy_id: int):
     else:
         return
 
-    await p.data.buddies.set(buddy_id)
+    await p.data.buddies.insert(buddy_id=buddy_id)
 
     if buddy_id in p.server.penguins_by_id:
         buddy = p.server.penguins_by_id[buddy_id]
-        await buddy.data.buddies.set(p.data.id)
+        await buddy.data.buddies.insert(buddy_id=p.data.id)
         await buddy.send_xt('ba', p.data.id, p.data.nickname, 1)
         await p.send_xt('ba', buddy.data.id, buddy.data.nickname, 1)
 
@@ -169,7 +169,7 @@ async def handle_buddy_remove(p, buddy_id: int):
 async def handle_character_request(p, character_id: int):
     if character_id in p.server.characters and character_id not in p.data.character_buddies:
         character = p.server.characters[character_id]
-        await p.data.character_buddies.set(character_id)
+        await p.data.character_buddies.insert(character_id=character_id)
         await p.send_xt('cr', character_id, 0)
         await p.send_xt('caon', character_id, p.server.server_config['Id'], p.room.id)
 
