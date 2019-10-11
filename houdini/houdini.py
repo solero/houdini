@@ -228,9 +228,9 @@ class Houdini:
 
         self.permissions = await PermissionCrumbsCollection.get_collection()
 
-        self.logger.info('Multi-client support is {}'.format(
-            'enabled' if self.config.client['MultiClientSupport'] else 'disabled'))
-        self.logger.info('Listening on {}:{}'.format(self.server_config['Address'], self.server_config['Port']))
+        self.logger.info(f'Multi-client support is '
+                         f'{"enabled" if self.config.client["MultiClientSupport"] else "disabled"}')
+        self.logger.info(f'Listening on {self.server_config["Address"]}:{self.server_config["Port"]}')
 
         if self.config.client['AuthStaticKey'] != 'houdini':
             self.logger.warning('The static key has been changed from the default, '

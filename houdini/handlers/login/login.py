@@ -21,22 +21,22 @@ async def handle_login(p, credentials: Credentials):
     loop = asyncio.get_event_loop()
 
     username, password = credentials.username, credentials.password
-    p.logger.info('{} is logging in!'.format(username))
+    p.logger.info(f'{username} is logging in!')
 
     data = await Penguin.query.where(Penguin.username == username).gino.first()
 
     if data is None:
-        p.logger.info('{} failed to login: penguin does not exist'.format(username))
+        p.logger.info(f'{username} failed to login: penguin does not exist')
         return await p.send_error_and_disconnect(100)
 
     password_correct = await loop.run_in_executor(None, bcrypt.checkpw,
                                                   password.encode('utf-8'), data.password.encode('utf-8'))
 
     ip_addr = p.peer_name[0]
-    flood_key = '{}.flood'.format(ip_addr)
+    flood_key = f'{ip_addr}.flood'
 
     if not password_correct:
-        p.logger.info('{} failed to login: incorrect password'.format(username))
+        p.logger.info(f'{username} failed to login: incorrect password')
 
         if await p.server.redis.exists(flood_key):
             tr = p.server.redis.multi_exec()
@@ -91,15 +91,15 @@ async def handle_login(p, credentials: Credentials):
         else:
             await p.send_error_and_disconnect(601, hours_left)
 
-    p.logger.info('{} has logged in successfully'.format(username))
+    p.logger.info(f'{username} has logged in successfully')
 
     random_key = Crypto.generate_random_key()
     login_key = Crypto.hash(random_key[::-1])
     confirmation_hash = Crypto.hash(os.urandom(24))
 
     tr = p.server.redis.multi_exec()
-    tr.setex('{}.lkey'.format(data.username), p.server.server_config['KeyTTL'], login_key)
-    tr.setex('{}.ckey'.format(data.username), p.server.server_config['KeyTTL'], confirmation_hash)
+    tr.setex(f'{data.username}.lkey', p.server.server_config['KeyTTL'], login_key)
+    tr.setex(f'{data.username}.ckey', p.server.server_config['KeyTTL'], confirmation_hash)
     await tr.execute()
 
     world_populations, buddy_presence = await get_server_presence(p, data.id)

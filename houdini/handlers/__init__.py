@@ -75,7 +75,7 @@ class _XTListener(_Listener):
     async def __call__(self, p, packet_data):
         if not self.pre_login and not p.joined_world:
             await p.close()
-            raise AuthorityError('{} tried sending XT packet before authentication!'.format(p))
+            raise AuthorityError(f'{p} tried sending XT packet before authentication!')
 
         await super()._check_cooldown(p)
         super()._check_list(p)

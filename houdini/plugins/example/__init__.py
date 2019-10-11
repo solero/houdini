@@ -17,15 +17,15 @@ class Example(IPlugin):
 
     async def ready(self):
         self.server.logger.info('Example.ready()')
-        await self.server.permissions.register('houdini.ping')
+        # await self.server.permissions.insert(name='houdini.ping')
 
     async def message_cooling(self, p):
-        print("{}, Message was sent during cooldown".format(p))
+        print(f'{p}, Message was sent during cooldown')
 
     @handlers.handler(XTPacket('m', 'sm'))
     @handlers.cooldown(1, callback=message_cooling)
     async def handle_send_message(self, p, penguin_id: int, message: str):
-        print('Do stuff with {}'.format(message))
+        print(f'Do stuff with {message}')
 
     @commands.command('ping')
     @permissions.has('houdini.ping')

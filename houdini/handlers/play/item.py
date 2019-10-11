@@ -8,11 +8,11 @@ import operator
 
 
 def get_pin_string_key(_, p, player_id):
-    return 'pins.{}'.format(player_id)
+    return f'pins.{player_id}'
 
 
 def get_awards_string_key(_, p, player_id):
-    return 'awards.{}'.format(player_id)
+    return f'awards.{player_id}'
 
 
 @cached(alias='default', key_builder=get_pin_string_key)

@@ -85,16 +85,15 @@ class CommandManager(_AbstractManager):
                 if name in parent_commands and len(parent_commands[name]):
                     conflict_command = parent_commands[name][0]
                     if config.commands['ConflictMode'] == ConflictResolution.Exception:
-                        raise NameError('Command name conflict: \'{}\' from plugin \'{}\' '
-                                        'conflicts with \'{}\' from module \'{}\''
-                                        .format(name, module.__class__.__name__, conflict_command.name,
-                                                conflict_command.instance.__class__.__name__))
+                        raise NameError(f'Command name conflict: \'{name}\' from plugin \'{module.__class__.__name__}\' '
+                                        f'conflicts with \'{conflict_command.name}\' from '
+                                        f'module \'{conflict_command.instance.__class__.__name__}\'')
                     elif config.commands['ConflictMode'] == ConflictResolution.Append:
                         parent_commands[name].append(command_object)
                     elif config.commands['ConflictMode'] == ConflictResolution.Silent:
-                        module.server.logger.warning(
-                            'Command \'{}\' from module \'{}\' disabled due to conflict with \'{}\''.format(
-                                name, module.__class__.__name__, conflict_command.instance.__class__.__name__))
+                        module.server.logger.warning(f'Command \'{name}\' from module \'{module.__class__.__name__}\' '
+                                                     f'disabled due to conflict with '
+                                                     f'\'{conflict_command.instance.__class__.__name__}\'')
                 else:
                     parent_commands[name] = [command_object]
 
@@ -131,7 +130,7 @@ async def invoke_command_string(commands, p, command_string):
 async def invoke_command_objects(commands, p, data):
     command_identifier = data.pop(0)
     if command_identifier not in commands:
-        raise UnknownCommandException('Command \'{}\' does not exist'.format(command_identifier))
+        raise UnknownCommandException(f'Command \'{command_identifier}\' does not exist')
 
     command_objects = commands[command_identifier]
     for command_object in command_objects:

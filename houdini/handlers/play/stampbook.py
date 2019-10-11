@@ -8,11 +8,11 @@ from aiocache import cached
 
 
 def get_book_cover_key(_, p, player_id):
-    return 'book.{}'.format(player_id)
+    return f'book.{player_id}'
 
 
 def get_player_stamps_key(_, p, player_id):
-    return 'stamps.{}'.format(player_id)
+    return f'stamps.{player_id}'
 
 
 @cached(alias='default', key_builder=get_book_cover_key)
@@ -133,4 +133,4 @@ async def handle_update_book_cover(p, color: int, highlight: int, pattern: int, 
                         book_modified=1).apply()
 
     stringified_cover = '%'.join(cover)
-    await p.server.cache.set('book.{}'.format(p.data.id), f'{color}%{highlight}%{pattern}%{icon}%{stringified_cover}')
+    await p.server.cache.set(f'book.{p.data.id}', f'{color}%{highlight}%{pattern}%{icon}%{stringified_cover}')

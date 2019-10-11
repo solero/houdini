@@ -43,7 +43,7 @@ async def get_server_presence(p, pid):
                                  else int(server_population) // (server_config['Capacity'] // 6)) \
                 if server_population else 0
 
-            world_populations.append('{},{}'.format(server_config['Id'], server_population))
+            world_populations.append(f'{server_config["Id"]},{server_population}')
 
             server_key = f'houdini.players.{server_config["Id"]}'
             if await p.server.redis.scard(server_key):

@@ -11,11 +11,11 @@ from aiocache import cached
 
 
 def get_status_key(_, p):
-    return 'quest.status.{}'.format(p.data.id)
+    return f'quest.status.{p.data.id}'
 
 
 def get_settings_key(_, p):
-    return 'quest.settings.{}'.format(p.room.id)
+    return f'quest.settings.{p.room.id}'
 
 
 @cached(alias='default', key_builder=get_status_key)
@@ -128,7 +128,7 @@ async def load_active_quests(p):
 @handlers.handler(XTPacket('j', 'js'), after=handle_join_server)
 @handlers.allow_once
 async def handle_quest_join_server(p):
-    await p.server.cache.delete('quest.status.{}'.format(p.data.id))
+    await p.server.cache.delete(f'quest.status.{p.data.id}')
 
     await load_active_quests(p)
     await p.send_xt('nxquestsettings', await get_quest_settings(p))
@@ -167,7 +167,7 @@ async def handle_quest_join_room(p):
 
 @handlers.handler(XTPacket('nx', 'nxquestaward'))
 async def handle_quest_award(p, quest_id: int):
-    await p.server.cache.delete('quest.status.{}'.format(p.data.id))
+    await p.server.cache.delete(f'quest.status.{p.data.id}')
 
     quest = await Quest.load(items=QuestAwardItem,
                              furniture=QuestAwardFurniture,
@@ -184,7 +184,7 @@ async def handle_quest_award(p, quest_id: int):
 @handlers.handler(XTPacket('nx', 'nxquestactivate'))
 @handlers.allow_once
 async def handle_quest_activate(p):
-    await p.server.cache.delete('quest.status.{}'.format(p.data.id))
+    await p.server.cache.delete(f'quest.status.{p.data.id}')
 
     await init_all_quests(p)
     await p.send_xt('nxquestdata', await get_player_quest_status(p))

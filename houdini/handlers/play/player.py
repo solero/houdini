@@ -11,11 +11,11 @@ import time
 
 
 def get_player_string_key(_, p, player_id):
-    return 'player.{}'.format(player_id)
+    return f'player.{player_id}'
 
 
 def get_mascot_string_key(_, p, mascot_id):
-    return 'mascot.{}'.format(mascot_id)
+    return f'mascot.{mascot_id}'
 
 
 @cached(alias='default', key_builder=get_player_string_key)
