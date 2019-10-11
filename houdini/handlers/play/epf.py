@@ -1,9 +1,55 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
+from houdini.handlers.play.mail import handle_start_mail_engine
 
 from houdini.data.item import Item
+from houdini.data.mail import PenguinPostcard
 
 import datetime
+import random
+
+
+@handlers.handler(XTPacket('l', 'mst'), before=handle_start_mail_engine)
+async def handle_send_job_mail(p):
+    postcards = []
+    if not p.data.agent_status and random.random() < 0.4:
+        epf_invited = await PenguinPostcard.query.where(
+            (PenguinPostcard.penguin_id == p.data.id) & ((PenguinPostcard.postcard_id == 112)
+                                                         | (PenguinPostcard.postcard_id == 47))).gino.scalar()
+        if not epf_invited:
+            postcards.append({
+                'penguin_id': p.data.id,
+                'postcard_id': 112
+            })
+
+    last_paycheck = p.data.last_paycheck.date()
+    today = datetime.date.today()
+    first_day_of_month = today.replace(day=1)
+    last_paycheck = last_paycheck.replace(day=1)
+
+    player_data = p.data
+    while last_paycheck < first_day_of_month:
+        last_paycheck = last_paycheck + datetime.timedelta(days=32)
+        last_paycheck = last_paycheck.replace(day=1)
+        send_date = last_paycheck + datetime.timedelta(days=1)
+        if 428 in p.data.inventory:
+            postcards.append({
+                'penguin_id': p.data.id,
+                'postcard_id': 172,
+                'send_date': send_date
+            })
+            player_data.update(coins=p.data.coins + 250)
+        if p.data.agent_status:
+            postcards.append({
+                'penguin_id': p.data.id,
+                'postcard_id': 184,
+                'send_date': send_date
+            })
+            player_data.update(coins=p.data.coins + 350)
+
+    await player_data.update(last_paycheck=last_paycheck).apply()
+    if postcards:
+        await PenguinPostcard.insert().values(postcards).gino.status()
 
 
 @handlers.handler(XTPacket('f', 'epfga'))
