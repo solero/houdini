@@ -446,7 +446,8 @@ CREATE TABLE chat_filter_rule (
   word TEXT,
   filter BOOLEAN NOT NULL DEFAULT FALSE,
   warn BOOLEAN NOT NULL DEFAULT FALSE,
-  ban BOOLEAN NOT NULL DEFAULT FALSE
+  ban BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY(word)
 );
 
 CREATE UNIQUE INDEX chat_filter_rule_word ON chat_filter_rule(word);
