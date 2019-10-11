@@ -62,8 +62,8 @@ async def handle_report(p, penguin_id: int, *reason):
     reason = int(reason[0]) if reason else 0
     date_now = datetime.datetime.now()
     server_id = p.server.server_config['Id']
-    print(server_id)
-    await Report.create(penguin_id=penguin_id, reporter_id=p.data.id, report_type=reason, date=date_now, server_id=server_id, room_id=p.room.id)
+    await Report.create(penguin_id=penguin_id, reporter_id=p.data.id, report_type=reason,
+                        date=date_now, server_id=server_id, room_id=p.room.id)
 
 
 @handlers.handler(XTPacket('o', 'moderatormessage'))
