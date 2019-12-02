@@ -11,6 +11,7 @@ class Ban(db.Model):
     moderator_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), index=True)
     reason = db.Column(db.SmallInteger, nullable=False)
     comment = db.Column(db.Text)
+    message = db.Column(db.Text)
 
 
 class Warning(db.Model):
@@ -19,6 +20,7 @@ class Warning(db.Model):
     penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
                            nullable=False)
     expires = db.Column(db.DateTime, primary_key=True, nullable=False)
+    issued = db.Column(db.DateTime, primary_key=True, nullable=False)
 
 
 class Report(db.Model):
