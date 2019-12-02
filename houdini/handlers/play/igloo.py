@@ -290,6 +290,17 @@ async def handle_update_igloo_slot_summary(p, igloo_id: int, slot_summary: _slot
 
         if igloo_id != p.room.id:
             await p.update(igloo=igloo_id).apply()
+            p.server.igloos_by_penguin_id[p.id] = igloo
+
+            igloo.penguins_by_id = p.room.penguins_by_id
+            igloo.penguins_by_username = p.room.penguins_by_username
+            igloo.penguins_by_character_id = p.room.penguins_by_character_id
+            p.room.penguins_by_id = {}
+            p.room.penguins_by_username = {}
+            p.room.penguins_by_character_id = {}
+
+            for penguin in igloo.penguins_by_id.values():
+                penguin.room = igloo
 
         for slot in slot_summary:
             igloo_id, locked = map(int, slot.split('|'))
