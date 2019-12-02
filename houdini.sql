@@ -223,6 +223,22 @@ COMMENT ON COLUMN character.name IS 'Character name';
 COMMENT ON COLUMN character.gift_id IS 'Character gift item ID';
 COMMENT ON COLUMN character.stamp_id IS 'Character stamp ID';
 
+DROP TABLE IF EXISTS epf_com_message;
+CREATE TABLE epf_com_message (
+  message TEXT NOT NULL,
+  character_id INT NOT NULL,
+  date TIMESTAMP NOT NULL,
+  CONSTRAINT epf_com_message_ibfk_1 FOREIGN KEY (character_id) REFERENCES character(id) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+COMMENT ON TABLE epf_com_message IS 'EPF phone com messages';
+
+COMMENT ON COLUMN epf_com_message.message IS 'Message content';
+COMMENT ON COLUMN epf_com_message.character_id IS 'Character ID of message';
+COMMENT ON COLUMN epf_com_message.date IS 'Date of message creation';
+
+ALTER TABLE epf_com_message ALTER COLUMN date SET DEFAULT now();
+
 DROP TABLE IF EXISTS puffle_item;
 CREATE TABLE puffle_item (
   id INT NOT NULL,
@@ -494,6 +510,7 @@ CREATE TABLE penguin (
   career_medals INT NOT NULL DEFAULT 0,
   agent_medals INT NOT NULL DEFAULT 0,
   last_field_op TIMESTAMP NOT NULL,
+  com_message_read_date TIMESTAMP NOT NULL,
   ninja_rank SMALLINT NOT NULL DEFAULT 0,
   ninja_progress SMALLINT NOT NULL DEFAULT 0,
   fire_ninja_rank SMALLINT NOT NULL DEFAULT 0,
@@ -548,6 +565,7 @@ CREATE UNIQUE INDEX penguin_username ON Penguin(username);
 ALTER TABLE penguin ALTER COLUMN registration_date SET DEFAULT now();
 ALTER TABLE penguin ALTER COLUMN last_paycheck SET DEFAULT now();
 ALTER TABLE penguin ALTER COLUMN last_field_op SET DEFAULT now();
+ALTER TABLE penguin ALTER COLUMN com_message_read_date SET DEFAULT now();
 
 ALTER SEQUENCE penguin_id_seq RESTART WITH 101;
 
@@ -586,6 +604,7 @@ COMMENT ON COLUMN penguin.field_op_status IS 'Is field op complete?';
 COMMENT ON COLUMN penguin.career_medals IS 'Total career medals';
 COMMENT ON COLUMN penguin.agent_medals IS 'Current medals';
 COMMENT ON COLUMN penguin.last_field_op IS 'Date of last field op';
+COMMENT ON COLUMN penguin.com_message_read_date IS 'Recent agent message read';
 COMMENT ON COLUMN penguin.ninja_rank IS 'Ninja rank';
 COMMENT ON COLUMN penguin.ninja_progress IS 'Ninja progress';
 COMMENT ON COLUMN penguin.fire_ninja_rank IS 'Fire ninja rank';
