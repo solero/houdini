@@ -51,7 +51,7 @@ Houdini can be run as a normal Python program under any operating system.
 $ git clone https://github.com/solero/houdini-asyncio
 $ cd houdini-asyncio
 $ pip install -r requirements.txt
-$ python bootstrap.py Login
+$ python bootstrap.py login
 ```
 
 ## Game Screenshots
