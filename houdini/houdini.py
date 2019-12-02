@@ -1,7 +1,6 @@
 import asyncio
 import os
 import sys
-import copy
 
 from houdini.spheniscidae import Spheniscidae
 from houdini.penguin import Penguin
