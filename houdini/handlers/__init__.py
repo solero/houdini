@@ -26,8 +26,8 @@ class _Packet:
 
 
 class XTPacket(_Packet):
-    def __init__(self, *packet_id):
-        super().__init__('#'.join(packet_id))
+    def __init__(self, *packet_id, ext='s'):
+        super().__init__(ext + '%' + '#'.join(packet_id))
 
 
 class XMLPacket(_Packet):

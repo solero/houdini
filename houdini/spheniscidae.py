@@ -94,7 +94,7 @@ class Spheniscidae:
         parsed_data = data.split('%')[1:-1]
 
         packet_id = parsed_data[2]
-        packet = XTPacket(packet_id)
+        packet = XTPacket(packet_id, ext=parsed_data[1])
 
         if packet in self.server.xt_listeners:
             xt_listeners = self.server.xt_listeners[packet]
