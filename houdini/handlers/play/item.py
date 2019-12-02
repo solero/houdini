@@ -1,6 +1,8 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
+from houdini.handlers.play.navigation import handle_join_server
 from houdini.data.item import Item, PenguinItemCollection
+from houdini.data.permission import PenguinPermissionCollection
 
 import time
 from aiocache import cached
@@ -41,6 +43,14 @@ async def get_awards_string(p, player_id):
 
     awards = [str(award) for award in inventory.keys() if p.server.items[award].is_award()]
     return '%'.join(awards)
+
+
+@handlers.handler(XTPacket('j', 'js'), after=handle_join_server)
+@handlers.player_attribute(joined_world=True)
+@handlers.allow_once
+async def load_inventory(p):
+    p.inventory = await PenguinItemCollection.get_collection(p.id)
+    p.permissions = await PenguinPermissionCollection.get_collection(p.id)
 
 
 @handlers.handler(XTPacket('i', 'gi'))

@@ -12,7 +12,10 @@ from houdini.handlers.play.navigation import handle_join_server
 from houdini.data import db
 from houdini.data.penguin import Penguin
 from houdini.data.room import PenguinIglooRoom
-from houdini.data.igloo import IglooFurniture, IglooLike, Igloo, Furniture, Flooring, Location
+from houdini.data.igloo import IglooFurniture, IglooLike, Igloo, Furniture, Flooring, Location, \
+    PenguinIglooCollection, PenguinFurnitureCollection, \
+    PenguinFlooringCollection, PenguinLocationCollection
+from houdini.data.room import PenguinIglooRoomCollection
 
 from sqlalchemy.dialects.postgresql import insert
 
@@ -135,6 +138,17 @@ async def save_igloo_furniture(p, furniture_list=None):
             })
 
         await IglooFurniture.insert().values(furniture).gino.status()
+
+
+@handlers.handler(XTPacket('j', 'js'), after=handle_join_server)
+@handlers.player_attribute(joined_world=True)
+@handlers.allow_once
+async def load_igloo_inventory(p):
+    p.igloos = await PenguinIglooCollection.get_collection(p.id)
+    p.igloo_rooms = await PenguinIglooRoomCollection.get_collection(p.id)
+    p.furniture = await PenguinFurnitureCollection.get_collection(p.id)
+    p.flooring = await PenguinFlooringCollection.get_collection(p.id)
+    p.locations = await PenguinLocationCollection.get_collection(p.id)
 
 
 @handlers.handler(XTPacket('g', 'gm'))

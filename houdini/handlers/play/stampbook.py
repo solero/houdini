@@ -48,6 +48,13 @@ async def get_player_stamps_string(p, player_id):
 
 
 @handlers.handler(XTPacket('j', 'js'), after=handle_join_server)
+@handlers.player_attribute(joined_world=True)
+@handlers.allow_once
+async def load_stamp_inventory(p):
+    p.stamps = await PenguinStampCollection.get_collection(p.id)
+
+
+@handlers.handler(XTPacket('j', 'js'), after=handle_join_server)
 @handlers.allow_once
 async def handle_get_stamps(p):
     await p.send_xt('gps', p.id, await get_player_stamps_string(p, p.id))

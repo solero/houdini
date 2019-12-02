@@ -25,6 +25,15 @@ async def update_player_presence(p):
                 await penguin.send_xt('caon', p.character, p.server.config.id, p.room.id)
 
 
+@handlers.handler(XTPacket('j', 'js'), after=handle_join_server)
+@handlers.player_attribute(joined_world=True)
+@handlers.allow_once
+async def load_buddy_inventory(p):
+    p.buddies = await BuddyListCollection.get_collection(p.id)
+    p.buddy_requests = await BuddyRequestCollection.get_collection(p.id)
+    p.character_buddies = await CharacterBuddyCollection.get_collection(p.id)
+
+
 @handlers.handler(XTPacket('j', 'jr'), after=handle_join_room, client=ClientType.Vanilla)
 async def handle_send_room_presence(p):
     await update_player_presence(p)
