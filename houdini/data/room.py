@@ -1,6 +1,12 @@
 from houdini.data import db, AbstractDataCollection
 
 
+def stealth_mod_filter(stealth_mod_id):
+    def f(p):
+        return not p.stealth_moderator or p.id == stealth_mod_id
+    return f
+
+
 class RoomMixin:
 
     def __init__(self, *args, **kwargs):
@@ -40,16 +46,15 @@ class RoomMixin:
         p.toy = None
 
     async def refresh(self, p):
-        if p.is_vanilla_client and p.data.stealth_moderator:
-            return await p.send_xt('grs', self.id, await self.get_string(is_stealth=True))
+        if p.is_vanilla_client and p.stealth_moderator:
+            return await p.send_xt('grs', self.id, await self.get_string(f=stealth_mod_filter(p.id)))
         await p.send_xt('grs', self.id, await self.get_string())
 
-    async def get_string(self, is_stealth=False):
-        return '%'.join([await p.string for p in self.penguins_by_id.values()
-                         if is_stealth or not p.data.stealth_moderator])
+    async def get_string(self, f=None):
+        return '%'.join([await p.string for p in filter(f, self.penguins_by_id.values())])
 
-    async def send_xt(self, *data):
-        for penguin in self.penguins_by_id.values():
+    async def send_xt(self, *data, f=None):
+        for penguin in filter(f, self.penguins_by_id.values()):
             await penguin.send_xt(*data)
 
 
@@ -105,8 +110,8 @@ class Room(db.Model, RoomMixin):
 
         if self.game:
             await p.send_xt('jg', self.id)
-        elif p.is_vanilla_client and p.data.stealth_moderator:
-            await p.send_xt('jr', self.id, await self.get_string(is_stealth=True))
+        elif p.is_vanilla_client and p.stealth_moderator:
+            await p.send_xt('jr', self.id, await self.get_string(f=stealth_mod_filter(p.id)))
         else:
             await p.send_xt('jr', self.id, await self.get_string())
             await self.send_xt('ap', await p.string)
@@ -145,8 +150,8 @@ class PenguinIglooRoom(db.Model, RoomMixin):
     async def add_penguin(self, p):
         await RoomMixin.add_penguin(self, p)
 
-        if p.is_vanilla_client and p.data.stealth_moderator:
-            await p.send_xt('jr', self.external_id, await self.get_string(is_stealth=True))
+        if p.is_vanilla_client and p.stealth_moderator:
+            await p.send_xt('jr', self.external_id, await self.get_string(f=stealth_mod_filter(p.id)))
         else:
             await p.send_xt('jr', self.external_id, await self.get_string())
             await self.send_xt('ap', await p.string)
