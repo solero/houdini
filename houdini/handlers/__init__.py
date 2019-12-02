@@ -3,8 +3,9 @@ import enum
 import itertools
 from types import FunctionType
 
-from houdini.converters import _listener, _ArgumentDeserializer, get_converter, do_conversion, _ConverterContext
-from houdini.cooldown import _Cooldown, _CooldownMapping, BucketType
+from houdini.converters import _listener, _ArgumentDeserializer, get_converter, \
+    do_conversion, _ConverterContext, ChecklistError
+from houdini.cooldown import _Cooldown, _CooldownMapping, BucketType, CooldownError
 from houdini import plugins, _AbstractManager, get_package_modules
 
 
@@ -73,14 +74,19 @@ class _XTListener(_Listener):
         self.pre_login = kwargs.get('pre_login')
 
     async def __call__(self, p, packet_data):
-        if not self.pre_login and not p.joined_world:
-            await p.close()
-            raise AuthorityError(f'{p} tried sending XT packet before authentication!')
+        try:
+            if not self.pre_login and not p.joined_world:
+                await p.close()
+                raise AuthorityError(f'{p} tried sending XT packet before authentication!')
 
-        await super()._check_cooldown(p)
-        super()._check_list(p)
+            await super()._check_cooldown(p)
+            super()._check_list(p)
 
-        await super().__call__(p, packet_data)
+            await super().__call__(p, packet_data)
+        except CooldownError:
+            p.logger.debug(f'{p} tried to send a packet during a cooldown')
+        except ChecklistError:
+            p.logger.debug(f'{p} sent a packet without meeting checklist requirements')
 
 
 class _XMLListener(_Listener):
@@ -89,27 +95,35 @@ class _XMLListener(_Listener):
         super().__init__(*args, **kwargs)
 
     async def __call__(self, p, packet_data):
-        await super()._check_cooldown(p)
-        super()._check_list(p)
+        try:
+            await super()._check_cooldown(p)
+            super()._check_list(p)
 
-        handler_call_arguments = [self.instance, p] if self.instance is not None else [p]
+            handler_call_arguments = [self.instance, p] if self.instance is not None else [p]
 
-        ctx = _ConverterContext(None, None, packet_data, p)
-        for ctx.component in itertools.islice(self._signature, len(handler_call_arguments), len(self._signature)):
-            if ctx.component.default is not ctx.component.empty:
-                handler_call_arguments.append(ctx.component.default)
-            elif ctx.component.kind == ctx.component.POSITIONAL_OR_KEYWORD:
-                converter = get_converter(ctx.component)
+            ctx = _ConverterContext(None, None, packet_data, p)
+            for ctx.component in itertools.islice(self._signature, len(handler_call_arguments), len(self._signature)):
+                if ctx.component.default is not ctx.component.empty:
+                    handler_call_arguments.append(ctx.component.default)
+                elif ctx.component.kind == ctx.component.POSITIONAL_OR_KEYWORD:
+                    converter = get_converter(ctx.component)
 
-                handler_call_arguments.append(await do_conversion(converter, ctx))
-        return await self.callback(*handler_call_arguments)
+                    handler_call_arguments.append(await do_conversion(converter, ctx))
+            return await self.callback(*handler_call_arguments)
+        except CooldownError:
+            p.logger.debug(f'{p} tried to send a packet during a cooldown')
+        except ChecklistError:
+            p.logger.debug(f'{p} sent a packet without meeting checklist requirements')
 
 
 class _DummyListener(_Listener):
     async def __call__(self, p, *_):
-        super()._check_list(p)
-        handler_call_arguments = [self.instance, p] if self.instance is not None else [p]
-        return await self.callback(*handler_call_arguments)
+        try:
+            super()._check_list(p)
+            handler_call_arguments = [self.instance, p] if self.instance is not None else [p]
+            return await self.callback(*handler_call_arguments)
+        except ChecklistError:
+            p.logger.debug(f'{p} sent a packet without meeting checklist requirements')
 
 
 class _ListenerManager(_AbstractManager):

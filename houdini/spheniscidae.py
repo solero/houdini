@@ -7,8 +7,6 @@ from xml.etree.cElementTree import Element, SubElement, tostring
 
 from houdini.constants import ClientType
 from houdini.handlers import AuthorityError, DummyEventPacket
-from houdini.converters import ChecklistError
-from houdini.cooldown import CooldownError
 
 
 class Spheniscidae:
@@ -142,27 +140,21 @@ class Spheniscidae:
     async def _client_connected(self):
         self.logger.info(f'Client {self.peer_name} connected')
 
-        try:
-            dummy_event = DummyEventPacket('connected')
-            if dummy_event in self.server.dummy_event_listeners:
-                dummy_event_listeners = self.server.dummy_event_listeners[dummy_event]
-                for listener in dummy_event_listeners:
-                    await listener(self)
-        except ChecklistError:
-            self.logger.debug(f'{self} sent a packet without meeting checklist requirements')
+        dummy_event = DummyEventPacket('connected')
+        if dummy_event in self.server.dummy_event_listeners:
+            dummy_event_listeners = self.server.dummy_event_listeners[dummy_event]
+            for listener in dummy_event_listeners:
+                await listener(self)
 
     async def _client_disconnected(self):
         del self.server.peers_by_ip[self.peer_name]
         self.logger.info(f'Client {self.peer_name} disconnected')
 
-        try:
-            dummy_event = DummyEventPacket('disconnected')
-            if dummy_event in self.server.dummy_event_listeners:
-                dummy_event_listeners = self.server.dummy_event_listeners[dummy_event]
-                for listener in dummy_event_listeners:
-                    await listener(self)
-        except ChecklistError:
-            self.logger.debug(f'{self} sent a packet without meeting checklist requirements')
+        dummy_event = DummyEventPacket('disconnected')
+        if dummy_event in self.server.dummy_event_listeners:
+            dummy_event_listeners = self.server.dummy_event_listeners[dummy_event]
+            for listener in dummy_event_listeners:
+                await listener(self)
 
     async def __data_received(self, data):
         data = data.decode()[:-1]
@@ -173,10 +165,6 @@ class Spheniscidae:
                 await self.__handle_xt_data(data)
         except AuthorityError:
             self.logger.debug(f'{self} tried to send game packet before authentication')
-        except CooldownError:
-            self.logger.debug(f'{self} tried to send a packet during a cooldown')
-        except ChecklistError:
-            self.logger.debug(f'{self} sent a packet without meeting checklist requirements')
 
     async def run(self):
         await self._client_connected()
