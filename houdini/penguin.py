@@ -218,6 +218,13 @@ class Penguin(Spheniscidae, penguin.Penguin):
 
         return True
 
+    async def add_coins(self, coins, stay=False):
+        if stay:
+            await self.join_room(self.room)
+        await self.update(coins=self.coins + coins).apply()
+        await self.send_xt('zo', self.coins, '', 0, 0, 0)
+        return self.coins
+
     async def set_color(self, item):
         await self.update(color=item.id).apply()
         await self.room.send_xt('upc', self.id, item.id)
