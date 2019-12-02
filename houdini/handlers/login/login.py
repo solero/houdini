@@ -81,7 +81,7 @@ async def handle_login(p, credentials: Credentials):
         if await data.minutes_played_today >= data.timer_total.total_seconds() // 60:
             return await p.send_error_and_disconnect(910, data.timer_total)
 
-    active_ban = await Ban.query.where(Ban.penguin_id == data.id and Ban.expires >= datetime.now()).gino.first()
+    active_ban = await Ban.query.where((Ban.penguin_id == data.id) & (Ban.expires >= datetime.now())).gino.first()
 
     if active_ban is not None:
         hours_left = round((active_ban.expires - datetime.now()).total_seconds() / 60 / 60)
@@ -89,7 +89,7 @@ async def handle_login(p, credentials: Credentials):
         if hours_left == 0:
             return await p.send_error_and_disconnect(602)
         else:
-            await p.send_error_and_disconnect(601, hours_left)
+            return await p.send_error_and_disconnect(601, hours_left)
 
     p.logger.info(f'{username} has logged in successfully')
 
