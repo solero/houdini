@@ -31,6 +31,5 @@ pip-delete-this-directory.txt
 
 # PyCharm
 .idea/
-config\.py
 
 logs/
