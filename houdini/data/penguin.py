@@ -43,6 +43,7 @@ class Penguin(db.Model):
     career_medals = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
     agent_medals = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
     last_field_op = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
+    com_message_read_date = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
     ninja_rank = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
     ninja_progress = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
     fire_ninja_rank = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
@@ -151,3 +152,11 @@ class Login(db.Model):
     date = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
     ip_address = db.Column(db.CHAR(255), nullable=False)
     minutes_played = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
+
+
+class EpfComMessage(db.Model):
+    __tablename__ = 'epf_com_message'
+
+    message = db.Column(db.Text, nullable=False)
+    character_id = db.Column(db.ForeignKey('character.id', ondelete='RESTRICT', onupdate='CASCADE'), nullable=False)
+    date = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))

@@ -4,9 +4,23 @@ from houdini.handlers.play.mail import handle_start_mail_engine
 
 from houdini.data.item import Item
 from houdini.data.mail import PenguinPostcard
+from houdini.data.penguin import EpfComMessage
+from houdini.constants import ClientType
 
 import datetime
+import time
 import random
+
+from aiocache import cached
+
+
+@cached(alias='default', key='com_messages')
+async def get_com_messages(p):
+    async with p.server.db.transaction():
+        messages = []
+        async for message in EpfComMessage.query.order_by(EpfComMessage.date.desc()).gino.iterate():
+            messages.append(f'{message.message}|{int(time.mktime(message.date.timetuple()))}|{message.character_id}')
+        return '%'.join(messages)
 
 
 @handlers.handler(XTPacket('l', 'mst'), before=handle_start_mail_engine)
@@ -102,3 +116,14 @@ async def handle_buy_epf_item(p, item: Item):
             return await p.send_error(401)
 
         await p.add_epf_inventory(item)
+
+
+@handlers.handler(XTPacket('f', 'epfgm'), client=ClientType.Vanilla)
+@handlers.allow_once
+async def handle_get_com_messages(p):
+    unread_com_message = await EpfComMessage.query.where(
+        EpfComMessage.date > p.com_message_read_date).gino.scalar()
+    if unread_com_message:
+        await p.server.cache.delete('com_messages')
+        await p.update(com_message_read_date=datetime.datetime.now()).apply()
+    await p.send_xt('epfgm', int(bool(unread_com_message)), await get_com_messages(p))
