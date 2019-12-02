@@ -31,7 +31,7 @@ async def handle_get_mail(p):
     async with p.server.db.transaction():
         async for postcard in mail_query.gino.iterate():
             sender_name, sender_id = ('sys', 0) if postcard.sender_id is None else (
-                postcard.parent.nickname, postcard.sender_id)
+                postcard.parent.safe_nickname(p.server.config.lang), postcard.sender_id)
             sent_timestamp = int(time.mktime(postcard.send_date.timetuple()))
             postcards.append(f'{sender_name}|{sender_id}|{postcard.postcard_id}|'
                              f'{postcard.details}|{sent_timestamp}|{postcard.id}|{int(postcard.has_read)}')
@@ -54,7 +54,7 @@ async def handle_send_mail(p, recipient_id: int, postcard_id: int):
         postcard = await PenguinPostcard.create(penguin_id=recipient_id, sender_id=p.id,
                                                 postcard_id=postcard_id)
         sent_timestamp = int(time.mktime(postcard.send_date.timetuple()))
-        await recipient.send_xt('mr', p.data.nickname, p.data.id, postcard_id, '', sent_timestamp, postcard.id)
+        await recipient.send_xt('mr', p.safe_name, p.id, postcard_id, '', sent_timestamp, postcard.id)
     else:
         ignored = await IgnoreList.query.where((IgnoreList.penguin_id == recipient_id)
                                                & (IgnoreList.ignore_id == p.id)).gino.scalar()

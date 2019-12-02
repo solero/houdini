@@ -21,7 +21,8 @@ async def handle_get_ignore_list(p):
 
     async with p.server.db.transaction():
         ignore_list = ignore_query.gino.iterate()
-        ignores = [f'{ignore.ignore_id}|{ignore.parent.nickname}' async for ignore in ignore_list]
+        ignores = [f'{ignore.ignore_id}|{ignore.parent.safe_nickname(p.server.config.lang)}'
+                   async for ignore in ignore_list]
 
     await p.send_xt('gn', *ignores)
 

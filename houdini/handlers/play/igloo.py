@@ -392,7 +392,7 @@ async def handle_can_like_igloo(p):
 @handlers.handler(XTPacket('g', 'gr'), client=ClientType.Vanilla)
 async def handle_get_open_igloo_list(p):
     async def get_igloo_string(igloo):
-        owner_name = p.server.penguins_by_id[igloo.penguin_id].data.nickname
+        owner_name = p.server.penguins_by_id[igloo.penguin_id].safe_name
         like_count = await get_layout_like_count(igloo.id)
         igloo_population = len(igloo.penguins_by_id)
         return f'{igloo.penguin_id}|{owner_name}|{like_count}|{igloo_population}|{int(igloo.locked)}'
@@ -409,7 +409,7 @@ async def handle_get_open_igloo_list_legacy(p):
         return await p.send_line('%xt%gr%-1%')
 
     async def get_igloo_string(igloo):
-        owner_name = p.server.penguins_by_id[igloo.penguin_id].data.nickname
+        owner_name = p.server.penguins_by_id[igloo.penguin_id].safe_name
         return f'{igloo.penguin_id}|{owner_name}'
 
     open_igloos = [await get_igloo_string(igloo) for igloo in p.server.open_igloos_by_penguin_id.values()]

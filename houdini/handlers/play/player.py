@@ -106,7 +106,7 @@ async def handle_get_player_by_id(p, penguin_id: int):
 @handlers.cooldown(1)
 async def handle_get_player_by_swid(p, penguin_id: int):
     if penguin_id in p.server.penguins_by_id:
-        nickname = p.server.penguins_by_id[penguin_id].data.nickname
+        nickname = p.server.penguins_by_id[penguin_id].safe_nick
     else:
         nickname = await Penguin.select('nickname').where(Penguin.id == penguin_id).gino.scalar()
     await p.send_xt('pbs', penguin_id, penguin_id, nickname)

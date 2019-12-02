@@ -84,7 +84,7 @@ class SoundStudio:
 
     async def get_broadcasted_tracks(self):
         penguins = self.server.penguins_by_id
-        broadcasted_tracks = ','.join(f'{track.owner_id}|{penguins[track.owner_id].data.nickname}|'
+        broadcasted_tracks = ','.join(f'{track.owner_id}|{penguins[track.owner_id].safe_name}|'
                                       f'{track.owner_id}|{track.id}|{track.likes}'
                                       for track in self.playlist)
         return broadcasted_tracks
@@ -113,7 +113,7 @@ async def get_shared_tracks(p):
     async with db.transaction():
         async for track in tracks_query.iterate():
             penguin = p.server.penguins_by_id[track.owner_id]
-            shared_tracks.append(f'{penguin.data.id}|{penguin.data.nickname}|{track.id}|{track.likes}')
+            shared_tracks.append(f'{penguin.id}|{penguin.safe_name}|{track.id}|{track.likes}')
     return shared_tracks
 
 

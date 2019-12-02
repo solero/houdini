@@ -1,9 +1,10 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
-from houdini.handlers.play.navigation import handle_join_room
+from houdini.handlers.play.navigation import handle_join_room, handle_join_server
 
 from houdini.data.penguin import Penguin
-from houdini.data.buddy import BuddyList, BuddyRequest
+from houdini.data.buddy import BuddyList, BuddyRequest, BuddyListCollection, \
+    BuddyRequestCollection, CharacterBuddyCollection
 from houdini.constants import ClientType
 
 
@@ -58,7 +59,7 @@ async def handle_get_buddies(p):
 
         async for buddy in buddy_list:
             buddy_presence = int(buddy.buddy_id in p.server.penguins_by_id)
-            buddies.append(f'{buddy.buddy_id}|{buddy.parent.nickname}|{buddy_presence}')
+            buddies.append(f'{buddy.buddy_id}|{buddy.parent.safe_nickname(p.server.config.lang)}|{buddy_presence}')
 
             if buddy.best_buddy:
                 best_buddies.append(str(buddy.buddy_id))
@@ -70,7 +71,8 @@ async def handle_get_buddies(p):
             if character.best_buddy:
                 best_characters.append(str(character.character_id))
 
-        requests = [f'{request.requester_id}|{request.parent.nickname}' async for request in buddy_requests]
+        requests = [f'{request.requester_id}|{request.parent.safe_nickname(p.server.config.lang)}'
+                    async for request in buddy_requests]
 
     best_friend_count = len(best_buddies) + len(best_characters)
     notification_aware = int(best_friend_count >= 1)
@@ -101,7 +103,7 @@ async def handle_get_buddies_legacy(p):
 
         async for buddy in buddy_list:
             buddy_presence = int(buddy.buddy_id in p.server.penguins_by_id)
-            buddies.append(f'{buddy.buddy_id}|{buddy.parent.nickname}|{buddy_presence}')
+            buddies.append(f'{buddy.buddy_id}|{buddy.parent.safe_nickname(p.server.config.lang)}|{buddy_presence}')
 
     await p.send_xt('gb', *buddies)
     await update_player_presence(p)
