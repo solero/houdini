@@ -42,13 +42,18 @@ class PluginManager(_AbstractManager):
 
     async def load(self, module):
         plugin_class, plugin_type = inspect.getmembers(module, is_plugin).pop()
+        plugin_index = plugin_class.lower()
 
-        if self.server.server_config['Plugins'] is not True and \
-                plugin_class not in self.server.server_config['Plugins']:
+        if self.server.config.plugins != '*' and \
+                plugin_index not in self.server.config.plugins:
             return
 
         plugin_object = plugin_type(self.server)
-        self[module.__name__] = plugin_object
+
+        if plugin_index in self:
+            raise KeyError(f'Duplicate plugin name "{plugin_index}" exists')
+
+        self[plugin_index] = plugin_object
 
         await self.server.commands.load(plugin_object)
         await self.server.xt_listeners.load(plugin_object)
