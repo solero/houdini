@@ -1,3 +1,8 @@
+# Plugins: An introduction
+
+Plugins provide a neat way to extend Houdini's functionality. Here is an example!
+
+```python
 from houdini import handlers
 from houdini.handlers import XTPacket
 
@@ -5,7 +10,6 @@ from houdini.plugins import IPlugin
 from houdini import commands
 
 from houdini import permissions
-
 
 class Example(IPlugin):
     author = "Ben"
@@ -31,3 +35,11 @@ class Example(IPlugin):
     @permissions.has('houdini.ping')
     async def ping(self, p):
         await p.send_xt('cprompt', 'Pong')
+
+    @commands.command('ac')
+    async def add_coins(self, p, amount: int = 100):
+        await p.add_coins(amount, stay=True)
+
+```
+
+This page is a WIP!
