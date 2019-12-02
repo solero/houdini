@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from houdini import handlers
 from houdini.handlers import XTPacket
 from houdini.converters import SeparatorConverter
-from houdini.constants import ClientType
+from houdini.constants import ClientType, StatusField
 from houdini.handlers.play.navigation import handle_join_server
 
 from houdini.data import db
@@ -161,7 +161,8 @@ async def handle_get_igloo_details(p, penguin_id: int):
 
 @handlers.handler(XTPacket('g', 'gail'), client=ClientType.Vanilla)
 async def handle_get_all_igloo_layouts(p):
-    await p.send_xt('gail', p.data.id, 0, await get_all_igloo_layouts(p))
+    await p.status_field_set(StatusField.OpenedIglooViewer)
+    await p.send_xt('gail', p.id, 0, await get_all_igloo_layouts(p))
 
 
 @handlers.handler(XTPacket('g', 'ag'))
@@ -296,7 +297,8 @@ async def handle_update_igloo_slot_summary(p, igloo_id: int, slot_summary: _slot
 
             if igloo_id == p.igloo:
                 if not locked:
-                    p.server.open_igloos_by_penguin_id[p.data.id] = igloo
+                    await p.status_field_set(StatusField.ActiveIglooLayoutOpenFlag)
+                    p.server.open_igloos_by_penguin_id[p.id] = igloo
 
                 if igloo.locked != bool(locked):
                     await igloo.update(locked=bool(locked)).apply()

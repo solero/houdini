@@ -4,7 +4,7 @@ from houdini.data.room import Room
 from houdini.data.penguin import Login
 from houdini.data.penguin import Penguin
 from houdini.data.room import PenguinIglooRoom, PenguinBackyardRoom
-from houdini.constants import ClientType
+from houdini.constants import ClientType, StatusField
 
 import random
 import time
@@ -91,6 +91,7 @@ async def handle_join_player_room(p, penguin_id: int, room_type: str):
         backyard = PenguinBackyardRoom()
         await p.send_xt('jp', backyard.id, backyard.id, room_type)
         await p.join_room(backyard)
+        await p.status_field_set(StatusField.VisitBackyardFirstTime)
     elif room_type == 'igloo':
         igloo = await create_temporary_room(p, penguin_id)
         await p.send_xt('jp', igloo.external_id, igloo.external_id, room_type)
