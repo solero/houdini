@@ -83,14 +83,14 @@ class Spheniscidae:
         await self.send_line(xml_data.decode('utf-8'))
 
     async def send_line(self, data):
-        self.logger.debug('Outgoing data: %s', data)
+        self.logger.debug(f'Outgoing data: {data}')
         self.__writer.write(data.encode('utf-8') + Spheniscidae.Delimiter)
 
     async def close(self):
         self.__writer.close()
 
     async def __handle_xt_data(self, data):
-        self.logger.debug('Received XT data: %s', data)
+        self.logger.debug(f'Received XT data: {data}')
         parsed_data = data.split('%')[1:-1]
 
         packet_id = parsed_data[2]
@@ -108,7 +108,7 @@ class Spheniscidae:
             self.logger.warn('Handler for %s doesn\'t exist!', packet_id)
 
     async def __handle_xml_data(self, data):
-        self.logger.debug('Received XML data: %s', data)
+        self.logger.debug(f'Received XML data: {data}')
 
         element_tree = Et.fromstring(data)
 
@@ -140,7 +140,7 @@ class Spheniscidae:
             self.logger.warn('Received invalid XML data!')
 
     async def _client_connected(self):
-        self.logger.info('Client %s connected', self.peer_name)
+        self.logger.info(f'Client {self.peer_name} connected')
 
         try:
             dummy_event = DummyEventPacket('connected')
@@ -153,7 +153,7 @@ class Spheniscidae:
 
     async def _client_disconnected(self):
         del self.server.peers_by_ip[self.peer_name]
-        self.logger.info('Client %s disconnected', self.peer_name)
+        self.logger.info(f'Client {self.peer_name} disconnected')
 
         try:
             dummy_event = DummyEventPacket('disconnected')
