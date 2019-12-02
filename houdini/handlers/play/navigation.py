@@ -66,6 +66,8 @@ async def handle_join_server(p, penguin_id: int, login_key: str):
 @handlers.handler(XTPacket('j', 'jr'))
 @handlers.cooldown(1)
 async def handle_join_room(p, room: Room, x: int, y: int):
+    if p.is_legacy_client and room.tables:
+        await p.send_xt('jr', room.id)
     p.x, p.y = x, y
     await p.join_room(room)
 
