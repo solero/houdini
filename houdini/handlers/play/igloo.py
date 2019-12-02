@@ -165,6 +165,17 @@ async def handle_get_all_igloo_layouts(p):
     await p.send_xt('gail', p.id, 0, await get_all_igloo_layouts(p))
 
 
+@handlers.handler(XTPacket('g', 'gail'), client=ClientType.Vanilla, after=handle_get_all_igloo_layouts)
+async def handle_get_all_igloo_likes(p):
+    total = 0
+    like_strings = []
+    for igloo in p.igloo_rooms.values():
+        like_count = await get_layout_like_count(igloo.id)
+        total += like_count
+        like_strings.append(f'{igloo.id}|{like_count}')
+    await p.send_xt('gaili', total, ','.join(like_strings))
+
+
 @handlers.handler(XTPacket('g', 'ag'))
 async def handle_buy_flooring(p, flooring: Flooring):
     if flooring is None:
@@ -495,15 +506,10 @@ async def handle_like_igloo(p):
             set_=dict(count=IglooLike.count + 1, date=datetime.now()),
             where=(IglooLike.date < datetime.today())
         )
-        await like_insert.gino.status()
+        like_count = await like_insert.gino.scalar()
 
+        await p.room.send_xt('lue', p.id, like_count, f=lambda penguin: penguin.id != p.id)
         await p.server.cache.delete(f'layout_like_count.{p.room.id}')
-
-        if len(p.room.penguins_by_id) > 1:
-            like_count = await get_layout_like_count(p.room.id)
-            for penguin in p.room.penguins_by_id.values():
-                if penguin.data.id != p.data.id:
-                    await p.send_xt('lue', p.data.id, like_count)
 
 
 @handlers.handler(XTPacket('g', 'gii'), client=ClientType.Vanilla)
