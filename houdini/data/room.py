@@ -1,6 +1,52 @@
 from houdini.data import db, AbstractDataCollection
 
 
+class ConnectFourLogic:
+
+    def __init__(self):
+        self.current_player = 1
+        self.board = [[0 for _ in range(6)] for _ in range(7)]
+
+    def place_chip(self, col, row):
+        self.board[col][row] = self.current_player
+
+    def is_position_win(self, col, row):
+        for delta_row, delta_col in [(1, 0), (0, 1), (1, 1), (1, -1)]:
+            streak = 1
+            for delta in (1, -1):
+                delta_row *= delta
+                delta_col *= delta
+                next_row = row + delta_row
+                next_col = col + delta_col
+                while 0 <= next_row < 6 and 0 <= next_col < 7:
+                    if self.board[next_col][next_row] == self.current_player:
+                        streak += 1
+                    else:
+                        break
+                    if streak == 4:
+                        return True
+                    next_row += delta_row
+                    next_col += delta_col
+        return False
+
+    def is_valid_move(self, col, row):
+        if 0 <= row <= 5 and 0 <= col <= 6:
+            if row == 5 or (self.board[col][row] == 0 and self.board[col][row + 1]):
+                return True
+        return False
+
+    def is_board_full(self):
+        for col in self.board:
+            if not col[0]:
+                return False
+        return True
+
+    def get_string(self):
+        return ','.join(str(item) for row in self.board for item in row)
+
+
+
+
 def stealth_mod_filter(stealth_mod_id):
     def f(p):
         return not p.stealth_moderator or p.id == stealth_mod_id
@@ -172,13 +218,16 @@ class RoomTable(db.Model):
     game = db.Column(db.String(20), nullable=False)
 
     GameClassMapping = {
-
+        'four': ConnectFourLogic,
+        'mancala': str,
+        'treasure': str
     }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.penguins = []
         self.room = None
+        self.logic = None
 
     async def add(self, p):
         self.penguins.append(p)
@@ -195,13 +244,14 @@ class RoomTable(db.Model):
         self.penguins.remove(p)
 
         await p.send_xt("lt")
-        await p.room.send_xt("ut", self.id, len(self.penguins))
+        await self.room.send_xt("ut", self.id, len(self.penguins))
         p.table = None
 
     async def reset(self):
         for penguin in self.penguins:
             penguin.table = None
 
+        self.logic = type(self.logic)()
         self.penguins = []
         await self.room.send_xt("ut", self.id, 0)
 
@@ -213,11 +263,11 @@ class RoomTable(db.Model):
             return str()
         elif len(self.penguins) == 1:
             player_one, = self.penguins
-            return "%".join([player_one.nickname, str(), self.game.get_string()])
+            return "%".join([player_one.safe_name, str(), self.logic.get_string()])
         player_one, player_two = self.penguins[:2]
         if len(self.penguins) == 2:
-            return "%".join([player_one.nickname, player_two.nickname, self.game.get_string()])
-        return "%".join([player_one.nickname, player_two.nickname, self.game.get_string(), "1"])
+            return "%".join([player_one.safe_name, player_two.safe_name, self.logic.get_string()])
+        return "%".join([player_one.safe_name, player_two.safe_name, self.logic.get_string(), "1"])
 
     async def send_xt(self, *data):
         for penguin in self.penguins:
@@ -244,12 +294,12 @@ class RoomWaddle(db.Model):
 
     async def add(self, p):
         if not self.penguins:
-            self.penguins = [None] * self.Seats
+            self.penguins = [None] * self.seats
 
         seat_id = self.penguins.index(None)
         self.penguins[seat_id] = p
         await p.send_xt("jw", seat_id)
-        await p.room.send_xt("uw", self.id, seat_id, p.Nickname)
+        await p.room.send_xt("uw", self.id, seat_id, p.safe_name)
 
         p.waddle = self
 
@@ -259,7 +309,7 @@ class RoomWaddle(db.Model):
     async def remove(self, p):
         seat_id = self.get_seat_id(p)
         self.penguins[seat_id] = None
-        await self.room.send_xt("uw", self.id, seat_id)
+        await p.room.send_xt("uw", self.id, seat_id)
 
         p.waddle = None
 
@@ -292,10 +342,12 @@ class RoomCollection(AbstractDataCollection):
         async with db.transaction():
             async for table in RoomTable.query.gino.iterate():
                 self[table.room_id].tables[table.id] = table
+                table.room = self[table.room_id]
+                table.logic = RoomTable.GameClassMapping[table.game]()
 
     async def setup_waddles(self):
         async with db.transaction():
             async for waddle in RoomWaddle.query.gino.iterate():
                 self[waddle.room_id].waddles[waddle.id] = waddle
-
+                waddle.room = self[waddle.room_id]
 
