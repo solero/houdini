@@ -1,4 +1,5 @@
 from houdini import handlers
+from houdini.converters import SeparatorConverter
 from houdini.handlers import XTPacket
 from houdini.data.penguin import Penguin
 from houdini.constants import ClientType
@@ -109,6 +110,31 @@ async def handle_get_player_by_swid(p, penguin_id: int):
     else:
         nickname = await Penguin.select('nickname').where(Penguin.id == penguin_id).gino.scalar()
     await p.send_xt('pbs', penguin_id, penguin_id, nickname)
+
+
+_id_converter = SeparatorConverter(separator=',', mapper=int)
+
+
+@handlers.handler(XTPacket('u', 'pbsu'), client=ClientType.Vanilla)
+@handlers.cooldown(1)
+async def handle_get_player_username_by_swid(p, ids: _id_converter):
+    ids = list(ids)
+    query = Penguin.select('id', 'nickname').where(Penguin.id.in_(ids))
+    async with p.server.db.transaction():
+        nicknames = {
+            pid: nickname async for pid, nickname in query.gino.iterate()}
+
+    await p.send_xt('pbsu', ','.join(nicknames[pid] for pid in ids))
+
+
+@handlers.handler(XTPacket('u', 'gabcms'))
+async def handle_get_ab_test_data(p):
+    pass
+
+
+@handlers.handler(XTPacket('u', 'rpfi'))
+async def handle_send_refresh_player_friend_info(p):
+    pass
 
 
 @handlers.handler(XTPacket('u', 'pbn'), client=ClientType.Vanilla)
