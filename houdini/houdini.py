@@ -24,6 +24,7 @@ from houdini.data.mail import PostcardCollection
 from houdini.data.pet import PuffleCollection, PuffleItemCollection
 from houdini.data.permission import PermissionCollection
 from houdini.data.buddy import CharacterCollection
+from houdini.data.moderator import ChatFilterRuleCollection
 
 try:
     import uvloop
@@ -74,6 +75,7 @@ class Houdini:
         self.plugins = PluginManager(self)
 
         self.permissions = None
+        self.chat_filter_words = None
 
         self.items = None
         self.igloos = None

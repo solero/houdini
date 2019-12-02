@@ -16,6 +16,15 @@ async def handle_send_message(p, penguin_id: int, message: str):
         return
 
     tokens = message.lower()
+    for word, consequence in p.server.chat_filter_words.items():
+        if word in tokens:
+            if consequence.ban:
+                return
+            elif consequence.warn:
+                return
+            elif consequence.filter:
+                return
+
     if has_command_prefix(p.server.config.command_prefix, message):
         await invoke_command_string(p.server.commands, p, message)
     else:
