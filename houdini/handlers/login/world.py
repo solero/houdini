@@ -35,8 +35,7 @@ async def world_login(p, data):
         await p.server.penguins_by_id[data.id].close()
 
     p.logger.info(f'{data.username} logged in successfully')
-
-    p.data = data
+    p.update(**data.to_dict())
     await p.send_xt('l')
 
 

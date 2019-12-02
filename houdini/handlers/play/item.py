@@ -18,7 +18,7 @@ def get_awards_string_key(_, p, player_id):
 @cached(alias='default', key_builder=get_pin_string_key)
 async def get_pin_string(p, player_id):
     if player_id in p.server.penguins_by_id:
-        inventory = p.server.penguins_by_id[player_id].data.inventory
+        inventory = p.server.penguins_by_id[player_id].inventory
     else:
         inventory = await PenguinItemCollection.get_collection(player_id)
 
@@ -35,7 +35,7 @@ async def get_pin_string(p, player_id):
 @cached(alias='default', key_builder=get_awards_string_key)
 async def get_awards_string(p, player_id):
     if player_id in p.server.penguins_by_id:
-        inventory = p.server.penguins_by_id[player_id].data.inventory
+        inventory = p.server.penguins_by_id[player_id].inventory
     else:
         inventory = await PenguinItemCollection.get_collection(player_id)
 
@@ -46,7 +46,7 @@ async def get_awards_string(p, player_id):
 @handlers.handler(XTPacket('i', 'gi'))
 @handlers.allow_once
 async def handle_get_inventory(p):
-    await p.send_xt('gi', *p.data.inventory.keys())
+    await p.send_xt('gi', *p.inventory.keys())
 
 
 @handlers.handler(XTPacket('i', 'ai'))
@@ -55,13 +55,13 @@ async def handle_buy_inventory(p, item: Item):
     if item is None:
         return await p.send_error(402)
 
-    if item.id in p.data.inventory:
+    if item.id in p.inventory:
         return await p.send_error(400)
 
     if item.tour:
         return await p.add_inbox(p.server.postcards[126])
 
-    if p.data.coins < item.cost:
+    if p.coins < item.cost:
         return await p.send_error(401)
 
     await p.add_inventory(item)

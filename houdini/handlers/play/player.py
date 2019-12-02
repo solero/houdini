@@ -51,28 +51,28 @@ async def server_egg_timer(server):
     while True:
         await asyncio.sleep(60)
         for p in server.penguins_by_id.values():
-            if p.data.timer_active:
+            if p.timer_active:
                 p.egg_timer_minutes -= 1
-                if p.client_type == ClientType.Vanilla:
-                    minutes_until_timer_end = datetime.combine(datetime.today(), p.data.timer_end) - datetime.now()
+                if p.is_vanilla_client:
+                    minutes_until_timer_end = datetime.combine(datetime.today(), p.timer_end) - datetime.now()
                     minutes_until_timer_end = minutes_until_timer_end.total_seconds() // 60
 
                     if minutes_until_timer_end <= p.egg_timer_minutes + 1:
                         if p.egg_timer_minutes == 7:
-                            await p.send_error(915, p.egg_timer_minutes, p.data.timer_start, p.data.timer_end)
+                            await p.send_error(915, p.egg_timer_minutes, p.timer_start, p.timer_end)
                         elif p.egg_timer_minutes == 5:
-                            await p.send_error(915, p.egg_timer_minutes, p.data.timer_start, p.data.timer_end)
+                            await p.send_error(915, p.egg_timer_minutes, p.timer_start, p.timer_end)
                     else:
                         if p.egg_timer_minutes == 7:
-                            await p.send_error(914, p.egg_timer_minutes, p.data.timer_total)
+                            await p.send_error(914, p.egg_timer_minutes, p.timer_total)
                         elif p.egg_timer_minutes == 5:
-                            await p.send_error(914, p.egg_timer_minutes, p.data.timer_total)
+                            await p.send_error(914, p.egg_timer_minutes, p.timer_total)
 
-                    await p.send_xt('uet', p.egg_timer_minutes)
-                    if p.egg_timer_minutes <= 0:
-                        await p.send_error_and_disconnect(916, p.data.timer_start, p.data.timer_end)
+                    await p.send_xt('uet', max(0, p.egg_timer_minutes))
+                    if p.egg_timer_minutes < 0:
+                        await p.send_error_and_disconnect(916, p.timer_start, p.timer_end)
                 else:
-                    if p.egg_timer_minutes <= 0:
+                    if p.egg_timer_minutes < 0:
                         await p.send_error_and_disconnect(910)
 
 
@@ -117,7 +117,7 @@ async def handle_get_player_by_name(p, player_name: str):
     player_name = player_name.lower()
     if player_name in p.server.penguins_by_username:
         player = p.server.penguins_by_username[player_name]
-        await p.send_xt('pbn', player.data.id, player.data.id, player.data.nickname)
+        await p.send_xt('pbn', player.id, player.id, player.safe_name)
     else:
         result = await Penguin.select('id', 'nickname').where(
             Penguin.username == player_name).gino.first()
@@ -131,9 +131,9 @@ async def handle_get_player_by_name(p, player_name: str):
 @handlers.handler(XTPacket('u', 'smi'), client=ClientType.Vanilla)
 @handlers.cooldown(10)
 async def handle_send_mascot_invite(p, num_invites: int, character_id: int):
-    if character_id in p.server.characters and p.data.character is not None:
-        for _ in range(min(num_invites, len(p.server.penguins_by_id))):
-            player = random.choice(list(p.server.penguins_by_id.values()))
+    if character_id in p.server.characters and p.character is not None:
+        players = random.sample(list(p.server.penguins_by_id.values()), min(num_invites, len(p.server.penguins_by_id)))
+        for player in players:
             await player.send_xt('smi', character_id)
 
 
@@ -151,7 +151,7 @@ async def handle_find_player(p, player_id: int):
 
 @handlers.handler(XTPacket('u', 'gbffl'))
 async def handle_get_best_friends(p):
-    await p.send_xt('gbffl', ','.join((str(buddy.buddy_id) for buddy in p.data.buddies.values() if buddy.best_buddy)))
+    await p.send_xt('gbffl', ','.join((str(buddy.buddy_id) for buddy in p.buddies.values() if buddy.best_buddy)))
 
 
 @handlers.handler(XTPacket('u', 'pbsms'), client=ClientType.Vanilla)
@@ -174,49 +174,49 @@ async def handle_set_player_position(p, x: int, y: int):
     p.x, p.y = x, y
     p.frame = 1
     p.toy = None
-    await p.room.send_xt('sp', p.data.id, x, y)
+    await p.room.send_xt('sp', p.id, x, y)
 
 
 @handlers.handler(XTPacket('u', 'sf'))
 @handlers.cooldown(.5)
 async def handle_set_player_frame(p, frame: int):
     p.frame = frame
-    await p.room.send_xt('sf', p.data.id, frame)
+    await p.room.send_xt('sf', p.id, frame)
 
 
 @handlers.handler(XTPacket('u', 'sb'))
 @handlers.cooldown(1)
 async def handle_send_throw_ball(p, x: int, y: int):
-    await p.room.send_xt('sb', p.data.id, x, y)
+    await p.room.send_xt('sb', p.id, x, y)
 
 
 @handlers.handler(XTPacket('u', 'se'))
 @handlers.cooldown(1)
 async def handle_send_emote(p, emote: int):
-    await p.room.send_xt('se', p.data.id, emote)
+    await p.room.send_xt('se', p.id, emote)
 
 
 @handlers.handler(XTPacket('u', 'sa'))
 @handlers.cooldown(1)
 async def handle_send_action(p, action: int):
-    await p.room.send_xt('sa', p.data.id, action)
+    await p.room.send_xt('sa', p.id, action)
 
 
 @handlers.handler(XTPacket('u', 'followpath'))
 @handlers.cooldown(1)
 async def handle_follow_path(p, path: int):
-    await p.room.send_xt('followpath', p.data.id, path)
+    await p.room.send_xt('followpath', p.id, path)
 
 
 @handlers.handler(XTPacket('u', 'ss'))
 async def handle_send_safe_message(p, message_id: int):
-    await p.room.send_xt('ss', p.data.id, message_id)
+    await p.room.send_xt('ss', p.id, message_id)
 
 
 @handlers.handler(XTPacket('u', 'sma'))
 async def handle_send_mascot_message(p, message_id: int):
-    if p.data.character:
-        await p.room.send_xt('sma', p.data.id, message_id)
+    if p.character:
+        await p.room.send_xt('sma', p.id, message_id)
 
 
 @handlers.handler(XTPacket('u', 'glr'))

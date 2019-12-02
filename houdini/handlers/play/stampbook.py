@@ -19,8 +19,8 @@ def get_player_stamps_key(_, p, player_id):
 async def get_book_cover_string(p, player_id):
     if player_id in p.server.penguins_by_id:
         player = p.server.penguins_by_id[player_id]
-        cover_details = [player.data.book_color, player.data.book_highlight, player.data.book_pattern,
-                         player.data.book_icon]
+        cover_details = [player.book_color, player.book_highlight, player.book_pattern,
+                         player.book_icon]
     else:
         cover_details = list(await Penguin.select('book_color', 'book_highlight', 'book_pattern', 'book_icon')
                              .where(Penguin.id == player_id).gino.first())
@@ -41,7 +41,7 @@ async def get_book_cover_string(p, player_id):
 @cached(alias='default', key_builder=get_player_stamps_key)
 async def get_player_stamps_string(p, player_id):
     if player_id in p.server.penguins_by_id:
-        stamp_inventory = p.server.penguins_by_id[player_id].data.stamps
+        stamp_inventory = p.server.penguins_by_id[player_id].stamps
     else:
         stamp_inventory = await PenguinStampCollection.get_collection(player_id)
     return '|'.join(map(str, stamp_inventory.keys()))
@@ -50,20 +50,20 @@ async def get_player_stamps_string(p, player_id):
 @handlers.handler(XTPacket('j', 'js'), after=handle_join_server)
 @handlers.allow_once
 async def handle_get_stamps(p):
-    await p.send_xt('gps', p.data.id, await get_player_stamps_string(p, p.data.id))
+    await p.send_xt('gps', p.id, await get_player_stamps_string(p, p.id))
 
 
 @handlers.handler(XTPacket('st', 'gps'))
 @handlers.cooldown(1)
 async def handle_get_player_stamps(p, player_id: int):
-    await p.send_xt('gps', p.data.id, await get_player_stamps_string(p, player_id))
+    await p.send_xt('gps', p.id, await get_player_stamps_string(p, player_id))
 
 
 @handlers.handler(XTPacket('st', 'gmres'))
 @handlers.cooldown(1)
 async def handle_get_recent_stamps(p):
     recent_stamps = []
-    for stamp in p.data.stamps.values():
+    for stamp in p.stamps.values():
         if stamp.recent:
             recent_stamps.append(stamp.stamp_id)
             await stamp.update(recent=False).apply()
@@ -88,8 +88,8 @@ async def handle_update_book_cover(p, color: int, highlight: int, pattern: int, 
            and len(cover) <= 10):
         return
 
-    await CoverItem.delete.where(CoverItem.penguin_id == p.data.id).gino.status()
-    await CoverStamp.delete.where(CoverStamp.penguin_id == p.data.id).gino.status()
+    await CoverItem.delete.where(CoverItem.penguin_id == p.id).gino.status()
+    await CoverStamp.delete.where(CoverStamp.penguin_id == p.id).gino.status()
 
     stamp_tracker = set()
     inventory_tracker = set()
@@ -106,19 +106,19 @@ async def handle_update_book_cover(p, color: int, highlight: int, pattern: int, 
             return
 
         if stamp_type == 0:
-            if stamp_id in stamp_tracker or stamp_id not in p.data.stamps:
+            if stamp_id in stamp_tracker or stamp_id not in p.stamps:
                 return
             stamp_tracker.add(stamp_id)
-            cover_stamps.append({'penguin_id': p.data.id, 'stamp_id': stamp_id, 'x': pos_x, 'y': pos_y,
+            cover_stamps.append({'penguin_id': p.id, 'stamp_id': stamp_id, 'x': pos_x, 'y': pos_y,
                                  'rotation': rotation, 'depth': depth})
         elif stamp_type == 1 or stamp_type == 2:
             cover_item = p.server.items[stamp_id]
-            if stamp_id in inventory_tracker or stamp_id not in p.data.inventory or \
+            if stamp_id in inventory_tracker or stamp_id not in p.inventory or \
                     (stamp_type == 1 and not cover_item.is_flag()) or \
                     (stamp_type == 2 and not cover_item.is_award()):
                 return
             inventory_tracker.add(stamp_id)
-            cover_items.append({'penguin_id': p.data.id, 'item_id': stamp_id, 'x': pos_x, 'y': pos_y,
+            cover_items.append({'penguin_id': p.id, 'item_id': stamp_id, 'x': pos_x, 'y': pos_y,
                                'rotation': rotation, 'depth': depth})
 
     if cover_items:
@@ -126,11 +126,11 @@ async def handle_update_book_cover(p, color: int, highlight: int, pattern: int, 
     if cover_stamps:
         await CoverStamp.insert().values(cover_stamps).gino.status()
 
-    await p.data.update(book_color=color,
-                        book_highlight=highlight,
-                        book_pattern=pattern,
-                        book_icon=icon,
-                        book_modified=1).apply()
+    await p.update(book_color=color,
+                   book_highlight=highlight,
+                   book_pattern=pattern,
+                   book_icon=icon,
+                   book_modified=1).apply()
 
     stringified_cover = '%'.join(cover)
-    await p.server.cache.set(f'book.{p.data.id}', f'{color}%{highlight}%{pattern}%{icon}%{stringified_cover}')
+    await p.server.cache.set(f'book.{p.id}', f'{color}%{highlight}%{pattern}%{icon}%{stringified_cover}')

@@ -95,7 +95,7 @@ async def get_player_tracks(p):
     likes = db.func.count(TrackLike.track_id)
     tracks_query = db.select([PenguinTrack, likes])\
         .select_from(PenguinTrack.outerjoin(TrackLike))\
-        .where(PenguinTrack.owner_id == p.data.id)\
+        .where(PenguinTrack.owner_id == p.id)\
         .group_by(PenguinTrack.id).gino.load(PenguinTrack.load(likes=ColumnLoader(likes)))
     async with db.transaction():
         async for track in tracks_query.iterate():
@@ -131,7 +131,7 @@ async def can_like_track(p, owner_id: int, track_id: int):
     like = await db.select(TrackLike) \
         .select_from(TrackLike.outerjoin(PenguinTrack)) \
         .where((PenguinTrack.owner_id == owner_id)
-               & (TrackLike.penguin_id == p.data.id)
+               & (TrackLike.penguin_id == p.id)
                & (TrackLike.track_id == track_id)
                & (TrackLike.date > yesterday)).gino.first()
     return like is None
@@ -139,7 +139,7 @@ async def can_like_track(p, owner_id: int, track_id: int):
 
 def get_playlist_position(p):
     for position, track in enumerate(p.server.music.playlist):
-        if track.owner_id == p.data.id:
+        if track.owner_id == p.id:
             return position + 1
     return -1
 
@@ -206,10 +206,10 @@ async def handle_save_my_music_track(p, track_name, track_pattern, track_hash):
         return
 
     track_count = await db.select([db.func.count(PenguinTrack.id)])\
-        .where(PenguinTrack.owner_id == p.data.id).gino.scalar()
+        .where(PenguinTrack.owner_id == p.id).gino.scalar()
     if track_count >= 12:
         return
-    track = await PenguinTrack.create(owner_id=p.data.id, name=track_name, pattern=track_pattern)
+    track = await PenguinTrack.create(owner_id=p.id, name=track_name, pattern=track_pattern)
     await p.send_xt('savemymusictrack', track.id)
 
 
@@ -219,11 +219,11 @@ async def handle_refresh_my_track_likes(p):
     likes = db.func.count(TrackLike.track_id)
     track_likes_query = db.select([PenguinTrack.id, likes])\
         .select_from(PenguinTrack.outerjoin(TrackLike))\
-        .where(PenguinTrack.owner_id == p.data.id)\
+        .where(PenguinTrack.owner_id == p.id)\
         .group_by(PenguinTrack.id).gino.load(PenguinTrack.load(likes=ColumnLoader(likes)))
     async with db.transaction():
         async for track in track_likes_query.iterate():
-            await p.send_xt('getlikecountfortrack', p.data.id, track.id, track.likes)
+            await p.send_xt('getlikecountfortrack', p.id, track.id, track.likes)
 
 
 @handlers.handler(XTPacket('musictrack', 'sharemymusictrack'), client=ClientType.Vanilla)
@@ -232,10 +232,10 @@ async def handle_refresh_my_track_likes(p):
 async def handle_share_my_music_track(p, track_id: int, sharing: int):
     if sharing:
         await PenguinTrack.update.values(sharing=False)\
-            .where(PenguinTrack.owner_id == p.data.id).gino.status()
+            .where(PenguinTrack.owner_id == p.id).gino.status()
     await PenguinTrack.update.values(sharing=bool(sharing))\
         .where((PenguinTrack.id == track_id)
-               & (PenguinTrack.owner_id == p.data.id)).gino.status()
+               & (PenguinTrack.owner_id == p.id)).gino.status()
     await p.send_xt('sharemymusictrack', 1)
 
 
@@ -243,7 +243,7 @@ async def handle_share_my_music_track(p, track_id: int, sharing: int):
 @handlers.player_in_room(SoundStudio.StudioRoomId, SoundStudio.DeckRoomId)
 async def handle_delete_track(p, track_id: int):
     await PenguinTrack.delete.where((PenguinTrack.id == track_id)
-                                    & (PenguinTrack.owner_id == p.data.id)).gino.status()
+                                    & (PenguinTrack.owner_id == p.id)).gino.status()
     await p.send_xt('deletetrack', 1)
 
 
@@ -260,7 +260,7 @@ async def handle_can_like_track(p, owner_id: int, track_id: int):
 async def handle_like_track(p, owner_id: int, track_id: int):
     can_like = await can_like_track(p, owner_id, track_id)
     if can_like:
-        await TrackLike.create(penguin_id=p.data.id, track_id=track_id)
+        await TrackLike.create(penguin_id=p.id, track_id=track_id)
         like_count = await db.select([db.func.count(TrackLike.track_id)])\
             .where(TrackLike.track_id == track_id).gino.scalar()
         await p.room.send_xt('liketrack', owner_id, track_id, like_count)

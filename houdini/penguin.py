@@ -1,9 +1,10 @@
 import time
 
 from houdini.spheniscidae import Spheniscidae
+from houdini.data import penguin
 
 
-class Penguin(Spheniscidae):
+class Penguin(Spheniscidae, penguin.Penguin):
 
     __slots__ = ['x', 'y', 'frame', 'toy', 'room', 'waddle', 'table',
                  'data', 'muted', 'login_key', 'member', 'membership_days',
@@ -22,7 +23,6 @@ class Penguin(Spheniscidae):
         self.table = None
         self.muted = False
 
-        self.data = None
         self.login_key = None
 
         self.member = 1
@@ -61,22 +61,22 @@ class Penguin(Spheniscidae):
     async def join_room(self, room):
         await room.add_penguin(self)
 
-        self.logger.info(f'{self.data.username} joined room \'{room.name}\'')
+        self.logger.info(f'{self.username} joined room \'{room.name}\'')
 
     async def add_inventory(self, item, notify=True):
-        if item.id in self.data.inventory:
+        if item.id in self.inventory:
             return False
 
-        await self.data.inventory.insert(item_id=item.id)
-        await self.data.update(coins=self.data.coins - item.cost).apply()
+        await self.inventory.insert(item_id=item.id)
+        await self.update(coins=self.coins - item.cost).apply()
 
         if notify:
-            await self.send_xt('ai', item.id, self.data.coins)
+            await self.send_xt('ai', item.id, self.coins)
 
-        self.logger.info(f'{self.data.username} added \'{item.name}\' to their clothing inventory')
+        self.logger.info(f'{self.username} added \'{item.name}\' to their clothing inventory')
 
-        await self.server.cache.delete(f'pins.{self.data.id}')
-        await self.server.cache.delete(f'awards.{self.data.id}')
+        await self.server.cache.delete(f'pins.{self.id}')
+        await self.server.cache.delete(f'awards.{self.id}')
 
         return True
 
@@ -84,209 +84,210 @@ class Penguin(Spheniscidae):
         if not item.epf:
             return False
 
-        if item.id in self.data.inventory:
+        if item.id in self.inventory:
             return False
 
-        await self.data.inventory.insert(item_id=item.id)
-        await self.data.update(agent_medals=self.data.agent_medals - item.cost).apply()
+        await self.inventory.insert(item_id=item.id)
+        await self.update(agent_medals=self.agent_medals - item.cost).apply()
 
         if notify:
-            await self.send_xt('epfai', self.data.agent_medals)
+            await self.send_xt('epfai', self.agent_medals)
 
         return True
 
     async def add_igloo(self, igloo, notify=True):
-        if igloo.id in self.data.igloos:
+        if igloo.id in self.igloos:
             return False
 
-        await self.data.igloos.insert(igloo_id=igloo.id)
-        await self.data.update(coins=self.data.coins - igloo.cost).apply()
+        await self.igloos.insert(igloo_id=igloo.id)
+        await self.update(coins=self.coins - igloo.cost).apply()
 
         if notify:
-            await self.send_xt('au', igloo.id, self.data.coins)
+            await self.send_xt('au', igloo.id, self.coins)
 
-        self.logger.info(f'{self.data.username} added \'{igloo.name}\' to their igloos inventory')
+        self.logger.info(f'{self.username} added \'{igloo.name}\' to their igloos inventory')
 
         return True
 
     async def add_puffle_item(self, care_item, quantity=1, notify=True):
-        if care_item.id in self.data.puffle_items:
-            penguin_care_item = self.data.puffle_items[care_item.id]
+        if care_item.id in self.puffle_items:
+            penguin_care_item = self.puffle_items[care_item.id]
             if penguin_care_item.quantity >= 100:
                 return False
 
             await penguin_care_item.update(
                 quantity=penguin_care_item.quantity + quantity).apply()
         else:
-            await self.data.puffle_items.insert(item_id=care_item.id)
+            await self.puffle_items.insert(item_id=care_item.id)
 
-        await self.data.update(coins=self.data.coins - care_item.cost).apply()
+        await self.update(coins=self.coins - care_item.cost).apply()
 
         if notify:
-            await self.send_xt('papi', self.data.coins, care_item.id, quantity)
+            await self.send_xt('papi', self.coins, care_item.id, quantity)
 
-        self.logger.info(f'{self.data.username} added \'{care_item.name}\' to their puffle care inventory')
+        self.logger.info(f'{self.username} added \'{care_item.name}\' to their puffle care inventory')
 
         return True
 
     async def add_furniture(self, furniture, quantity=1, notify=True):
-        if furniture.id in self.data.furniture:
-            penguin_furniture = self.data.furniture[furniture.id]
+        if furniture.id in self.furniture:
+            penguin_furniture = self.furniture[furniture.id]
             if penguin_furniture.quantity >= furniture.max_quantity:
                 return False
 
             await penguin_furniture.update(
                 quantity=penguin_furniture.quantity + quantity).apply()
         else:
-            await self.data.furniture.insert(furniture_id=furniture.id)
+            await self.furniture.insert(furniture_id=furniture.id)
 
-        await self.data.update(coins=self.data.coins - furniture.cost).apply()
+        await self.update(coins=self.coins - furniture.cost).apply()
 
         if notify:
-            await self.send_xt('af', furniture.id, self.data.coins)
+            await self.send_xt('af', furniture.id, self.coins)
 
-        self.logger.info(f'{self.data.username} added \'{furniture.name}\' to their furniture inventory')
+        self.logger.info(f'{self.username} added \'{furniture.name}\' to their furniture inventory')
 
         return True
 
     async def add_card(self, card, quantity=1):
-        if card.id in self.data.cards:
-            penguin_card = self.data.cards[card.id]
+        if card.id in self.cards:
+            penguin_card = self.cards[card.id]
 
             await penguin_card.update(
                 quantity=penguin_card.quantity + quantity).apply()
         else:
-            await self.data.cards.insert(card_id=card.id)
+            await self.cards.insert(card_id=card.id)
 
-        self.logger.info(f'{self.data.username} added \'{card.name}\' to their ninja deck')
+        self.logger.info(f'{self.username} added \'{card.name}\' to their ninja deck')
 
         return True
 
     async def add_flooring(self, flooring, notify=True):
-        if flooring.id in self.data.flooring:
+        if flooring.id in self.flooring:
             return False
 
-        await self.data.flooring.insert(flooring_id=flooring.id)
-        await self.data.update(coins=self.data.coins - flooring.cost).apply()
+        await self.flooring.insert(flooring_id=flooring.id)
+        await self.update(coins=self.coins - flooring.cost).apply()
 
         if notify:
-            await self.send_xt('ag', flooring.id, self.data.coins)
+            await self.send_xt('ag', flooring.id, self.coins)
 
-        self.logger.info(f'{self.data.username} added \'{flooring.name}\' to their flooring inventory')
+        self.logger.info(f'{self.username} added \'{flooring.name}\' to their flooring inventory')
 
         return True
 
     async def add_location(self, location, notify=True):
-        if location.id in self.data.locations:
+        if location.id in self.locations:
             return False
 
-        await self.data.locations.insert(location_id=location.id)
-        await self.data.update(coins=self.data.coins - location.cost).apply()
+        await self.locations.insert(location_id=location.id)
+        await self.update(coins=self.coins - location.cost).apply()
 
         if notify:
-            await self.send_xt('aloc', location.id, self.data.coins)
+            await self.send_xt('aloc', location.id, self.coins)
 
-        self.logger.info(f'{self.data.username} added \'{location.name}\' to their location inventory')
+        self.logger.info(f'{self.username} added \'{location.name}\' to their location inventory')
 
         return True
 
     async def add_stamp(self, stamp, notify=True):
-        if stamp.id in self.data.stamps:
+        if stamp.id in self.stamps:
             return False
 
-        await self.data.stamps.insert(stamp_id=stamp.id)
+        await self.stamps.insert(stamp_id=stamp.id)
 
         if notify:
             await self.send_xt('aabs', stamp.id)
 
-        self.logger.info(f'{self.data.username} earned stamp \'{stamp.name}\'')
-        await self.server.cache.delete(f'stamps.{self.data.id}')
+        self.logger.info(f'{self.username} earned stamp \'{stamp.name}\'')
+        await self.server.cache.delete(f'stamps.{self.id}')
 
         return True
 
     async def add_inbox(self, postcard, sender_name="sys", sender_id=None, details=""):
-        penguin_postcard = await self.data.postcards.insert(penguin_id=self.data.id, sender_id=sender_id, postcard_id=postcard.id, details=details)
+        penguin_postcard = await self.postcards.insert(penguin_id=self.id, sender_id=sender_id,
+                                                       postcard_id=postcard.id, details=details)
 
         await self.send_xt('mr', sender_name, 0, postcard.id, details, int(time.time()), penguin_postcard.id)
 
     async def add_permission(self, permission):
-        if permission not in self.data.permissions:
-            await self.data.permissions.insert(name=permission)
+        if permission not in self.permissions:
+            await self.permissions.insert(name=permission)
 
-        self.logger.info(f'{self.data.username} was assigned permission \'{permission}\'')
+        self.logger.info(f'{self.username} was assigned permission \'{permission}\'')
 
         return True
 
     async def set_color(self, item):
-        await self.data.update(color=item.id).apply()
-        await self.room.send_xt('upc', self.data.id, item.id)
-        self.logger.info(f'{self.data.username} updated their color to \'{item.name}\' ')
+        await self.update(color=item.id).apply()
+        await self.room.send_xt('upc', self.id, item.id)
+        self.logger.info(f'{self.username} updated their color to \'{item.name}\' ')
 
     async def set_head(self, item):
         item_id = None if item is None else item.id
-        await self.data.update(head=item_id).apply()
-        await self.room.send_xt('uph', self.data.id, item_id or 0)
+        await self.update(head=item_id).apply()
+        await self.room.send_xt('uph', self.id, item_id or 0)
 
-        self.logger.info(f'{self.data.username} updated their head item to \'{item.name}\' ' if item else
-                         f'{self.data.username} removed their head item')
+        self.logger.info(f'{self.username} updated their head item to \'{item.name}\' ' if item else
+                         f'{self.username} removed their head item')
 
     async def set_face(self, item):
         item_id = None if item is None else item.id
-        await self.data.update(face=item_id).apply()
-        await self.room.send_xt('upf', self.data.id, item_id or 0)
+        await self.update(face=item_id).apply()
+        await self.room.send_xt('upf', self.id, item_id or 0)
 
-        self.logger.info(f'{self.data.username} updated their face item to \'{item.name}\' ' if item else
-                         f'{self.data.username} removed their face item')
+        self.logger.info(f'{self.username} updated their face item to \'{item.name}\' ' if item else
+                         f'{self.username} removed their face item')
 
     async def set_neck(self, item):
         item_id = None if item is None else item.id
-        await self.data.update(neck=item_id).apply()
-        await self.room.send_xt('upn', self.data.id, item_id or 0)
+        await self.update(neck=item_id).apply()
+        await self.room.send_xt('upn', self.id, item_id or 0)
 
-        self.logger.info(f'{self.data.username} updated their neck item to \'{item.name}\' ' if item else
-                         f'{self.data.username} removed their neck item')
+        self.logger.info(f'{self.username} updated their neck item to \'{item.name}\' ' if item else
+                         f'{self.username} removed their neck item')
 
     async def set_body(self, item):
         item_id = None if item is None else item.id
-        await self.data.update(body=item_id).apply()
-        await self.room.send_xt('upb', self.data.id, item_id or 0)
+        await self.update(body=item_id).apply()
+        await self.room.send_xt('upb', self.id, item_id or 0)
 
-        self.logger.info(f'{self.data.username} updated their body item to \'{item.name}\' ' if item else
-                         f'{self.data.username} removed their body item')
+        self.logger.info(f'{self.username} updated their body item to \'{item.name}\' ' if item else
+                         f'{self.username} removed their body item')
 
     async def set_hand(self, item):
         item_id = None if item is None else item.id
-        await self.data.update(hand=item_id).apply()
-        await self.room.send_xt('upa', self.data.id, item_id or 0)
+        await self.update(hand=item_id).apply()
+        await self.room.send_xt('upa', self.id, item_id or 0)
 
-        self.logger.info(f'{self.data.username} updated their hand item to \'{item.name}\' ' if item else
-                         f'{self.data.username} removed their hand item')
+        self.logger.info(f'{self.username} updated their hand item to \'{item.name}\' ' if item else
+                         f'{self.username} removed their hand item')
 
     async def set_feet(self, item):
         item_id = None if item is None else item.id
-        await self.data.update(feet=item_id).apply()
-        await self.room.send_xt('upe', self.data.id, item_id or 0)
+        await self.update(feet=item_id).apply()
+        await self.room.send_xt('upe', self.id, item_id or 0)
 
-        self.logger.info(f'{self.data.username} updated their feet item to \'{item.name}\' ' if item else
-                         f'{self.data.username} removed their feet item')
+        self.logger.info(f'{self.username} updated their feet item to \'{item.name}\' ' if item else
+                         f'{self.username} removed their feet item')
 
     async def set_flag(self, item):
         item_id = None if item is None else item.id
-        await self.data.update(flag=item_id).apply()
-        await self.room.send_xt('upl', self.data.id, item_id or 0)
+        await self.update(flag=item_id).apply()
+        await self.room.send_xt('upl', self.id, item_id or 0)
 
-        self.logger.info(f'{self.data.username} updated their flag item to \'{item.name}\' ' if item else
-                         f'{self.data.username} removed their flag item')
+        self.logger.info(f'{self.username} updated their flag item to \'{item.name}\' ' if item else
+                         f'{self.username} removed their flag item')
 
     async def set_photo(self, item):
         item_id = None if item is None else item.id
-        await self.data.update(photo=item_id).apply()
-        await self.room.send_xt('upp', self.data.id, item_id or 0)
+        await self.update(photo=item_id).apply()
+        await self.room.send_xt('upp', self.id, item_id or 0)
 
-        self.logger.info(f'{self.data.username} updated their background to \'{item.name}\' ' if item else
-                         f'{self.data.username} removed their background item')
+        self.logger.info(f'{self.username} updated their background to \'{item.name}\' ' if item else
+                         f'{self.username} removed their background item')
         
     def __repr__(self):
-        if self.data is not None:
-            return f'<Penguin ID=\'{self.data.id}\' Username=\'{self.data.username}\'>'
+        if self.id is not None:
+            return f'<Penguin ID=\'{self.id}\' Username=\'{self.username}\'>'
         return super().__repr__()

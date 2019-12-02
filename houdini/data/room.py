@@ -17,23 +17,23 @@ class RoomMixin:
     async def add_penguin(self, p):
         if p.room:
             await p.room.remove_penguin(p)
-        self.penguins_by_id[p.data.id] = p
-        self.penguins_by_username[p.data.username] = p
+        self.penguins_by_id[p.id] = p
+        self.penguins_by_username[p.username] = p
 
-        if p.data.character:
-            self.penguins_by_character_id[p.data.character] = p
+        if p.character:
+            self.penguins_by_character_id[p.character] = p
 
         p.room = self
 
     async def remove_penguin(self, p):
-        if not (p.is_vanilla_client and p.data.stealth_moderator):
-            await self.send_xt('rp', p.data.id)
+        if not (p.is_vanilla_client and p.stealth_moderator):
+            await self.send_xt('rp', p.id, f=lambda penguin: penguin.id != p.id)
 
-        del self.penguins_by_id[p.data.id]
-        del self.penguins_by_username[p.data.username]
+        del self.penguins_by_id[p.id]
+        del self.penguins_by_username[p.username]
 
-        if p.data.character:
-            del self.penguins_by_character_id[p.data.character]
+        if p.character:
+            del self.penguins_by_character_id[p.character]
 
         p.room = None
         p.frame = 1

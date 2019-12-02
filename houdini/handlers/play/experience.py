@@ -11,7 +11,7 @@ from aiocache import cached
 
 
 def get_status_key(_, p):
-    return f'quest.status.{p.data.id}'
+    return f'quest.status.{p.id}'
 
 
 def get_settings_key(_, p):
@@ -24,18 +24,18 @@ async def get_player_quest_status(p):
                        items=QuestAwardItem,
                        furniture=QuestAwardFurniture,
                        pet=QuestAwardPuffleItem,
-                       complete=PenguinQuestTask.on((PenguinQuestTask.penguin_id == p.data.id) &
+                       complete=PenguinQuestTask.on((PenguinQuestTask.penguin_id == p.id) &
                                                     (QuestTask.id == PenguinQuestTask.task_id))).gino
 
     def has_award(quest):
         for award in quest.items:
-            if award.item_id not in p.data.inventory:
+            if award.item_id not in p.inventory:
                 return False
         for award in quest.furniture:
-            if award.furniture_id not in p.data.furniture:
+            if award.furniture_id not in p.furniture:
                 return False
         for award in quest.pet:
-            if award.puffle_item_id not in p.data.puffle_items:
+            if award.puffle_item_id not in p.puffle_items:
                 return False
         return True
 
@@ -103,14 +103,14 @@ async def get_quest_settings(p):
 
 async def init_all_quests(p):
     query = Quest.load(tasks=QuestTask,
-                       complete=PenguinQuestTask.on((PenguinQuestTask.penguin_id == p.data.id) &
+                       complete=PenguinQuestTask.on((PenguinQuestTask.penguin_id == p.id) &
                                                     (QuestTask.id == PenguinQuestTask.task_id))).gino
 
     async with db.transaction():
         async for quest in query.iterate():
             for task in quest.tasks:
                 if task.id not in quest.in_progress.union(quest.complete):
-                    await PenguinQuestTask.create(task_id=task.id, penguin_id=p.data.id)
+                    await PenguinQuestTask.create(task_id=task.id, penguin_id=p.id)
 
     await load_active_quests(p)
 
@@ -120,7 +120,7 @@ async def load_active_quests(p):
                                        items=QuestAwardItem,
                                        furniture=QuestAwardFurniture,
                                        pet=QuestAwardPuffleItem,
-                                       complete=PenguinQuestTask.on((PenguinQuestTask.penguin_id == p.data.id) &
+                                       complete=PenguinQuestTask.on((PenguinQuestTask.penguin_id == p.id) &
                                                                     (PenguinQuestTask.task_id == QuestTask.id) &
                                                                     (PenguinQuestTask.complete == False))).gino.all()
 
@@ -128,7 +128,7 @@ async def load_active_quests(p):
 @handlers.handler(XTPacket('j', 'js'), after=handle_join_server)
 @handlers.allow_once
 async def handle_quest_join_server(p):
-    await p.server.cache.delete(f'quest.status.{p.data.id}')
+    await p.server.cache.delete(f'quest.status.{p.id}')
 
     await load_active_quests(p)
     await p.send_xt('nxquestsettings', await get_quest_settings(p))
@@ -136,11 +136,11 @@ async def handle_quest_join_server(p):
 
 
 async def set_task_cleared(p, task_id):
-    await p.server.cache.delete(f'quest.status.{p.data.id}')
+    await p.server.cache.delete(f'quest.status.{p.id}')
 
     await PenguinQuestTask.update.values(complete=True) \
         .where((PenguinQuestTask.task_id == task_id) &
-               (PenguinQuestTask.penguin_id == p.data.id)).gino.status()
+               (PenguinQuestTask.penguin_id == p.id)).gino.status()
     return await p.send_xt('nxquestdata', await get_player_quest_status(p))
 
 
@@ -159,7 +159,7 @@ async def handle_quest_join_room(p):
     if p.active_quests is not None:
         for quest in p.active_quests:
             for task in quest.tasks:
-                igloo_quest_completed = task.id == 3 and p.room.igloo and p.room.penguin_id == p.data.id
+                igloo_quest_completed = task.id == 3 and p.room.igloo and p.room.penguin_id == p.id
                 if task.id in quest.in_progress and igloo_quest_completed:
                     await set_task_cleared(p, task.id)
                     p.active_quests.remove(quest)
@@ -167,7 +167,7 @@ async def handle_quest_join_room(p):
 
 @handlers.handler(XTPacket('nx', 'nxquestaward'))
 async def handle_quest_award(p, quest_id: int):
-    await p.server.cache.delete(f'quest.status.{p.data.id}')
+    await p.server.cache.delete(f'quest.status.{p.id}')
 
     quest = await Quest.load(items=QuestAwardItem,
                              furniture=QuestAwardFurniture,
@@ -184,7 +184,7 @@ async def handle_quest_award(p, quest_id: int):
 @handlers.handler(XTPacket('nx', 'nxquestactivate'))
 @handlers.allow_once
 async def handle_quest_activate(p):
-    await p.server.cache.delete(f'quest.status.{p.data.id}')
+    await p.server.cache.delete(f'quest.status.{p.id}')
 
     await init_all_quests(p)
     await p.send_xt('nxquestdata', await get_player_quest_status(p))
@@ -193,39 +193,39 @@ async def handle_quest_activate(p):
 @handlers.handler(XTPacket('nx', 'gas'))
 @handlers.allow_once
 async def handle_get_action_status(p):
-    await p.send_xt('gas', int(p.data.special_dance), int(p.data.special_wave),
-                    int(p.data.special_snowball))
+    await p.send_xt('gas', int(p.special_dance), int(p.special_wave),
+                    int(p.special_snowball))
 
 
 @handlers.handler(XTPacket('nx', 'mcs'))
 async def handle_map_category_setting(p, map_category: int):
     if 0 <= map_category <= 4:
-        await p.data.update(map_category=map_category).apply()
+        await p.update(map_category=map_category).apply()
 
 
 @handlers.handler(XTPacket('nx', 'pcos'))
 @handlers.allow_once
-@handlers.player_data_attribute(opened_playercard=False)
+@handlers.player_attribute(opened_playercard=False)
 async def handle_playercard_opened_setting(p):
-    await p.data.update(opened_playercard=True).apply()
+    await p.update(opened_playercard=True).apply()
 
 
 @handlers.handler(XTPacket('nx', 'swave'))
 @handlers.allow_once
-@handlers.player_data_attribute(special_wave=False)
+@handlers.player_attribute(special_wave=False)
 async def handle_special_wave(p):
-    await p.data.update(special_wave=True).apply()
+    await p.update(special_wave=True).apply()
 
 
 @handlers.handler(XTPacket('nx', 'sdance'))
 @handlers.allow_once
-@handlers.player_data_attribute(special_dance=False)
+@handlers.player_attribute(special_dance=False)
 async def handle_special_dance(p):
-    await p.data.update(special_dance=True).apply()
+    await p.update(special_dance=True).apply()
 
 
 @handlers.handler(XTPacket('nx', 'ssnowball'))
 @handlers.allow_once
-@handlers.player_data_attribute(special_snowball=False)
+@handlers.player_attribute(special_snowball=False)
 async def handle_special_snowball(p):
-    await p.data.update(special_snowball=True).apply()
+    await p.update(special_snowball=True).apply()

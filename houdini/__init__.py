@@ -66,26 +66,20 @@ class PenguinStringCompiler(OrderedDict):
         return attribute_method
 
     @classmethod
-    def data_attribute_by_name(cls, attribute_name):
-        async def attribute_method(p):
-            return getattr(p.data, attribute_name) or 0
-        return attribute_method
-
-    @classmethod
     def setup_default_builder(cls, string_builder):
         string_builder.update({
-            'ID': PenguinStringCompiler.data_attribute_by_name('id'),
-            'Nickname': PenguinStringCompiler.data_attribute_by_name('nickname'),
-            'Approval': PenguinStringCompiler.data_attribute_by_name('approval'),
-            'Color': PenguinStringCompiler.data_attribute_by_name('color'),
-            'Head': PenguinStringCompiler.data_attribute_by_name('head'),
-            'Face': PenguinStringCompiler.data_attribute_by_name('face'),
-            'Neck': PenguinStringCompiler.data_attribute_by_name('neck'),
-            'Body': PenguinStringCompiler.data_attribute_by_name('body'),
-            'Hand': PenguinStringCompiler.data_attribute_by_name('hand'),
-            'Feet': PenguinStringCompiler.data_attribute_by_name('feet'),
-            'Flag': PenguinStringCompiler.data_attribute_by_name('flag'),
-            'Photo': PenguinStringCompiler.data_attribute_by_name('photo'),
+            'ID': PenguinStringCompiler.attribute_by_name('id'),
+            'Nickname': PenguinStringCompiler.attribute_by_name('nickname'),
+            'Approval': PenguinStringCompiler.attribute_by_name('approval'),
+            'Color': PenguinStringCompiler.attribute_by_name('color'),
+            'Head': PenguinStringCompiler.attribute_by_name('head'),
+            'Face': PenguinStringCompiler.attribute_by_name('face'),
+            'Neck': PenguinStringCompiler.attribute_by_name('neck'),
+            'Body': PenguinStringCompiler.attribute_by_name('body'),
+            'Hand': PenguinStringCompiler.attribute_by_name('hand'),
+            'Feet': PenguinStringCompiler.attribute_by_name('feet'),
+            'Flag': PenguinStringCompiler.attribute_by_name('flag'),
+            'Photo': PenguinStringCompiler.attribute_by_name('photo'),
             'X': PenguinStringCompiler.attribute_by_name('x'),
             'Y': PenguinStringCompiler.attribute_by_name('y'),
             'Frame': PenguinStringCompiler.attribute_by_name('frame'),

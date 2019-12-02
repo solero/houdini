@@ -2,16 +2,7 @@ from datetime import datetime, date
 
 from houdini.data import db
 
-from houdini.data.permission import PenguinPermissionCollection
-from houdini.data.item import PenguinItemCollection
-from houdini.data.igloo import PenguinIglooCollection, PenguinFurnitureCollection, \
-    PenguinFlooringCollection, PenguinLocationCollection
-from houdini.data.stamp import PenguinStampCollection
-from houdini.data.ninja import PenguinCardCollection
-from houdini.data.pet import PenguinPuffleCollection, PenguinPuffleItemCollection
-from houdini.data.buddy import BuddyListCollection, BuddyRequestCollection, \
-    CharacterBuddyCollection, IgnoreListCollection
-from houdini.data.room import PenguinIglooRoomCollection
+from functools import lru_cache
 
 
 class Penguin(db.Model):
@@ -107,23 +98,7 @@ class Penguin(db.Model):
 
         super().__init__(*args, **kwargs)
 
-    async def load_inventories(self):
-        self.inventory = await PenguinItemCollection.get_collection(self.id)
-        self.permissions = await PenguinPermissionCollection.get_collection(self.id)
-        self.igloos = await PenguinIglooCollection.get_collection(self.id)
-        self.igloo_rooms = await PenguinIglooRoomCollection.get_collection(self.id)
-        self.furniture = await PenguinFurnitureCollection.get_collection(self.id)
-        self.flooring = await PenguinFlooringCollection.get_collection(self.id)
-        self.locations = await PenguinLocationCollection.get_collection(self.id)
-        self.stamps = await PenguinStampCollection.get_collection(self.id)
-        self.cards = await PenguinCardCollection.get_collection(self.id)
-        self.puffles = await PenguinPuffleCollection.get_collection(self.id)
-        self.puffle_items = await PenguinPuffleItemCollection.get_collection(self.id)
-        self.buddies = await BuddyListCollection.get_collection(self.id)
-        self.buddy_requests = await BuddyRequestCollection.get_collection(self.id)
-        self.character_buddies = await CharacterBuddyCollection.get_collection(self.id)
-        self.ignore = await IgnoreListCollection.get_collection(self.id)
-
+    @lru_cache()
     def safe_nickname(self, language_bitmask):
         return self.nickname if self.approval & language_bitmask else "P" + str(self.id)
 

@@ -232,15 +232,6 @@ def player_attribute(**attrs):
     return check(check_for_attributes)
 
 
-def player_data_attribute(**attrs):
-    def check_for_attributes(_, p):
-        for attr, value in attrs.items():
-            if not getattr(p.data, attr) == value:
-                return False
-        return True
-    return check(check_for_attributes)
-
-
 def player_in_room(*room_ids):
     def check_room_id(_, p):
         return p.room.id in room_ids

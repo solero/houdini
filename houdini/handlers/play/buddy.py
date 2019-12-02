@@ -8,21 +8,21 @@ from houdini.constants import ClientType
 
 
 async def update_player_presence(p):
-    for buddy_id in p.data.buddies.keys():
+    for buddy_id in p.buddies.keys():
         if buddy_id in p.server.penguins_by_id:
             buddy = p.server.penguins_by_id[buddy_id]
-            await p.send_xt('bon', buddy.data.id, p.server.server_config['Id'], buddy.room.id)
-            await buddy.send_xt('bon', p.data.id, p.server.server_config['Id'], p.room.id)
+            await p.send_xt('bon', buddy.id, p.server.config.id, buddy.room.id)
+            await buddy.send_xt('bon', p.id, p.server.config.id, p.room.id)
 
-    for character_id in p.data.character_buddies.keys():
+    for character_id in p.character_buddies.keys():
         if character_id in p.server.penguins_by_character_id:
             character = p.server.penguins_by_character_id[character_id]
-            await p.send_xt('caon', character_id, p.server.server_config['Id'], character.room.id)
+            await p.send_xt('caon', character_id, p.server.config.id, character.room.id)
 
-    if p.data.character is not None:
+    if p.character is not None:
         for penguin in p.server.penguins_by_id.values():
-            if p.data.character in penguin.data.character_buddies:
-                await penguin.send_xt('caon', p.data.character, p.server.server_config['Id'], p.room.id)
+            if p.character in penguin.character_buddies:
+                await penguin.send_xt('caon', p.character, p.server.config.id, p.room.id)
 
 
 @handlers.handler(XTPacket('j', 'jr'), after=handle_join_room, client=ClientType.Vanilla)
@@ -34,9 +34,9 @@ async def handle_send_room_presence(p):
 @handlers.allow_once
 async def handle_get_buddies(p):
     buddies_query = BuddyList.load(parent=Penguin.on(Penguin.id == BuddyList.buddy_id)).where(
-        BuddyList.penguin_id == p.data.id)
+        BuddyList.penguin_id == p.id)
     request_query = BuddyRequest.load(parent=Penguin.on(Penguin.id == BuddyRequest.requester_id)).where(
-        BuddyRequest.penguin_id == p.data.id)
+        BuddyRequest.penguin_id == p.id)
 
     buddies = []
     best_buddies = []
@@ -54,7 +54,7 @@ async def handle_get_buddies(p):
             if buddy.best_buddy:
                 best_buddies.append(str(buddy.buddy_id))
 
-        for character in p.data.character_buddies.values():
+        for character in p.character_buddies.values():
             character_presence = int(character.character_id in p.server.penguins_by_character_id)
             characters.append(f'{character.character_id}|{character_presence}')
 
@@ -66,7 +66,7 @@ async def handle_get_buddies(p):
     best_friend_count = len(best_buddies) + len(best_characters)
     notification_aware = int(best_friend_count >= 1)
     best_friends_enabled = int((len(buddies) + len(characters)) >= 6)
-    await p.send_xt('gs', best_friend_count, notification_aware, int(p.data.active), best_friends_enabled)
+    await p.send_xt('gs', best_friend_count, notification_aware, int(p.active), best_friends_enabled)
 
     await p.send_xt('gb', *buddies)
     await p.send_xt('pr', *requests)
@@ -83,7 +83,7 @@ async def handle_get_buddies(p):
 @handlers.allow_once
 async def handle_get_buddies_legacy(p):
     buddies_query = BuddyList.load(parent=Penguin.on(Penguin.id == BuddyList.buddy_id)).where(
-        BuddyList.penguin_id == p.data.id)
+        BuddyList.penguin_id == p.id)
 
     buddies = []
 
@@ -100,7 +100,7 @@ async def handle_get_buddies_legacy(p):
 
 @handlers.handler(XTPacket('b', 'bf'), client=ClientType.Legacy)
 async def handle_find_buddy(p, buddy_id: int):
-    if buddy_id in p.data.buddies and buddy_id in p.server.penguins_by_id:
+    if buddy_id in p.buddies and buddy_id in p.server.penguins_by_id:
         buddy = p.server.penguins_by_id[buddy_id]
         await p.send_xt('bf', buddy.room.external_id if buddy.room.igloo else buddy.room.id)
 
@@ -108,101 +108,100 @@ async def handle_find_buddy(p, buddy_id: int):
 @handlers.handler(XTPacket('b', 'br'))
 @handlers.cooldown(.5)
 async def handle_buddy_request(p, buddy_id: int):
-    if buddy_id not in p.data.buddies:
+    if buddy_id not in p.buddies:
         if buddy_id in p.server.penguins_by_id:
             buddy = p.server.penguins_by_id[buddy_id]
 
-            if buddy.client_type == ClientType.Vanilla and p.data.id not in buddy.data.buddy_requests:
-                await buddy.data.buddy_requests.insert(buddy_id=p.data.id)
-            elif p.data.id not in buddy.buddy_requests:
-                buddy.buddy_requests.add(p.data.id)
+            if buddy.client_type == ClientType.Vanilla and p.id not in buddy.buddy_requests:
+                await buddy.buddy_requests.insert(buddy_id=p.id)
+            elif p.id not in buddy.buddy_requests:
+                buddy.buddy_requests.add(p.id)
             else:
                 return
 
-            await buddy.send_xt('br', p.data.id, p.data.nickname)
+            await buddy.send_xt('br', p.id, p.safe_name)
         else:
-            await BuddyRequest.create(penguin_id=buddy_id, requester_id=p.data.id)
+            await BuddyRequest.create(penguin_id=buddy_id, requester_id=p.id)
 
 
 @handlers.handler(XTPacket('b', 'ba'))
 async def handle_buddy_accept(p, buddy_id: int):
-    if buddy_id in p.data.buddy_requests:
-        await p.data.buddy_requests.delete(buddy_id)
+    if buddy_id in p.buddy_requests:
+        await p.buddy_requests.delete(buddy_id)
     elif buddy_id in p.buddy_requests:
         p.buddy_requests.remove(buddy_id)
     else:
         return
 
-    await p.data.buddies.insert(buddy_id=buddy_id)
+    await p.buddies.insert(buddy_id=buddy_id)
 
     if buddy_id in p.server.penguins_by_id:
         buddy = p.server.penguins_by_id[buddy_id]
-        await buddy.data.buddies.insert(buddy_id=p.data.id)
-        await buddy.send_xt('ba', p.data.id, p.data.nickname, 1)
-        await p.send_xt('ba', buddy.data.id, buddy.data.nickname, 1)
+        await buddy.buddies.insert(buddy_id=p.id)
+        await buddy.send_xt('ba', p.id, p.safe_name, 1)
+        await p.send_xt('ba', buddy.id, buddy.safe_name, 1)
 
         if p.client_type == ClientType.Vanilla:
-            await p.send_xt('bon', buddy.data.id, p.server.server_config['Id'], buddy.room.id)
+            await p.send_xt('bon', buddy.id, p.server.config.id, buddy.room.id)
         if buddy.client_type == ClientType.Vanilla:
-            await buddy.send_xt('bon', p.data.id, p.server.server_config['Id'], p.room.id)
+            await buddy.send_xt('bon', p.id, p.server.config.id, p.room.id)
     else:
-        await BuddyList.create(penguin_id=buddy_id, buddy_id=p.data.id)
+        await BuddyList.create(penguin_id=buddy_id, buddy_id=p.id)
         nickname = await Penguin.select('nickname').where(Penguin.id == buddy_id).gino.scalar()
         await p.send_xt('ba', buddy_id, nickname, 0)
 
 
 @handlers.handler(XTPacket('b', 'rb'))
 async def handle_buddy_remove(p, buddy_id: int):
-    if buddy_id in p.data.buddies:
-        await p.data.buddies.delete(buddy_id)
+    if buddy_id in p.buddies:
+        await p.buddies.delete(buddy_id)
         await p.send_xt('rb', buddy_id)
         if buddy_id in p.server.penguins_by_id:
             buddy = p.server.penguins_by_id[buddy_id]
-            await buddy.send_xt('rb', p.data.id)
-            await buddy.data.buddies.delete(p.data.id)
+            await buddy.send_xt('rb', p.id)
+            await buddy.buddies.delete(p.id)
         else:
             await BuddyList.delete.where((BuddyList.penguin_id == buddy_id) &
-                                         (BuddyList.buddy_id == p.data.id)).gino.status()
+                                         (BuddyList.buddy_id == p.id)).gino.status()
 
 
 @handlers.handler(XTPacket('b', 'cr'), client=ClientType.Vanilla)
 async def handle_character_request(p, character_id: int):
-    if character_id in p.server.characters and character_id not in p.data.character_buddies:
-        character = p.server.characters[character_id]
-        await p.data.character_buddies.insert(character_id=character_id)
+    if character_id in p.server.characters and character_id not in p.character_buddies:
+        await p.character_buddies.insert(character_id=character_id)
         await p.send_xt('cr', character_id, 0)
-        await p.send_xt('caon', character_id, p.server.server_config['Id'], p.room.id)
+        await p.send_xt('caon', character_id, p.server.config.id, p.room.id)
 
 
 @handlers.handler(XTPacket('b', 'rr'), client=ClientType.Vanilla)
 async def handle_buddy_reject(p, buddy_id: int):
-    await p.data.buddy_requests.delete(buddy_id)
+    await p.buddy_requests.delete(buddy_id)
 
 
 @handlers.handler(XTPacket('b', 'tbf'), client=ClientType.Vanilla)
 async def handle_toggle_best_friend(p, buddy_id: int):
-    if buddy_id in p.data.buddies:
-        buddy_record = p.data.buddies[buddy_id]
+    if buddy_id in p.buddies:
+        buddy_record = p.buddies[buddy_id]
         await buddy_record.update(best_buddy=not buddy_record.best_buddy).apply()
 
 
 @handlers.handler(XTPacket('b', 'tbc'), client=ClientType.Vanilla)
 async def handle_toggle_best_character(p, character_id: int):
-    if character_id in p.data.character_buddies:
-        character_buddy_record = p.data.character_buddies[character_id]
+    if character_id in p.character_buddies:
+        character_buddy_record = p.character_buddies[character_id]
         await character_buddy_record.update(best_buddy=not character_buddy_record.best_buddy).apply()
 
 
 @handlers.disconnected
 @handlers.player_attribute(joined_world=True)
 async def handle_disconnect_buddy(p):
-    if p.data.character is not None:
-        del p.server.penguins_by_character_id[p.data.character]
+    if p.character is not None:
+        del p.server.penguins_by_character_id[p.character]
 
         for penguin in p.server.penguins_by_id.values():
-            if p.data.character in penguin.data.character_buddies:
-                await penguin.send_xt('caof', p.data.character)
+            if p.character in penguin.character_buddies:
+                await penguin.send_xt('caof', p.character)
 
-    for buddy_id in p.data.buddies:
+    for buddy_id in p.buddies:
         if buddy_id in p.server.penguins_by_id:
-            await p.server.penguins_by_id[buddy_id].send_xt('bof', p.data.id)
+            await p.server.penguins_by_id[buddy_id].send_xt('bof', p.id)
