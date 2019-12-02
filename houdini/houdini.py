@@ -97,7 +97,7 @@ class Houdini:
 
         self.music = None
 
-    async def start(self):
+        self.puck = (0, 0)
 
     async def start(self):
         general_log_file = self.config.logging_general_path if self.config.logging_general_path \
