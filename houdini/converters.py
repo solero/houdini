@@ -88,13 +88,20 @@ class _ArgumentDeserializer:
             if ctx.component.annotation is ctx.component.empty and ctx.component.default is not ctx.component.empty:
                 handler_call_arguments.append(ctx.component.default)
             elif ctx.component.kind == ctx.component.POSITIONAL_OR_KEYWORD:
-                ctx.argument = next(ctx.arguments)
-                converter = get_converter(ctx.component)
+                ctx.argument = next(ctx.arguments, None)
 
-                if converter == str:
-                    self._consume_separated_string(ctx)
+                if ctx.argument is None:
+                    if ctx.component.default is not ctx.component.empty:
+                        handler_call_arguments.append(ctx.component.default)
+                    else:
+                        raise StopIteration
+                else:
+                    converter = get_converter(ctx.component)
 
-                handler_call_arguments.append(await do_conversion(converter, ctx))
+                    if converter == str:
+                        self._consume_separated_string(ctx)
+
+                    handler_call_arguments.append(await do_conversion(converter, ctx))
             elif ctx.component.kind == ctx.component.VAR_POSITIONAL:
                 for argument in ctx.arguments:
                     ctx.argument = argument
