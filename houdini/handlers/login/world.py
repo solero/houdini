@@ -1,5 +1,3 @@
-import config
-
 from houdini import handlers
 from houdini.handlers import XMLPacket, login
 from houdini.converters import WorldCredentials, Credentials
@@ -15,7 +13,7 @@ handle_random_key = login.handle_random_key
 
 
 async def world_login(p, data):
-    if len(p.server.penguins_by_id) >= p.server.server_config['Capacity']:
+    if len(p.server.penguins_by_id) >= p.server.config.capacity:
         return await p.send_error_and_disconnect(103)
 
     if data is None:
@@ -53,7 +51,7 @@ async def handle_login(p, credentials: WorldCredentials):
         return await p.close()
 
     login_key = login_key.decode()
-    login_hash = Crypto.encrypt_password(login_key + config.client['AuthStaticKey']) + login_key
+    login_hash = Crypto.encrypt_password(login_key + p.server.config.auth_key) + login_key
 
     if credentials.client_key != login_hash:
         return await p.close()
@@ -73,11 +71,11 @@ async def handle_login(p, credentials: WorldCredentials):
 async def handle_legacy_login(p, credentials: Credentials):
     tr = p.server.redis.multi_exec()
     tr.get(f'{credentials.username}.lkey')
-    tr.delete(f'{credentials.username}.lkey', '{credentials.username}.ckey')
+    tr.delete(f'{credentials.username}.lkey', f'{credentials.username}.ckey')
     login_key, _ = await tr.execute()
 
     login_key = login_key.decode()
-    login_hash = Crypto.encrypt_password(login_key + config.client['AuthStaticKey']) + login_key
+    login_hash = Crypto.encrypt_password(login_key + p.server.config.auth_key) + login_key
 
     if login_key is None or login_hash != credentials.password:
         return await p.close()

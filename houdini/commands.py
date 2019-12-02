@@ -1,5 +1,4 @@
 import inspect
-import config
 
 from houdini import handlers
 from houdini import plugins
@@ -46,12 +45,12 @@ class _CommandGroup(_Command):
 
 
 def command(name=None, **kwargs):
-    return _listener(_Command, name, string_delimiter=config.commands['StringDelimiters'],
+    return _listener(_Command, name, string_delimiter=['"', "'"],
                      string_separator=' ', **kwargs)
 
 
 def group(name=None, **kwargs):
-    return _listener(_CommandGroup, name, string_delimiter=config.commands['StringDelimiters'],
+    return _listener(_CommandGroup, name, string_delimiter=['"', "'"],
                      string_separator=' ', **kwargs)
 
 
@@ -59,7 +58,6 @@ cooldown = handlers.cooldown
 check = handlers.check
 
 player_attribute = handlers.player_attribute
-player_data_attribute = handlers.player_data_attribute
 player_in_room = handlers.player_in_room
 
 
@@ -84,13 +82,14 @@ class CommandManager(_AbstractManager):
             for name in command_object.alias:
                 if name in parent_commands and len(parent_commands[name]):
                     conflict_command = parent_commands[name][0]
-                    if config.commands['ConflictMode'] == ConflictResolution.Exception:
+                    conflict_resolution = self.server.config.command_conflict_mode
+                    if conflict_resolution == ConflictResolution.Exception:
                         raise NameError(f'Command name conflict: \'{name}\' from plugin \'{module.__class__.__name__}\' '
                                         f'conflicts with \'{conflict_command.name}\' from '
                                         f'module \'{conflict_command.instance.__class__.__name__}\'')
-                    elif config.commands['ConflictMode'] == ConflictResolution.Append:
+                    elif conflict_resolution == ConflictResolution.Append:
                         parent_commands[name].append(command_object)
-                    elif config.commands['ConflictMode'] == ConflictResolution.Silent:
+                    elif conflict_resolution == ConflictResolution.Silent:
                         module.server.logger.warning(f'Command \'{name}\' from module \'{module.__class__.__name__}\' '
                                                      f'disabled due to conflict with '
                                                      f'\'{conflict_command.instance.__class__.__name__}\'')
@@ -102,25 +101,21 @@ def is_command(command_object):
     return issubclass(type(command_object), _Command)
 
 
-if type(config.commands['Prefix']) == str:
-    config.commands['Prefix'] = [config.commands['Prefix']]
-
-
-def has_command_prefix(command_string):
-    for prefix in config.commands['Prefix']:
+def has_command_prefix(pre, command_string):
+    for prefix in pre:
         if command_string.startswith(prefix):
             return True
     return False
 
 
-def get_command_prefix(command_string):
-    for prefix in config.commands['Prefix']:
+def get_command_prefix(pre, command_string):
+    for prefix in pre:
         if command_string.startswith(prefix):
             return prefix
 
 
 async def invoke_command_string(commands, p, command_string):
-    prefix = get_command_prefix(command_string)
+    prefix = get_command_prefix(p.server.config.command_prefix, command_string)
     no_prefix = command_string[len(prefix):]
     data = no_prefix.split(' ')
 

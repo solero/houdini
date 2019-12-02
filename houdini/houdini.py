@@ -6,7 +6,6 @@ import copy
 from houdini.spheniscidae import Spheniscidae
 from houdini.penguin import Penguin
 from houdini import PenguinStringCompiler
-import config
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -47,21 +46,13 @@ from houdini.handlers.play.music import SoundStudio
 
 class Houdini:
 
-    def __init__(self, server_name,  **kwargs):
+    def __init__(self, config):
         self.server = None
         self.redis = None
-        self.config = None
         self.cache = None
+        self.config = config
         self.db = db
         self.peers_by_ip = {}
-
-        self.server_name = server_name
-        self.database_config_override = kwargs.get('database')
-        self.redis_config_override = kwargs.get('redis')
-        self.commands_config_override = kwargs.get('commands')
-        self.client_config_override = kwargs.get('client')
-        self.server_config_override = kwargs.get('server')
-        self.server_config = None
 
         self.logger = None
 
@@ -105,18 +96,14 @@ class Houdini:
         self.music = None
 
     async def start(self):
-        self.config = config
 
-        self.server_config = copy.deepcopy(self.config.servers[self.server_name])
-        self.server_config.update(self.server_config_override)
-
-        self.config.database.update(self.database_config_override)
-        self.config.redis.update(self.redis_config_override)
-        self.config.commands.update(self.commands_config_override)
-        self.config.client.update(self.client_config_override)
-
-        general_log_directory = os.path.dirname(self.server_config["Logging"]["General"])
-        errors_log_directory = os.path.dirname(self.server_config["Logging"]["Errors"])
+    async def start(self):
+        general_log_file = self.config.logging_general_path if self.config.logging_general_path \
+            else f'logs/{self.config.name.lower()}.log'
+        errors_log_file = self.config.logging_error_path if self.config.logging_error_path \
+            else f'logs/{self.config.name.lower()}-errors.log'
+        general_log_directory = os.path.dirname(general_log_file)
+        errors_log_directory = os.path.dirname(errors_log_file)
 
         if not os.path.exists(general_log_directory):
             os.mkdir(general_log_directory)
@@ -125,10 +112,10 @@ class Houdini:
             os.mkdir(errors_log_directory)
 
         self.logger = logging.getLogger('houdini')
-        universal_handler = RotatingFileHandler(self.server_config['Logging']['General'],
+        universal_handler = RotatingFileHandler(general_log_file,
                                                 maxBytes=2097152, backupCount=3, encoding='utf-8')
 
-        error_handler = logging.FileHandler(self.server_config['Logging']['Errors'])
+        error_handler = logging.FileHandler(errors_log_file)
         console_handler = logging.StreamHandler(stream=sys.stdout)
 
         log_formatter = logging.Formatter('%(asctime)s [%(levelname)-5.5s]  %(message)s')
@@ -141,35 +128,34 @@ class Houdini:
         self.logger.addHandler(console_handler)
         self.logger.addHandler(error_handler)
 
-        level = logging.getLevelName(self.server_config['Logging']['Level'])
+        level = logging.getLevelName(self.config.logging_level)
         self.logger.setLevel(level)
 
         self.server = await asyncio.start_server(
-            self.client_connected, self.server_config['Address'],
-            self.server_config['Port']
+            self.client_connected, self.config.address,
+            self.config.port
         )
 
         await self.db.set_bind('postgresql://{}:{}@{}/{}'.format(
-            self.config.database['Username'], self.config.database['Password'],
-            self.config.database['Address'],
-            self.config.database['Name']))
+            self.config.database_username, self.config.database_password,
+            self.config.database_address,
+            self.config.database_name))
 
         self.logger.info('Booting Houdini')
 
         self.redis = await aioredis.create_redis_pool('redis://{}:{}'.format(
-            self.config.redis['Address'], self.config.redis['Port']),
+            self.config.redis_address, self.config.redis_port),
             minsize=5, maxsize=10)
 
-        if self.server_config['World']:
-            await self.redis.delete(f'houdini.players.{self.server_config["Id"]}')
-            await self.redis.hdel(f'houdini.population', self.server_config["Id"])
+        if self.config.type == 'world':
+            await self.redis.delete(f'houdini.players.{self.config.id}')
+            await self.redis.hset(f'houdini.population', self.config.id, 0)
 
-            caches.set_config({
-                'default': {
-                    'cache': SimpleMemoryCache,
-                    'namespace': 'houdini',
-                    'ttl': self.server_config['CacheExpiry']
-                }})
+            caches.set_config(dict(default=dict(
+                cache=SimpleMemoryCache,
+                namespace='houdini',
+                ttl=self.config.cache_expiry
+            )))
             self.cache = caches.get('default')
 
             self.client_class = Penguin
@@ -227,12 +213,13 @@ class Houdini:
         self.logger.info(f'Loaded {len(self.characters)} characters')
 
         self.permissions = await PermissionCollection.get_collection()
+        self.chat_filter_words = await ChatFilterRuleCollection.get_collection()
 
         self.logger.info(f'Multi-client support is '
-                         f'{"enabled" if self.config.client["MultiClientSupport"] else "disabled"}')
-        self.logger.info(f'Listening on {self.server_config["Address"]}:{self.server_config["Port"]}')
+                         f'{"enabled" if not self.config.single_client_mode else "disabled"}')
+        self.logger.info(f'Listening on {self.config.address}:{self.config.port}')
 
-        if self.config.client['AuthStaticKey'] != 'houdini':
+        if self.config.auth_key != 'houdini':
             self.logger.warning('The static key has been changed from the default, '
                                 'this may cause authentication issues!')
 

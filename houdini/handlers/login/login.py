@@ -41,19 +41,19 @@ async def handle_login(p, credentials: Credentials):
         if await p.server.redis.exists(flood_key):
             tr = p.server.redis.multi_exec()
             tr.incr(flood_key)
-            tr.expire(flood_key, p.server.server_config['LoginFailureTimer'])
+            tr.expire(flood_key, p.server.config.login_failure_timer)
             failure_count, _ = await tr.execute()
 
-            if failure_count >= p.server.server_config['LoginFailureLimit']:
+            if failure_count >= p.server.config.login_failure_limit:
                 return await p.send_error_and_disconnect(150)
         else:
-            await p.server.redis.setex(flood_key, p.server.server_config['LoginFailureTimer'], 1)
+            await p.server.redis.setex(flood_key, p.server.config.login_failure_timer, 1)
 
         return await p.send_error_and_disconnect(101)
 
     failure_count = await p.server.redis.get(flood_key)
     if failure_count:
-        max_attempts_exceeded = int(failure_count) >= p.server.server_config['LoginFailureLimit']
+        max_attempts_exceeded = int(failure_count) >= p.server.config.login_failure_limit
 
         if max_attempts_exceeded:
             return await p.send_error_and_disconnect(150)
@@ -98,8 +98,8 @@ async def handle_login(p, credentials: Credentials):
     confirmation_hash = Crypto.hash(os.urandom(24))
 
     tr = p.server.redis.multi_exec()
-    tr.setex(f'{data.username}.lkey', p.server.server_config['KeyTTL'], login_key)
-    tr.setex(f'{data.username}.ckey', p.server.server_config['KeyTTL'], confirmation_hash)
+    tr.setex(f'{data.username}.lkey', p.server.config.auth_ttl, login_key)
+    tr.setex(f'{data.username}.ckey', p.server.config.auth_ttl, confirmation_hash)
     await tr.execute()
 
     world_populations, buddy_presence = await get_server_presence(p, data.id)

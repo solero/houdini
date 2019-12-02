@@ -34,6 +34,8 @@ class Spheniscidae:
 
         self.received_packets = set()
 
+        super().__init__()
+
     @property
     def is_vanilla_client(self):
         return self.client_type == ClientType.Vanilla
@@ -51,7 +53,7 @@ class Spheniscidae:
 
     async def send_policy_file(self):
         await self.send_line(f'<cross-domain-policy><allow-access-from domain="*" to-ports="'
-                             f'{self.server.server_config["Port"]}" /></cross-domain-policy>')
+                             f'{self.server.config.port}" /></cross-domain-policy>')
         await self.close()
 
     async def send_xt(self, handler_id, *data):

@@ -1,5 +1,3 @@
-import config
-
 from houdini import handlers
 from houdini.handlers import XMLPacket
 from houdini.converters import VersionChkConverter
@@ -11,13 +9,13 @@ from houdini.data.buddy import BuddyList
 @handlers.handler(XMLPacket('verChk'))
 @handlers.allow_once
 async def handle_version_check(p, version: VersionChkConverter):
-    if config.client['MultiClientSupport']:
-        if config.client['LegacyVersionChk'] == version:
+    if not p.server.config.single_client_mode:
+        if p.server.config.legacy_version == version:
             p.client_type = ClientType.Legacy
-        elif config.client['VanillaVersionChk'] == version:
+        elif p.server.config.vanilla_version == version:
             p.client_type = ClientType.Vanilla
-    elif config.client['DefaultVersionChk'] == version:
-        p.client_type = config.client['DefaultClientType']
+    elif p.server.config.default_version == version:
+        p.client_type = p.server.config.default_version
 
     if p.client_type is None:
         await p.send_xml({'body': {'action': 'apiKO', 'r': '0'}})
@@ -28,32 +26,31 @@ async def handle_version_check(p, version: VersionChkConverter):
 
 @handlers.handler(XMLPacket('rndK'))
 @handlers.allow_once
-async def handle_random_key(p, data):
-    await p.send_xml({'body': {'action': 'rndK', 'r': '-1'}, 'k': config.client['AuthStaticKey']})
+async def handle_random_key(p, _):
+    await p.send_xml({'body': {'action': 'rndK', 'r': '-1'}, 'k': p.server.config.auth_key})
 
 
 async def get_server_presence(p, pid):
     buddy_worlds = []
     world_populations = []
 
-    for server_name, server_config in config.servers.items():
-        if server_config['World']:
-            server_population = await p.server.redis.hget('houdini.population', server_config['Id'])
-            server_population = (7 if int(server_population) == server_config['Capacity']
-                                 else int(server_population) // (server_config['Capacity'] // 6)) \
-                if server_population else 0
+    pops = await p.server.redis.hgetall('houdini.population')
+    for server_id, server_population in pops.items():
+        server_population = (7 if int(server_population) == p.server.config.capacity
+                             else int(server_population) // (p.server.config.capacity // 6)) \
+            if server_population else 0
 
-            world_populations.append(f'{server_config["Id"]},{server_population}')
+        world_populations.append(f'{int(server_id)},{int(server_population)}')
 
-            server_key = f'houdini.players.{server_config["Id"]}'
-            if await p.server.redis.scard(server_key):
-                async with p.server.db.transaction():
-                    buddies = BuddyList.select('buddy_id').where(BuddyList.penguin_id == pid).gino.iterate()
-                    tr = p.server.redis.multi_exec()
-                    async for buddy_id, in buddies:
-                        tr.sismember(server_key, buddy_id)
-                    online_buddies = await tr.execute()
-                    if any(online_buddies):
-                        buddy_worlds.append(server_config['Id'])
+        server_key = f'houdini.players.{int(server_id)}'
+        if await p.server.redis.scard(server_key):
+            async with p.server.db.transaction():
+                buddies = BuddyList.select('buddy_id').where(BuddyList.penguin_id == pid).gino.iterate()
+                tr = p.server.redis.multi_exec()
+                async for buddy_id, in buddies:
+                    tr.sismember(server_key, buddy_id)
+                online_buddies = await tr.execute()
+                if any(online_buddies):
+                    buddy_worlds.append(str(int(server_id)))
 
     return '|'.join(world_populations), '|'.join(buddy_worlds)

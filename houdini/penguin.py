@@ -55,8 +55,8 @@ class Penguin(Spheniscidae, penguin.Penguin):
         return self.server.penguin_string_compiler.compile(self)
 
     @property
-    def nickname(self):
-        return self.data.safe_nickname(self.server.server_config['Language'])
+    def safe_name(self):
+        return self.safe_nickname(self.server.config.lang)
 
     async def join_room(self, room):
         await room.add_penguin(self)
