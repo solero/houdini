@@ -117,15 +117,18 @@ class Penguin(db.Model):
         return get_minutes()
 
     @property
+    @lru_cache()
     def age(self):
         return (datetime.now() - self.registration_date).days
 
     @property
+    @lru_cache()
     def approval(self):
         return int(f'{self.approval_ru * 1}{self.approval_de * 1}0{self.approval_es * 1}'
                    f'{self.approval_fr * 1}{self.approval_pt * 1}{self.approval_en * 1}', 2)
 
     @property
+    @lru_cache()
     def rejection(self):
         return int(f'{self.rejection_ru * 1}{self.rejection_de * 1}0{self.rejection_es * 1}'
                    f'{self.rejection_fr * 1}{self.rejection_pt * 1}{self.rejection_en * 1}', 2)
