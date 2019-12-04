@@ -1011,15 +1011,15 @@ COMMENT ON COLUMN track_like.track_id IS 'Liked track ID';
 COMMENT ON COLUMN track_like.penguin_id IS 'Liker penguin ID';
 COMMENT ON COLUMN track_like.date IS 'Timestamp of like';
 
-DROP TABLE IF EXISTS penguin_launch_game;
-CREATE TABLE penguin_launch_game (
+DROP TABLE IF EXISTS penguin_game_data;
+CREATE TABLE penguin_game_data (
   penguin_id INT NOT NULL,
-  level SMALLINT NOT NULL DEFAULT 0,
-  puffle_os SMALLINT NOT NULL DEFAULT 0,
-  best_time SMALLINT NOT NULL DEFAULT 600,
-  turbo BOOLEAN NOT NULL DEFAULT FALSE,
-  PRIMARY KEY (penguin_id, level),
-  CONSTRAINT penguin_launch_game_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  room_id INT NOT NULL,
+  index INT DEFAULT NULL,
+  data TEXT DEFAULT '',
+  PRIMARY KEY (penguin_id, room_id, index),
+  CONSTRAINT penguin_game_data_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT penguin_game_data_ibfk_2 FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 DROP TABLE IF EXISTS ignore_list;
