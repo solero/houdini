@@ -99,17 +99,6 @@ class PenguinPuffleItem(db.Model):
     quantity = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
 
 
-class PenguinLaunchGame(db.Model):
-    __tablename__ = 'penguin_launch_game'
-
-    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                           nullable=False)
-    level = db.Column(db.SmallInteger, primary_key=True, nullable=False, server_default=db.text("0"))
-    puffle_os = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    best_time = db.Column(db.SmallInteger, nullable=False, server_default=db.text("600"))
-    turbo = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-
-
 class PuffleCollection(AbstractDataCollection):
     __model__ = Puffle
     __indexby__ = 'id'

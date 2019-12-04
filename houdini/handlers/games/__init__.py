@@ -1,8 +1,13 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
+from houdini.converters import OptionalConverter
+from houdini.constants import ClientType
 from houdini.handlers.play.navigation import handle_join_room
 from houdini.handlers.play.moderation import cheat_ban
 from houdini.data.room import Room
+from houdini.data.game import PenguinGameData
+
+from sqlalchemy.dialects.postgresql import insert
 
 import time
 
@@ -91,3 +96,27 @@ async def handle_get_game_over(p, score: int):
                         total_collected_stamps,
                         total_game_stamps,
                         total_stamps)
+
+
+@handlers.handler(XTPacket('ggd', ext='z'), client=ClientType.Vanilla)
+async def handle_get_game_data(p, index: int = None):
+    game_data = await PenguinGameData.select('data').where((PenguinGameData.penguin_id == p.id) &
+                                                           (PenguinGameData.room_id == p.room.id) &
+                                                           (PenguinGameData.index == index)).gino.scalar()
+    await p.send_xt('ggd', game_data or '')
+
+
+@handlers.handler(XTPacket('sgd', ext='z'), client=ClientType.Vanilla)
+@handlers.cooldown(5)
+async def handle_set_game_data(p, index: OptionalConverter(int) = None, *, game_data: str):
+    if p.room.game:
+        data_insert = insert(PenguinGameData).values(penguin_id=p.id, room_id=p.room.id, index=index, data=game_data)
+        data_insert = data_insert.on_conflict_do_update(
+            constraint='penguin_game_data_pkey',
+            set_=dict(data=game_data),
+            where=((PenguinGameData.penguin_id == p.id)
+                   & (PenguinGameData.room_id == p.room.id)
+                   & (PenguinGameData.index == index))
+        )
+
+        await data_insert.gino.scalar()

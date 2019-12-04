@@ -16,6 +16,7 @@ from houdini.data.igloo import IglooFurniture, IglooLike, Igloo, Furniture, Floo
     PenguinIglooCollection, PenguinFurnitureCollection, \
     PenguinFlooringCollection, PenguinLocationCollection
 from houdini.data.room import PenguinIglooRoomCollection
+from houdini.data.game import PenguinGameData
 
 from sqlalchemy.dialects.postgresql import insert
 
@@ -521,3 +522,12 @@ async def handle_get_furniture_inventory(p):
     locations = ','.join(f'{location_id}|0000000000' for location_id in p.locations.keys())
 
     await p.send_xt('gii', furniture, flooring, igloos, locations)
+
+
+@handlers.handler(XTPacket('g', 'ggd'), client=ClientType.Vanilla)
+async def handle_get_dj3k_track(p, penguin_id: int, game_index: str):
+    room_id, index = game_index.split('|')
+    game_data = await PenguinGameData.select('data').where((PenguinGameData.penguin_id == penguin_id) &
+                                                           (PenguinGameData.room_id == int(room_id)) &
+                                                           (PenguinGameData.index == int(index))).gino.scalar()
+    await p.send_xt('ggd', game_data or '')
