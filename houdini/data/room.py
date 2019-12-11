@@ -47,6 +47,13 @@ class ConnectFourLogic:
 
 
 
+
+#class MancalaLogic:
+    
+   #def __init__(self):
+     #   self.current_player = 1
+       
+
 def stealth_mod_filter(stealth_mod_id):
     def f(p):
         return not p.stealth_moderator or p.id == stealth_mod_id
@@ -219,7 +226,7 @@ class RoomTable(db.Model):
 
     GameClassMapping = {
         'four': ConnectFourLogic,
-        'mancala': str,
+        'mancala': str, #MancalaLogic
         'treasure': str
     }
 
