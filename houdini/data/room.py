@@ -45,6 +45,63 @@ class ConnectFourLogic:
         return ','.join(str(item) for row in self.board for item in row)
 
 
+class MancalaLogic:
+
+    def __init__(self):
+        self.current_player = 1
+        self.board = [4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0]
+
+    def place_stone(self, hollow):
+        capture = False
+        hand = self.board[hollow]
+        self.board[hollow] = 0
+
+        while hand > 0:
+            hollow += 1 if hollow + 1 < len(self.board) else 0
+            myMancala, opponentMancala = (6, 13) if self.current_player == 1 else (13, 6)
+
+            if hollow == opponentMancala: continue
+            oppositeHollow = 12 - hollow
+
+            if hand == 1 and self.board[hollow] == 0:
+                if (self.current_player == 1 and hollow in range(0, 6)) or (self.current_player == 2 and hollow in range(7, 13)):
+                    self.board[myMancala] += self.board[oppositeHollow] + 1
+                    self.board[oppositeHollow] = 0
+                    capture = True
+                    break
+
+            self.board[hollow] += 1
+            hand -= 1
+
+            if (self.current_player == 1 and hollow != 6) or (self.current_player == 2 and hollow != 13):
+                return 'c' if capture else str()
+            else:
+                self.current_player = 2 if self.current_player == 1 else 1
+                return 'f'
+
+
+    def is_position_win(self):
+        if sum(self.board[0:6]) == 0 or sum(self.board[7:-1]) == 0:
+            if sum(self.board[0:6]) > sum(self.board[7:-1]):
+                return self.current_player == 1
+            return self.current_player == 2
+        return False
+
+    def is_position_tie(self):
+        if sum(self.board[0:6]) == 0 or sum(self.board[7:-1]) == 0:
+            if sum(self.board[0:6]) == sum(self.board[7:-1]):
+                return True
+        return False
+
+    def is_valid_move(self, hollow):
+        if self.current_player == 1 and hollow not in range(0, 6):
+            return False
+        elif self.current_player == 2 and hollow not in range(7, 13):
+            return False
+        return True
+
+    def get_string(self):
+        return ','.join(map(str, self.board))
 
 
 def stealth_mod_filter(stealth_mod_id):
@@ -219,7 +276,7 @@ class RoomTable(db.Model):
 
     GameClassMapping = {
         'four': ConnectFourLogic,
-        'mancala': str,
+        'mancala': MancalaLogic,
         'treasure': str
     }
 
@@ -350,4 +407,3 @@ class RoomCollection(AbstractDataCollection):
             async for waddle in RoomWaddle.query.gino.iterate():
                 self[waddle.room_id].waddles[waddle.id] = waddle
                 waddle.room = self[waddle.room_id]
-
