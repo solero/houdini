@@ -20,10 +20,36 @@ async def handle_join_game(p):
         await p.table.send_xt('uz', seat_id, p.safe_name)
 
         if len(p.table.penguins) == 2:
-            await p.table.send_xt('sz', 0) # Todo: Is this 0 needed?
+            await p.table.send_xt('sz', 0)
 
 
 @handlers.handler(XTPacket('zm', ext='z'))
 @table_handler(MancalaLogic)
-async def handle_send_move(p, hollow: int):
-  pass # Todo
+async def handle_send_move(p, move: int):
+    seat_id = p.table.get_seat_id(p)
+    is_player = seat_id < 2
+    game_ready = len(p.table.penguins) > 1
+
+    if is_player and game_ready:
+        hollow, = map(int, move)
+        current_player = p.table.penguins[p.table.logic.current_player - 1]
+
+        if current_player != p: return
+        if not p.table.logic.is_valid_move(hollow): return
+
+        move_result = p.table.logic.place_stone(hollow)
+        await p.table.send_xt('zm', seat_id, hollow, move_result)
+        opponent = p.table.penguins[1 if p.table.logic.current_player == 1 else 0]
+
+        if p.table.logic.is_position_win():
+            await p.add_coins(10)
+            await opponent.add_coins(5)
+            await p.table.reset()
+            return
+        elif p.table.logic.is_position_tie():
+            await p.add_coins(5)
+            await opponent.add_coins(5)
+            await p.table.reset()
+            return
+
+        p.table.logic.current_player = 2 if p.table.logic.current_player == 1 else 1
