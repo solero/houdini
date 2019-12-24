@@ -20,7 +20,7 @@ async def handle_join_game(p):
         await p.table.send_xt('uz', seat_id, p.safe_name)
 
         if len(p.table.penguins) == 2:
-            await p.table.send_xt('sz', 0)
+            await p.table.send_xt('sz', 0) # Todo: Is this 0 needed?
 
 
 @handlers.handler(XTPacket('zm', ext='z'))
