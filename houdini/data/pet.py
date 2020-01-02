@@ -7,12 +7,11 @@ class Puffle(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     parent_id = db.Column(db.ForeignKey('puffle.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
     name = db.Column(db.String(50), nullable=False, server_default=db.text("''::character varying"))
+    cost = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
     member = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     favourite_food = db.Column(db.ForeignKey('puffle_item.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    favourite_toy = db.Column(db.ForeignKey('puffle_item.id', ondelete='CASCADE', onupdate='CASCADE'))
     runaway_postcard = db.Column(db.ForeignKey('postcard.id', ondelete='CASCADE', onupdate='CASCADE'))
-    max_food = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
-    max_rest = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
-    max_clean = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
 
 
 class PuffleItem(db.Model):
@@ -72,7 +71,6 @@ class PenguinPuffle(db.Model):
     play = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
     rest = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
     clean = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
-    walking = db.Column(db.Boolean, server_default=db.text("false"))
     hat = db.Column(db.ForeignKey('puffle_item.id', ondelete='CASCADE', onupdate='CASCADE'))
     backyard = db.Column(db.Boolean, server_default=db.text("false"))
     has_dug = db.Column(db.Boolean, server_default=db.text("false"))

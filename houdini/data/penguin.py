@@ -53,9 +53,11 @@ class Penguin(db.Model):
     ninja_matches_won = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
     fire_matches_won = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
     water_matches_won = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
-    rainbow_adoptability = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    rainbow_adoptability = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     has_dug = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    puffle_handler = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     nuggets = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
+    walking = db.Column(db.ForeignKey('penguin_puffle.id', ondelete='CASCADE', onupdate='CASCADE'))
     opened_playercard = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     special_wave = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     special_dance = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
@@ -106,6 +108,9 @@ class Penguin(db.Model):
     async def status_field_set(self, field_bitmask):
         if (self.status_field & field_bitmask) == 0:
             await self.update(status_field=self.status_field ^ field_bitmask).apply()
+
+    def status_field_get(self, field_bitmask):
+        return (self.status_field & field_bitmask) != 0
 
     @property
     def minutes_played_today(self):

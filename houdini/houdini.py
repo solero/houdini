@@ -20,7 +20,8 @@ from houdini.data.room import RoomCollection
 from houdini.data.stamp import StampCollection
 from houdini.data.ninja import CardCollection
 from houdini.data.mail import PostcardCollection
-from houdini.data.pet import PuffleCollection, PuffleItemCollection
+from houdini.data.pet import PuffleCollection, PuffleItemCollection, PuffleTreasurePuffleItem, \
+    PuffleTreasureFurniture, PuffleTreasureItem
 from houdini.data.permission import PermissionCollection
 from houdini.data.buddy import CharacterCollection
 from houdini.data.moderator import ChatFilterRuleCollection
@@ -38,8 +39,8 @@ from houdini.handlers import XTListenerManager, XMLListenerManager, DummyEventLi
 from houdini.plugins import PluginManager
 from houdini.commands import CommandManager
 
-from houdini.handlers.play.player import server_heartbeat
-from houdini.handlers.play.player import server_egg_timer
+from houdini.handlers.play.player import server_heartbeat, server_egg_timer
+from houdini.handlers.play.pet import decrease_stats
 
 from houdini.handlers.play.music import SoundStudio
 
@@ -87,12 +88,16 @@ class Houdini:
         self.postcards = None
         self.puffles = None
         self.puffle_items = None
+        self.puffle_food_treasure = None
+        self.puffle_furniture_treasure = None
+        self.puffle_clothing_treasure = None
         self.characters = None
 
         self.spawn_rooms = None
 
         self.heartbeat = None
         self.egg_timer = None
+        self.puffle_killer = None
 
         self.music = None
 
@@ -210,6 +215,10 @@ class Houdini:
         self.puffle_items = await PuffleItemCollection.get_collection()
         self.logger.info(f'Loaded {len(self.puffle_items)} puffle care items')
 
+        self.puffle_food_treasure = await PuffleTreasurePuffleItem.query.gino.all()
+        self.puffle_furniture_treasure = await PuffleTreasureFurniture.query.gino.all()
+        self.puffle_clothing_treasure = await PuffleTreasureItem.query.gino.all()
+
         self.characters = await CharacterCollection.get_collection()
         self.logger.info(f'Loaded {len(self.characters)} characters')
 
@@ -228,6 +237,7 @@ class Houdini:
 
         self.heartbeat = asyncio.create_task(server_heartbeat(self))
         self.egg_timer = asyncio.create_task(server_egg_timer(self))
+        self.puffle_killer = asyncio.create_task(decrease_stats(self))
 
         self.music = SoundStudio(self)
 

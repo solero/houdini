@@ -275,18 +275,18 @@ COMMENT ON COLUMN puffle_item.clean_effect IS 'Effect on puffle clean level';
 DROP TABLE IF EXISTS puffle;
 CREATE TABLE puffle (
   id INT NOT NULL,
-  parent_id SMALLINT NOT NULL,
+  parent_id SMALLINT DEFAULT NULL,
   name VARCHAR(50) NOT NULL DEFAULT '',
+  cost INT NOT NULL DEFAULT 0,
   member BOOLEAN NOT NULL DEFAULT FALSE,
   favourite_food SMALLINT NOT NULL,
+  favourite_toy SMALLINT DEFAULT NULL,
   runaway_postcard SMALLINT DEFAULT NULL,
-  max_food SMALLINT NOT NULL DEFAULT 100,
-  max_rest SMALLINT NOT NULL DEFAULT 100,
-  max_clean SMALLINT NOT NULL DEFAULT 100,
   PRIMARY KEY (id),
   CONSTRAINT puffle_ibfk_1 FOREIGN KEY (parent_id) REFERENCES puffle (id) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT puffle_ibfk_2 FOREIGN KEY (favourite_food) REFERENCES puffle_item (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT puffle_ibfk_3 FOREIGN KEY (runaway_postcard) REFERENCES postcard (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT puffle_ibfk_3 FOREIGN KEY (favourite_toy) REFERENCES puffle_item (id) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT puffle_ibfk_4 FOREIGN KEY (runaway_postcard) REFERENCES postcard (id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE puffle IS 'Server puffle crumbs';
@@ -294,12 +294,10 @@ COMMENT ON TABLE puffle IS 'Server puffle crumbs';
 COMMENT ON COLUMN puffle.id IS 'Unique puffle ID';
 COMMENT ON COLUMN puffle.parent_id IS 'Base color puffle ID';
 COMMENT ON COLUMN puffle.name IS 'Puffle name';
+COMMENT ON COLUMN puffle.cost IS 'Puffle cost';
 COMMENT ON COLUMN puffle.member IS 'Is member-only?';
 COMMENT ON COLUMN puffle.favourite_food IS 'Favourite puffle-care item';
 COMMENT ON COLUMN puffle.runaway_postcard IS 'Runaway postcard ID';
-COMMENT ON COLUMN puffle.max_food IS 'Maximum food level';
-COMMENT ON COLUMN puffle.max_rest IS 'Maximum rest level';
-COMMENT ON COLUMN puffle.max_clean IS 'Maximum clean level';
 
 DROP TABLE IF EXISTS puffle_treasure_item;
 CREATE TABLE puffle_treasure_item (
@@ -520,9 +518,11 @@ CREATE TABLE penguin (
   ninja_matches_won INT NOT NULL DEFAULT 0,
   fire_matches_won INT NOT NULL DEFAULT 0,
   water_matches_won INT NOT NULL DEFAULT 0,
-  rainbow_adoptability SMALLINT NOT NULL DEFAULT 0,
+  rainbow_adoptability BOOLEAN NOT NULL DEFAULT FALSE,
   has_dug BOOLEAN NOT NULL DEFAULT FALSE,
+  puffle_handler BOOLEAN NOT NULL DEFAULT FALSE,
   nuggets SMALLINT NOT NULL DEFAULT 0,
+  walking INT DEFAULT NULL,
   opened_playercard BOOLEAN NOT NULL DEFAULT FALSE,
   special_wave BOOLEAN NOT NULL DEFAULT FALSE,
   special_dance BOOLEAN NOT NULL DEFAULT FALSE,
@@ -616,7 +616,9 @@ COMMENT ON COLUMN penguin.fire_matches_won IS 'JitsuFire matches won';
 COMMENT ON COLUMN penguin.water_matches_won IS 'JitsuWater matces won';
 COMMENT ON COLUMN penguin.rainbow_adoptability IS 'Rainbow puffle adoptability status';
 COMMENT ON COLUMN penguin.has_dug IS 'Puffle digging boolean';
+COMMENT ON COLUMN penguin.puffle_handler IS 'Has met puffle handler?';
 COMMENT ON COLUMN penguin.nuggets IS 'Golden puffle nuggets';
+COMMENT ON COLUMN penguin.walking IS 'Walking puffle ID';
 COMMENT ON COLUMN penguin.opened_playercard IS 'Has player opened playercard?';
 COMMENT ON COLUMN penguin.map_category IS 'Currently selected map category';
 COMMENT ON COLUMN penguin.status_field IS 'New player status field';
@@ -880,7 +882,7 @@ CREATE TABLE penguin_igloo_room (
   flooring INT NOT NULL,
   music SMALLINT NOT NULL DEFAULT 0,
   location INT NOT NULL,
-  locked BOOLEAN NOT NULL DEFAULT FALSE,
+  locked BOOLEAN NOT NULL DEFAULT TRUE,
   PRIMARY KEY (id),
   CONSTRAINT igloo_room_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT igloo_room_ibfk_2 FOREIGN KEY (type) REFERENCES igloo (id) ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -1111,7 +1113,6 @@ CREATE TABLE penguin_puffle (
   play SMALLINT NOT NULL DEFAULT 100,
   rest SMALLINT NOT NULL DEFAULT 100,
   clean SMALLINT NOT NULL DEFAULT 100,
-  walking BOOLEAN DEFAULT FALSE,
   hat INT DEFAULT NULL,
   backyard BOOLEAN DEFAULT FALSE,
   has_dug BOOLEAN DEFAULT FALSE,
@@ -1134,10 +1135,11 @@ COMMENT ON COLUMN penguin_puffle.food IS 'Puffle health %';
 COMMENT ON COLUMN penguin_puffle.play IS 'Puffle hunger %';
 COMMENT ON COLUMN penguin_puffle.rest IS 'Puffle rest %';
 COMMENT ON COLUMN penguin_puffle.clean IS 'Puffle clean %';
-COMMENT ON COLUMN penguin_puffle.walking IS 'Is being walked?';
 COMMENT ON COLUMN penguin_puffle.hat IS 'Puffle hat item ID';
 COMMENT ON COLUMN penguin_puffle.backyard IS 'Is in backyard?';
 COMMENT ON COLUMN penguin_puffle.has_dug IS 'Has dug?';
+
+ALTER TABLE penguin ADD CONSTRAINT penguin_ibfk_12 FOREIGN KEY (walking) REFERENCES penguin_puffle (id) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 DROP TABLE IF EXISTS penguin_puffle_item;
 CREATE TABLE penguin_puffle_item (
@@ -9102,47 +9104,47 @@ INSERT INTO puffle_item (id, parent_id, name, type, play_external, cost, quantit
  (158, 158, 'Drum Roll', 'head', 'none', 0, 1, TRUE, 0, 0, 0, 0),
  (159, 159, 'Swashbuckler Hat', 'head', 'none', 0, 1, TRUE, 0, 0, 0, 0);
 
-INSERT INTO puffle (id, parent_id, name, member, favourite_food, runaway_postcard, max_food, max_rest, max_clean) VALUES
- (0, 0, 'Blue', FALSE, 101, 100, 100, 100, 100),
- (1, 1, 'Pink', TRUE, 107, 101, 100, 120, 80),
- (2, 2, 'Black', TRUE, 112, 102, 120, 80, 100),
- (3, 3, 'Green', TRUE, 109, 103, 80, 100, 120),
- (4, 4, 'Purple', TRUE, 110, 104, 80, 120, 80),
- (5, 5, 'Red', FALSE, 106, 105, 100, 80, 120),
- (6, 6, 'Yellow', TRUE, 114, 106, 100, 100, 100),
- (7, 7, 'White', TRUE, 111, 169, 120, 80, 100),
- (8, 8, 'Orange', TRUE, 108, 109, 100, 80, 120),
- (9, 9, 'Brown', TRUE, 113, NULL, 100, 100, 100),
- (10, 10, 'Rainbow', TRUE, 115, NULL, 100, 100, 100),
- (11, 11, 'Gold', TRUE, 128, NULL, 100, 100, 100),
- (1000, 2, 'Black T-Rex', TRUE, 112, NULL, 100, 100, 100),
- (1001, 4, 'Purple T-Rex', TRUE, 110, NULL, 100, 100, 100),
- (1002, 5, 'Red Triceratops', TRUE, 106, NULL, 100, 100, 100),
- (1003, 0, 'Blue Triceratops', TRUE, 101, NULL, 100, 100, 100),
- (1004, 6, 'Yellow Stegasaurus', TRUE, 114, NULL, 100, 100, 100),
- (1005, 1, 'Pink Stegasaurus', TRUE, 107, NULL, 100, 100, 100),
- (1006, 0, 'Blue Dog', TRUE, 101, NULL, 100, 100, 100),
- (1007, 8, 'Orange Cat', TRUE, 108, NULL, 100, 100, 100),
- (1008, 3, 'Green Raccoon', TRUE, 109, NULL, 100, 100, 100),
- (1009, 8, 'Orange Raccoon', TRUE, 108, NULL, 100, 100, 100),
- (1010, 1, 'Pink Raccoon', TRUE, 107, NULL, 100, 100, 100),
- (1011, 0, 'Blue Raccoon', TRUE, 101, NULL, 100, 100, 100),
- (1012, 3, 'Green Rabbit', TRUE, 109, NULL, 100, 100, 100),
- (1013, 1, 'Pink Rabbit', TRUE, 107, NULL, 100, 100, 100),
- (1014, 7, 'White Rabbit', TRUE, 111, NULL, 100, 100, 100),
- (1015, 5, 'Red Rabbit', TRUE, 106, NULL, 100, 100, 100),
- (1016, 0, 'Blue Deer', TRUE, 101, NULL, 100, 100, 100),
- (1017, 2, 'Black Deer', TRUE, 112, NULL, 100, 100, 100),
- (1018, 5, 'Red Deer', TRUE, 106, NULL, 100, 100, 100),
- (1019, 4, 'Purple Deer', TRUE, 110, NULL, 100, 100, 100),
- (1020, 6, 'Yellow Unicorn', TRUE, 114, NULL, 100, 100, 100),
- (1021, 7, 'Snowman', TRUE, 111, NULL, 100, 100, 100),
- (1022, 4, 'Ghost', TRUE, 110, NULL, 100, 100, 100),
- (1023, 0, 'Crystal', TRUE, 101, NULL, 100, 100, 100),
- (1024, 3, 'Green Alien', FALSE, 109, NULL, 100, 100, 100),
- (1025, 8, 'Orange Alien', TRUE, 108, NULL, 100, 100, 100),
- (1026, 6, 'Yellow Alien', TRUE, 114, NULL, 100, 100, 100),
- (1027, 4, 'Purple Alien', TRUE, 110, NULL, 100, 100, 100);
+INSERT INTO puffle (id, parent_id, name, cost, member, favourite_food, favourite_toy, runaway_postcard) VALUES
+ (0, NULL, 'Blue', 400, FALSE, 101, 27, 100),
+ (1, NULL, 'Pink', 400, TRUE, 107, 28, 101),
+ (2, NULL, 'Black', 400, TRUE, 112, 31, 102),
+ (3, NULL, 'Green', 400, TRUE, 109, 30, 103),
+ (4, NULL, 'Purple', 400, TRUE, 110, 35, 104),
+ (5, NULL, 'Red', 400, FALSE, 106, 29, 105),
+ (6, NULL, 'Yellow', 400, TRUE, 114, 32, 106),
+ (7, NULL, 'White', 400, TRUE, 111, 33, 169),
+ (8, NULL, 'Orange', 400, TRUE, 108, 34, 109),
+ (9, NULL, 'Brown', 400, TRUE, 113, 36, NULL),
+ (10, NULL, 'Rainbow', 0, TRUE, 115, 103, NULL),
+ (11, NULL, 'Gold', 0, TRUE, 128, 125, NULL),
+ (1000, 2, 'Black T-Rex', 0, TRUE, 112, NULL, NULL),
+ (1001, 4, 'Purple T-Rex', 0, TRUE, 110, NULL, NULL),
+ (1002, 5, 'Red Triceratops', 0, TRUE, 106, NULL, NULL),
+ (1003, 0, 'Blue Triceratops', 0, TRUE, 101, NULL, NULL),
+ (1004, 6, 'Yellow Stegasaurus', 0, TRUE, 114, NULL, NULL),
+ (1005, 1, 'Pink Stegasaurus', 0, TRUE, 107, NULL, NULL),
+ (1006, 0, 'Blue Dog', 800, TRUE, 101, NULL, NULL),
+ (1007, 8, 'Orange Cat', 800, TRUE, 108, NULL, NULL),
+ (1008, 3, 'Green Raccoon', 800, TRUE, 109, NULL, NULL),
+ (1009, 8, 'Orange Raccoon', 800, TRUE, 108, NULL, NULL),
+ (1010, 1, 'Pink Raccoon', 800, TRUE, 107, NULL, NULL),
+ (1011, 0, 'Blue Raccoon', 800, TRUE, 101, NULL, NULL),
+ (1012, 3, 'Green Rabbit', 800, TRUE, 109, NULL, NULL),
+ (1013, 1, 'Pink Rabbit', 800, TRUE, 107, NULL, NULL),
+ (1014, 7, 'White Rabbit', 800, TRUE, 111, NULL, NULL),
+ (1015, 5, 'Red Rabbit', 800, TRUE, 106, NULL, NULL),
+ (1016, 0, 'Blue Deer', 800, TRUE, 101, NULL, NULL),
+ (1017, 2, 'Black Deer', 800, TRUE, 112, NULL, NULL),
+ (1018, 5, 'Red Deer', 800, TRUE, 106, NULL, NULL),
+ (1019, 4, 'Purple Deer', 800, TRUE, 110, NULL, NULL),
+ (1020, 6, 'Yellow Unicorn', 800, TRUE, 114, NULL, NULL),
+ (1021, 7, 'Snowman', 0, TRUE, 111, NULL, NULL),
+ (1022, 4, 'Ghost', 0, TRUE, 110, NULL, NULL),
+ (1023, 0, 'Crystal', 0, TRUE, 101, NULL, NULL),
+ (1024, 3, 'Green Alien', 0, FALSE, 109, NULL, NULL),
+ (1025, 8, 'Orange Alien', 0, TRUE, 108, NULL, NULL),
+ (1026, 6, 'Yellow Alien', 0, TRUE, 114, NULL, NULL),
+ (1027, 4, 'Purple Alien', 0, TRUE, 110, NULL, NULL);
  
 INSERT INTO puffle_treasure_puffle_item (puffle_id, puffle_item_id) VALUES
  (0, 115), (1, 115), (2, 115), (3, 115), (4, 115), (5, 115), (6, 115), (7, 115), (8, 115), (9, 115), (10, 115), (11, 115), (1000, 115), (1001, 115), (1002, 115), (1003, 115), (1004, 115), (1005, 115), (1006, 115), (1007, 115), (1008, 115), (1009, 115), (1010, 115), (1011, 115), (1012, 115), (1013, 115), (1014, 115), (1015, 115), (1016, 115), (1017, 115), (1018, 115), (1019, 115), (1020, 115), (1021, 115), (1022, 115), (1023, 115), (1024, 115), (1025, 115), (1026, 115), (1027, 115),
@@ -9819,7 +9821,7 @@ INSERT INTO quest (id, name) VALUES (3, 'igloo');
 
 INSERT INTO quest_award_item (quest_id, item_id) VALUES (1, 24023);
 INSERT INTO quest_award_furniture (quest_id, furniture_id) VALUES (3, 2166);
-INSERT INTO quest_award_puffle_item (quest_id, puffle_item_id) VALUES (2, 146);
+INSERT INTO quest_award_puffle_item (quest_id, puffle_item_id) VALUES (2, 70);
 
 INSERT INTO quest_task (quest_id, description, room_id) VALUES (1, 'Visit the Clothes Shop', 130);
 INSERT INTO quest_task (quest_id, description, room_id) VALUES (2, 'Visit the Pet Shop', 310);

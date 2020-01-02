@@ -2,6 +2,8 @@ import time
 
 from houdini.spheniscidae import Spheniscidae
 from houdini.data import penguin
+from houdini.data.mail import PenguinPostcard
+from houdini.handlers.play.pet import get_my_player_walking_puffle
 
 
 class Penguin(Spheniscidae, penguin.Penguin):
@@ -30,7 +32,6 @@ class Penguin(Spheniscidae, penguin.Penguin):
         self.membership_days_remain = -1
 
         self.avatar = None
-        self.walking_puffle = None
         self.active_quests = None
         self.legacy_buddy_requests = set()
 
@@ -39,13 +40,15 @@ class Penguin(Spheniscidae, penguin.Penguin):
         self.login_timestamp = None
         self.egg_timer_minutes = None
 
+        self.can_dig_gold = False
+
     @property
     def party_state(self):
         return str()
 
     @property
     def puffle_state(self):
-        return str()
+        return get_my_player_walking_puffle(self)
 
     @property
     def penguin_state(self):
@@ -120,21 +123,32 @@ class Penguin(Spheniscidae, penguin.Penguin):
 
         return True
 
-    async def add_puffle_item(self, care_item, quantity=1, notify=True):
-        if care_item.id in self.puffle_items:
-            penguin_care_item = self.puffle_items[care_item.id]
+    async def add_puffle_item(self, care_item, quantity=1, notify=True, cost=None):
+        if care_item.type not in ['food', 'head', 'play']:
+            return False
+
+        care_item_id = care_item.parent_id
+        quantity = quantity * care_item.quantity
+
+        if care_item.type == 'play' and care_item_id in self.puffle_items:
+            return False
+
+        if care_item_id in self.puffle_items:
+            penguin_care_item = self.puffle_items[care_item_id]
             if penguin_care_item.quantity >= 100:
                 return False
 
             await penguin_care_item.update(
                 quantity=penguin_care_item.quantity + quantity).apply()
         else:
-            await self.puffle_items.insert(item_id=care_item.id)
+            penguin_care_item = await self.puffle_items.insert(item_id=care_item_id,
+                                                               quantity=quantity)
 
-        await self.update(coins=self.coins - care_item.cost).apply()
+        cost = cost if cost is not None else care_item.cost
+        await self.update(coins=self.coins - cost).apply()
 
         if notify:
-            await self.send_xt('papi', self.coins, care_item.id, quantity)
+            await self.send_xt('papi', self.coins, care_item_id, penguin_care_item.quantity)
 
         self.logger.info(f'{self.username} added \'{care_item.name}\' to their puffle care inventory')
 
@@ -221,8 +235,8 @@ class Penguin(Spheniscidae, penguin.Penguin):
         return True
 
     async def add_inbox(self, postcard, sender_name="sys", sender_id=None, details=""):
-        penguin_postcard = await self.postcards.insert(penguin_id=self.id, sender_id=sender_id,
-                                                       postcard_id=postcard.id, details=details)
+        penguin_postcard = await PenguinPostcard.create(penguin_id=self.id, sender_id=sender_id,
+                                                        postcard_id=postcard.id, details=details)
 
         await self.send_xt('mr', sender_name, 0, postcard.id, details, int(time.time()), penguin_postcard.id)
 

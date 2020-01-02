@@ -12,6 +12,7 @@ from houdini.data.room import Room
 from houdini.data.item import Item
 from houdini.data.igloo import Igloo, Furniture, Flooring, Location
 from houdini.data.stamp import Stamp
+from houdini.data.pet import Puffle, PenguinPuffle
 
 
 class ChecklistError(Exception):
@@ -324,6 +325,30 @@ class StampConverter(IConverter):
         return None
 
 
+class PuffleConverter(IConverter):
+
+    description = """Converts a puffle ID into a houdini.data.Puffle instance"""
+
+    async def convert(self, ctx):
+        puffle_id = int(ctx.argument)
+        try:
+            return ctx.p.server.puffles[puffle_id]
+        except KeyError:
+            return None
+
+
+class PenguinPuffleConverter(IConverter):
+
+    description = """Converts a penguin puffle ID into a houdini.data.PenguinPuffle instance"""
+
+    async def convert(self, ctx):
+        puffle_id = int(ctx.argument)
+        try:
+            return ctx.p.puffles[puffle_id]
+        except KeyError:
+            return None
+
+
 class SeparatorConverter(IConverter):
 
     __slots__ = ['separator', 'mapper']
@@ -415,7 +440,10 @@ ConverterTypes = {
     Igloo: IglooConverter,
     Flooring: FlooringConverter,
     Location: LocationConverter,
-    Stamp: StampConverter
+    Stamp: StampConverter,
+    Puffle: PuffleConverter,
+
+    PenguinPuffle: PenguinPuffleConverter
 }
 
 
