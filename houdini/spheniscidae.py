@@ -87,6 +87,8 @@ class Spheniscidae:
     async def close(self):
         self.__writer.close()
 
+        await self._client_disconnected()
+
     async def __handle_xt_data(self, data):
         self.logger.debug(f'Received XT data: {data}')
         parsed_data = data.split('%')[1:-1]
@@ -186,7 +188,8 @@ class Spheniscidae:
             except BaseException as e:
                 self.logger.exception(e.__traceback__)
 
-        await self._client_disconnected()
+        if self.peer_name in self.server.peers_by_ip:
+            await self._client_disconnected()
 
     def __repr__(self):
         return f'<Spheniscidae {self.peer_name}>'
