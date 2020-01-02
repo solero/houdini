@@ -126,4 +126,8 @@ async def handle_get_com_messages(p):
     if unread_com_message:
         await p.server.cache.delete('com_messages')
         await p.update(com_message_read_date=datetime.datetime.now()).apply()
-    await p.send_xt('epfgm', int(bool(unread_com_message)), await get_com_messages(p))
+    com_messages = await get_com_messages(p)
+    if com_messages:
+        await p.send_xt('epfgm', int(bool(unread_com_message)), com_messages)
+    else:
+        await p.send_xt('epfgm', int(bool(unread_com_message)))
