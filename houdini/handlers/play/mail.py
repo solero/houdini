@@ -39,6 +39,7 @@ async def handle_get_mail(p):
 
 
 @handlers.handler(XTPacket('l', 'ms'))
+@handlers.depends_on_packet(XTPacket('l', 'mst'))
 @handlers.cooldown(2)
 async def handle_send_mail(p, recipient_id: int, postcard_id: int):
     if p.coins < 10:
@@ -68,18 +69,21 @@ async def handle_send_mail(p, recipient_id: int, postcard_id: int):
 
 
 @handlers.handler(XTPacket('l', 'mc'))
+@handlers.depends_on_packet(XTPacket('l', 'mst'))
 async def handle_mail_checked(p):
     await PenguinPostcard.update.values(has_read=True).where(
         PenguinPostcard.penguin_id == p.id).gino.status()
 
 
 @handlers.handler(XTPacket('l', 'md'))
+@handlers.depends_on_packet(XTPacket('l', 'mst'))
 async def handle_delete_mail(p, postcard_id: int):
     await PenguinPostcard.delete.where((PenguinPostcard.penguin_id == p.id)
                                        & (PenguinPostcard.id == postcard_id)).gino.status()
 
 
 @handlers.handler(XTPacket('l', 'mdp'))
+@handlers.depends_on_packet(XTPacket('l', 'mst'))
 async def handle_delete_mail_from_user(p, sender_id: int):
     sender_id = None if sender_id == 0 else sender_id
     await PenguinPostcard.delete.where((PenguinPostcard.penguin_id == p.id)
