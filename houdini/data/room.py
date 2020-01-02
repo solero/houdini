@@ -308,8 +308,11 @@ class PenguinBackyardRoom(RoomMixin):
         self.blackhole = False
         self.spawn = False
         self.stamp_group = None
+        self.penguin = None
 
     async def add_penguin(self, p):
+        self.penguin = p
+
         if p.room:
             await p.room.remove_penguin(p)
         p.room = self
@@ -320,6 +323,9 @@ class PenguinBackyardRoom(RoomMixin):
         p.room = None
         p.frame = 1
         p.toy = None
+
+    async def send_xt(self, *data, f=None):
+        await self.penguin.send_xt(*data)
 
 
 class Room(db.Model, RoomMixin):
