@@ -1,6 +1,6 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
-from houdini.handlers.play.navigation import handle_join_server
+from houdini.handlers.play.navigation import handle_join_server, handle_join_room
 from houdini.data.stamp import Stamp, CoverStamp, CoverItem, PenguinStampCollection
 from houdini.data.penguin import Penguin
 
@@ -58,6 +58,21 @@ async def load_stamp_inventory(p):
 @handlers.allow_once
 async def handle_get_stamps(p):
     await p.send_xt('gps', p.id, await get_player_stamps_string(p, p.id))
+
+
+@handlers.handler(XTPacket('j', 'jr'), after=handle_join_room)
+async def handle_add_mascot_stamp(p):
+    if p.character is not None:
+        character = p.server.characters[p.character]
+        stamp = p.server.stamps[character.stamp_id]
+        for penguin in p.room.penguins_by_id.values():
+            await penguin.add_stamp(stamp)
+
+    for penguin in p.room.penguins_by_id.values():
+        if penguin.character is not None:
+            character = p.server.characters[penguin.character]
+            stamp = p.server.stamps[character.stamp_id]
+            await p.add_stamp(stamp)
 
 
 @handlers.handler(XTPacket('st', 'gps'))
