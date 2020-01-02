@@ -30,22 +30,22 @@ async def handle_random_key(p, _):
     await p.send_xml({'body': {'action': 'rndK', 'r': '-1'}, 'k': p.server.config.auth_key})
 
 
-async def get_server_presence(p, pid):
+async def get_server_presence(p, pdata):
     buddy_worlds = []
     world_populations = []
 
     pops = await p.server.redis.hgetall('houdini.population')
     for server_id, server_population in pops.items():
-        server_population = (7 if int(server_population) == p.server.config.capacity
-                             else int(server_population) // (p.server.config.capacity // 6)) \
-            if server_population else 0
+        server_population = 7 if int(server_population) == p.server.config.capacity \
+            else int(server_population) // (p.server.config.capacity // 6)
+        server_population = server_population if not pdata.moderator else 0
 
         world_populations.append(f'{int(server_id)},{int(server_population)}')
 
         server_key = f'houdini.players.{int(server_id)}'
         if await p.server.redis.scard(server_key):
             async with p.server.db.transaction():
-                buddies = BuddyList.select('buddy_id').where(BuddyList.penguin_id == pid).gino.iterate()
+                buddies = BuddyList.select('buddy_id').where(BuddyList.penguin_id == pdata.id).gino.iterate()
                 tr = p.server.redis.multi_exec()
                 async for buddy_id, in buddies:
                     tr.sismember(server_key, buddy_id)

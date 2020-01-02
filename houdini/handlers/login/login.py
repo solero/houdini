@@ -102,7 +102,7 @@ async def handle_login(p, credentials: Credentials):
     tr.setex(f'{data.username}.ckey', p.server.config.auth_ttl, confirmation_hash)
     await tr.execute()
 
-    world_populations, buddy_presence = await get_server_presence(p, data.id)
+    world_populations, buddy_presence = await get_server_presence(p, data)
 
     if p.client_type == ClientType.Vanilla:
         raw_login_data = '|'.join([str(data.id), str(data.id), data.username, login_key, str(data.approval),
@@ -113,4 +113,4 @@ async def handle_login(p, credentials: Credentials):
         else:
             await p.send_xt('l', raw_login_data, confirmation_hash, '', world_populations, buddy_presence, data.email)
     else:
-        await p.send_xt('l', data.id, login_key, world_populations, buddy_presence)
+        await p.send_xt('l', data.id, login_key, buddy_presence, world_populations)

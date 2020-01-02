@@ -16,6 +16,9 @@ async def world_login(p, data):
     if len(p.server.penguins_by_id) >= p.server.config.capacity:
         return await p.send_error_and_disconnect(103)
 
+    if p.server.config.staff and not data.moderator:
+        return await p.send_error_and_disconnect(103)
+
     if data is None:
         return await p.send_error_and_disconnect(100)
 
