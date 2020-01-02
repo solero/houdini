@@ -31,7 +31,7 @@ class Penguin(Spheniscidae, penguin.Penguin):
         self.avatar = None
         self.walking_puffle = None
         self.active_quests = None
-        self.buddy_requests = set()
+        self.legacy_buddy_requests = set()
 
         self.heartbeat = time.time()
 

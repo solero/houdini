@@ -80,7 +80,7 @@ async def handle_get_buddies(p):
     await p.send_xt('gs', best_friend_count, notification_aware, int(p.active), best_friends_enabled)
 
     await p.send_xt('gb', *buddies)
-    await p.send_xt('pr', *requests)
+    await p.send_xt('pbr', *requests)
     await p.send_xt('gc', *characters)
 
     if best_friends_enabled:
@@ -125,8 +125,8 @@ async def handle_buddy_request(p, buddy_id: int):
 
             if buddy.client_type == ClientType.Vanilla and p.id not in buddy.buddy_requests:
                 await buddy.buddy_requests.insert(buddy_id=p.id)
-            elif p.id not in buddy.buddy_requests:
-                buddy.buddy_requests.add(p.id)
+            elif p.id not in buddy.legacy_buddy_requests:
+                buddy.legacy_buddy_requests.add(p.id)
             else:
                 return
 
@@ -139,8 +139,8 @@ async def handle_buddy_request(p, buddy_id: int):
 async def handle_buddy_accept(p, buddy_id: int):
     if buddy_id in p.buddy_requests:
         await p.buddy_requests.delete(buddy_id)
-    elif buddy_id in p.buddy_requests:
-        p.buddy_requests.remove(buddy_id)
+    elif buddy_id in p.legacy_buddy_requests:
+        p.legacy_buddy_requests.remove(buddy_id)
     else:
         return
 
