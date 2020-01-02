@@ -68,12 +68,14 @@ class Penguin(Spheniscidae, penguin.Penguin):
 
         self.logger.info(f'{self.username} joined room \'{room.name}\'')
 
-    async def add_inventory(self, item, notify=True):
+    async def add_inventory(self, item, notify=True, cost=None):
         if item.id in self.inventory:
             return False
 
+        cost = cost if cost is not None else item.cost
+
         await self.inventory.insert(item_id=item.id)
-        await self.update(coins=self.coins - item.cost).apply()
+        await self.update(coins=self.coins - cost).apply()
 
         if notify:
             await self.send_xt('ai', item.id, self.coins)
@@ -85,27 +87,31 @@ class Penguin(Spheniscidae, penguin.Penguin):
 
         return True
 
-    async def add_epf_inventory(self, item, notify=True):
+    async def add_epf_inventory(self, item, notify=True, cost=None):
         if not item.epf:
             return False
 
         if item.id in self.inventory:
             return False
 
+        cost = cost if cost is not None else item.cost
+
         await self.inventory.insert(item_id=item.id)
-        await self.update(agent_medals=self.agent_medals - item.cost).apply()
+        await self.update(agent_medals=self.agent_medals - cost).apply()
 
         if notify:
             await self.send_xt('epfai', self.agent_medals)
 
         return True
 
-    async def add_igloo(self, igloo, notify=True):
+    async def add_igloo(self, igloo, notify=True, cost=None):
         if igloo.id in self.igloos:
             return False
 
+        cost = cost if cost is not None else igloo.cost
+
         await self.igloos.insert(igloo_id=igloo.id)
-        await self.update(coins=self.coins - igloo.cost).apply()
+        await self.update(coins=self.coins - cost).apply()
 
         if notify:
             await self.send_xt('au', igloo.id, self.coins)
@@ -134,7 +140,7 @@ class Penguin(Spheniscidae, penguin.Penguin):
 
         return True
 
-    async def add_furniture(self, furniture, quantity=1, notify=True):
+    async def add_furniture(self, furniture, quantity=1, notify=True, cost=None):
         if furniture.id in self.furniture:
             penguin_furniture = self.furniture[furniture.id]
             if penguin_furniture.quantity >= furniture.max_quantity:
@@ -145,7 +151,8 @@ class Penguin(Spheniscidae, penguin.Penguin):
         else:
             await self.furniture.insert(furniture_id=furniture.id)
 
-        await self.update(coins=self.coins - furniture.cost).apply()
+        cost = cost if cost is not None else furniture.cost
+        await self.update(coins=self.coins - cost).apply()
 
         if notify:
             await self.send_xt('af', furniture.id, self.coins)
@@ -167,12 +174,14 @@ class Penguin(Spheniscidae, penguin.Penguin):
 
         return True
 
-    async def add_flooring(self, flooring, notify=True):
+    async def add_flooring(self, flooring, notify=True, cost=None):
         if flooring.id in self.flooring:
             return False
 
+        cost = cost if cost is not None else flooring.cost
+
         await self.flooring.insert(flooring_id=flooring.id)
-        await self.update(coins=self.coins - flooring.cost).apply()
+        await self.update(coins=self.coins - cost).apply()
 
         if notify:
             await self.send_xt('ag', flooring.id, self.coins)
@@ -181,12 +190,14 @@ class Penguin(Spheniscidae, penguin.Penguin):
 
         return True
 
-    async def add_location(self, location, notify=True):
+    async def add_location(self, location, notify=True, cost=None):
         if location.id in self.locations:
             return False
 
+        cost = cost if cost is not None else location.cost
+
         await self.locations.insert(location_id=location.id)
-        await self.update(coins=self.coins - location.cost).apply()
+        await self.update(coins=self.coins - cost).apply()
 
         if notify:
             await self.send_xt('aloc', location.id, self.coins)
