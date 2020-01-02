@@ -25,6 +25,7 @@ async def handle_join_game(p):
         if len(p.table.penguins) == 2:
             await p.table.send_xt('sz', p.table.get_string())
 
+
 @handlers.handler(XTPacket('zm', ext='z'))
 @table_handler(TreasureHuntLogic)
 async def handle_send_move(p, movie: str, direction: str, spade: int):
