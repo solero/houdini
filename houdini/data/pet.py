@@ -59,17 +59,6 @@ class PuffleTreasurePuffleItem(db.Model):
                                primary_key=True, nullable=False)
 
 
-class PuffleQuest(db.Model):
-    __tablename__ = 'puffle_quest'
-
-    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
-                           nullable=False)
-    task_id = db.Column(db.SmallInteger, primary_key=True, nullable=False)
-    completion_date = db.Column(db.DateTime)
-    item_collected = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-    coins_collected = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-
-
 class PenguinPuffle(db.Model):
     __tablename__ = 'penguin_puffle'
 

@@ -1155,25 +1155,6 @@ COMMENT ON COLUMN penguin_puffle_item.penguin_id IS 'Owner penguin ID';
 COMMENT ON COLUMN penguin_puffle_item.item_id IS 'Puffle care item ID';
 COMMENT ON COLUMN penguin_puffle_item.quantity IS 'Quantity owned';
 
-DROP TABLE IF EXISTS puffle_quest;
-CREATE TABLE puffle_quest (
-  penguin_id INT NOT NULL,
-  task_id SMALLINT NOT NULL,
-  completion_date TIMESTAMP DEFAULT NULL,
-  item_collected BOOLEAN NOT NULL DEFAULT FALSE,
-  coins_collected BOOLEAN NOT NULL DEFAULT FALSE,
-  PRIMARY KEY (penguin_id, task_id),
-  CONSTRAINT puffle_quest_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE
-);
-
-COMMENT ON TABLE puffle_quest IS 'Puffle quest progress';
-
-COMMENT ON COLUMN puffle_quest.penguin_id IS 'Quest penguin ID';
-COMMENT ON COLUMN puffle_quest.task_id IS 'Quest task ID';
-COMMENT ON COLUMN puffle_quest.completion_date IS 'Time of completion';
-COMMENT ON COLUMN puffle_quest.item_collected IS 'Item collection status';
-COMMENT ON COLUMN puffle_quest.coins_collected IS 'Coins collection status';
-
 DROP TABLE IF EXISTS redemption_code;
 CREATE TABLE redemption_code (
   id SERIAL,
