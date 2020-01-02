@@ -99,7 +99,7 @@ async def handle_get_game_over(p, score: int):
 
 
 @handlers.handler(XTPacket('ggd', ext='z'), client=ClientType.Vanilla)
-async def handle_get_game_data(p, index: int = None):
+async def handle_get_game_data(p, index: int = 0):
     game_data = await PenguinGameData.select('data').where((PenguinGameData.penguin_id == p.id) &
                                                            (PenguinGameData.room_id == p.room.id) &
                                                            (PenguinGameData.index == index)).gino.scalar()
@@ -108,7 +108,7 @@ async def handle_get_game_data(p, index: int = None):
 
 @handlers.handler(XTPacket('sgd', ext='z'), client=ClientType.Vanilla)
 @handlers.cooldown(5)
-async def handle_set_game_data(p, index: OptionalConverter(int) = None, *, game_data: str):
+async def handle_set_game_data(p, index: OptionalConverter(int) = 0, *, game_data: str):
     if p.room.game:
         data_insert = insert(PenguinGameData).values(penguin_id=p.id, room_id=p.room.id, index=index, data=game_data)
         data_insert = data_insert.on_conflict_do_update(
