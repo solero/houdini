@@ -155,7 +155,7 @@ async def handle_quest_join_room(p):
 
 
 @handlers.handler(XTPacket('j', 'jp'), after=handle_join_player_room)
-async def handle_quest_join_room(p):
+async def handle_quest_join_player_room(p):
     if p.active_quests is not None:
         for quest in p.active_quests:
             for task in quest.tasks:
