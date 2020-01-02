@@ -25,14 +25,13 @@ async def handle_join_game(p):
 
 @handlers.handler(XTPacket('zm', ext='z'))
 @table_handler(MancalaLogic)
-async def handle_send_move(p, move: int):
+async def handle_send_move(p, hollow: int):
     try:
         seat_id = p.table.get_seat_id(p)
         is_player = seat_id < 2
         game_ready = len(p.table.penguins) > 1
 
         if is_player and game_ready:
-            hollow, = map(int, move)
             current_player = p.table.penguins[p.table.logic.current_player - 1]
 
             if current_player != p:
