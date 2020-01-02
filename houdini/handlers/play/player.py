@@ -1,11 +1,14 @@
 from houdini import handlers
 from houdini.converters import SeparatorConverter
 from houdini.handlers import XTPacket
-from houdini.data.penguin import Penguin
+from houdini.handlers.play.navigation import handle_join_server
+from houdini.data import db
+from houdini.data.penguin import Penguin, PenguinMembership
+from houdini.data.mail import PenguinPostcard
 from houdini.constants import ClientType
 
 from aiocache import cached
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
 import asyncio
 import time
@@ -75,6 +78,78 @@ async def server_egg_timer(server):
                 else:
                     if p.egg_timer_minutes < 0:
                         await p.send_error_and_disconnect(910)
+
+
+MemberWarningDaysToExpiry = 14
+MemberWarningPostcardsVanilla = [122, 123]
+MemberWarningPostcardsLegacy = [163]
+MemberExpiredPostcard = 124
+MemberStartPostcardVanilla = 121
+MemberStartPostcardLegacy = 164
+
+
+@handlers.handler(XTPacket('j', 'js'), pre_login=True, before=handle_join_server)
+@handlers.allow_once
+async def handle_setup_membership(p):
+    if not p.server.config.expire_membership or p.moderator or p.character:
+        p.is_member = True
+        p.membership_days_total = p.age
+        return
+
+    membership_history = PenguinMembership.query.where(PenguinMembership.penguin_id == p.id)
+    current_timestamp = datetime.now()
+    postcards = []
+
+    warning_postcards = MemberWarningPostcardsVanilla if p.is_vanilla_client else MemberWarningPostcardsLegacy
+    start_postcard = MemberStartPostcardVanilla if p.is_vanilla_client else MemberStartPostcardLegacy
+
+    async with db.transaction():
+        async for membership_record in membership_history.gino.iterate():
+            membership_recurring = membership_record.expires is None
+            membership_active = membership_recurring or membership_record.expires >= current_timestamp
+
+            if membership_record.start < current_timestamp:
+                if membership_active:
+                    p.is_member = True
+
+                    if not membership_recurring:
+                        days_to_expiry = (membership_record.expires.date() - datetime.now().date()).days
+                        p.membership_days_remain = days_to_expiry
+
+                        if days_to_expiry <= MemberWarningDaysToExpiry and not membership_record.expires_aware:
+                            postcards.append(dict(
+                                penguin_id=p.id,
+                                postcard_id=random.choice(warning_postcards),
+                                send_date=membership_record.expires - timedelta(days=MemberWarningDaysToExpiry)
+                            ))
+                            await membership_record.update(expires_aware=True).apply()
+                else:
+                    if p.membership_days_remain < 0:
+                        days_since_expiry = (membership_record.expires.date() - datetime.now().date()).days
+                        p.membership_days_remain = min(p.membership_days_remain, days_since_expiry)
+
+                    if not membership_record.expired_aware:
+                        if p.is_vanilla_client:
+                            postcards.append(dict(
+                                penguin_id=p.id,
+                                postcard_id=MemberExpiredPostcard,
+                                send_date=membership_record.expires
+                            ))
+                        await membership_record.update(expired_aware=True).apply()
+
+                if not membership_record.start_aware:
+                    postcards.append(dict(
+                        penguin_id=p.id,
+                        postcard_id=start_postcard,
+                        send_date=membership_record.start
+                    ))
+                    await membership_record.update(start_aware=True).apply()
+
+            membership_end_date = current_timestamp if membership_active else membership_record.expires
+            p.membership_days_total += (membership_end_date - membership_record.start).days
+
+    if postcards:
+        await PenguinPostcard.insert().values(postcards).gino.status()
 
 
 @handlers.handler(XTPacket('u', 'h'))

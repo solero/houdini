@@ -1371,13 +1371,17 @@ COMMENT ON TABLE penguin_stamp IS 'Penguin earned stamps';
 COMMENT ON COLUMN penguin_stamp.penguin_id IS 'Stamp penguin ID';
 COMMENT ON COLUMN penguin_stamp.stamp_id IS 'Stamp ID';
 COMMENT ON COLUMN penguin_stamp.recent IS 'Is recently earned?';
+COMMENT ON COLUMN penguin_stamp.recent IS 'Is recently earned?';
 
 DROP TABLE IF EXISTS penguin_membership;
 CREATE TABLE penguin_membership (
   penguin_id INT NOT NULL,
   start TIMESTAMP NOT NULL, 
-  expires TIMESTAMP NOT NULL,
-  PRIMARY KEY(penguin_id, start, expires),
+  expires TIMESTAMP DEFAULT NULL,
+  start_aware BOOLEAN DEFAULT FALSE,
+  expires_aware BOOLEAN DEFAULT FALSE,
+  expired_aware BOOLEAN DEFAULT FALSE,
+  PRIMARY KEY(penguin_id, start),
   CONSTRAINT penguin_membership_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 

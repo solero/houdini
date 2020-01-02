@@ -7,9 +7,9 @@ from houdini.data import penguin
 class Penguin(Spheniscidae, penguin.Penguin):
 
     __slots__ = ['x', 'y', 'frame', 'toy', 'room', 'waddle', 'table',
-                 'data', 'muted', 'login_key', 'member', 'membership_days',
-                 'avatar', 'walking_puffle', 'permissions', 'active_quests',
-                 'buddy_requests', 'heartbeat', 'login_timestamp',
+                 'data', 'muted', 'login_key', 'is_member', 'membership_days_total',
+                 'membership_days_remain', 'avatar', 'walking_puffle', 'permissions',
+                 'active_quests', 'legacy_buddy_requests', 'heartbeat', 'login_timestamp',
                  'egg_timer_minutes']
 
     def __init__(self, *args):
@@ -25,8 +25,9 @@ class Penguin(Spheniscidae, penguin.Penguin):
 
         self.login_key = None
 
-        self.member = 1
-        self.membership_days = 1
+        self.is_member = False
+        self.membership_days_total = 0
+        self.membership_days_remain = -1
 
         self.avatar = None
         self.walking_puffle = None
@@ -57,6 +58,10 @@ class Penguin(Spheniscidae, penguin.Penguin):
     @property
     def safe_name(self):
         return self.safe_nickname(self.server.config.lang)
+
+    @property
+    def member(self):
+        return int(self.is_member)
 
     async def join_room(self, room):
         await room.add_penguin(self)

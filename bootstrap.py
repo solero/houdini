@@ -119,6 +119,9 @@ if __name__ == '__main__':
     client_group.add_argument('-kt', '--auth-ttl', action='store', type=int, default=3000,
                               help='Auth key TTL (seconds)')
 
+    membership_group = parser.add_argument_group('membership')
+    membership_group.add_argument('--expire-membership', action='store_true', help='Should membership expire?')
+
     args = parser.parse_args()
 
     args.port = args.port if args.port else 9875 if args.type == 'world' else 6112

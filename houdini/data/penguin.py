@@ -148,7 +148,10 @@ class PenguinMembership(db.Model):
     penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
                            nullable=False)
     start = db.Column(db.DateTime, primary_key=True, nullable=False)
-    expires = db.Column(db.DateTime, primary_key=True, nullable=False)
+    expires = db.Column(db.DateTime)
+    start_aware = db.Column(db.Boolean, server_default=db.text("false"))
+    expires_aware = db.Column(db.Boolean, server_default=db.text("false"))
+    expired_aware = db.Column(db.Boolean, server_default=db.text("false"))
 
 
 class Login(db.Model):

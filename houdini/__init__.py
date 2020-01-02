@@ -84,7 +84,7 @@ class PenguinStringCompiler(OrderedDict):
             'Y': PenguinStringCompiler.attribute_by_name('y'),
             'Frame': PenguinStringCompiler.attribute_by_name('frame'),
             'Member': PenguinStringCompiler.attribute_by_name('member'),
-            'MemberDays': PenguinStringCompiler.attribute_by_name('membership_days'),
+            'MemberDays': PenguinStringCompiler.attribute_by_name('membership_days_total'),
             'Avatar': PenguinStringCompiler.attribute_by_name('avatar'),
             'PenguinState': PenguinStringCompiler.attribute_by_name('penguin_state'),
             'PartyState': PenguinStringCompiler.attribute_by_name('party_state'),
