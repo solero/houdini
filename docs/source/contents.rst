@@ -6,6 +6,8 @@ Welcome to Houdini's documentation!
    :caption: Contents:
 
    intro/getting-started
+   intro/current-progress
+
    plugins/introduction
 
 
