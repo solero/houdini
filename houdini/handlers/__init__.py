@@ -256,5 +256,5 @@ def player_attribute(**attrs):
 
 def player_in_room(*room_ids):
     def check_room_id(_, p):
-        return p.room.id in room_ids
+        return p.room is not None and p.room.id in room_ids
     return check(check_room_id)
