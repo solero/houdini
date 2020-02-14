@@ -1168,6 +1168,7 @@ CREATE TABLE redemption_code (
   type VARCHAR(8) NOT NULL DEFAULT 'BLANKET',
   coins INT NOT NULL DEFAULT 0,
   expires TIMESTAMP DEFAULT NULL,
+  uses INT DEFAULT NULL,
   PRIMARY KEY (id)
 );
 
@@ -1180,6 +1181,7 @@ COMMENT ON COLUMN redemption_code.code IS 'Redemption code';
 COMMENT ON COLUMN redemption_code.type IS 'Code type';
 COMMENT ON COLUMN redemption_code.coins IS 'Code coins amount';
 COMMENT ON COLUMN redemption_code.expires IS 'Expiry date';
+COMMENT ON COLUMN redemption_code.uses IS 'Number of uses';
 
 DROP TABLE IF EXISTS redemption_book;
 CREATE TABLE redemption_book (
@@ -1212,24 +1214,39 @@ COMMENT ON COLUMN redemption_book_word.line IS 'Line number of page';
 COMMENT ON COLUMN redemption_book_word.word_number IS 'The nth word on the line';
 COMMENT ON COLUMN redemption_book_word.answer IS 'The correct word';
 
-DROP TABLE IF EXISTS penguin_redemption;
-CREATE TABLE penguin_redemption (
+DROP TABLE IF EXISTS penguin_redemption_code;
+CREATE TABLE penguin_redemption_code (
   penguin_id INT NOT NULL,
-  code_id INT DEFAULT NULL,
-  book_id INT DEFAULT NULL,
+  code_id INT NOT NULL,
   PRIMARY KEY (penguin_id, code_id),
-  CONSTRAINT penguin_redemption_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_redemption_ibfk_2 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_redemption_ibfk_3 FOREIGN KEY (book_id) REFERENCES redemption_book (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT penguin_redemption_code_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT penguin_redemption_code_ibfk_2 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
-CREATE INDEX penguin_redemption_code_id ON penguin_redemption (code_id);
-CREATE INDEX penguin_redemption_book_id ON penguin_redemption (book_id);
+CREATE INDEX penguin_redemption_code_code_id ON penguin_redemption_code (code_id);
 
-COMMENT ON TABLE penguin_redemption IS 'Redeemed codes';
+COMMENT ON TABLE penguin_redemption_code IS 'Redeemed codes';
 
-COMMENT ON COLUMN penguin_redemption.penguin_id IS 'Unique penguin ID';
-COMMENT ON COLUMN penguin_redemption.code_id IS 'Unique code ID';
+COMMENT ON COLUMN penguin_redemption_code.penguin_id IS 'Unique penguin ID';
+COMMENT ON COLUMN penguin_redemption_code.code_id IS 'Unique code ID';
+
+
+DROP TABLE IF EXISTS penguin_redemption_book;
+CREATE TABLE penguin_redemption_book (
+  penguin_id INT NOT NULL,
+  book_id INT NOT NULL,
+  PRIMARY KEY (penguin_id, book_id),
+  CONSTRAINT penguin_redemption_book_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT penguin_redemption_book_ibfk_2 FOREIGN KEY (book_id) REFERENCES redemption_book (id) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE INDEX penguin_redemption_book_book_id ON penguin_redemption_book (book_id);
+
+COMMENT ON TABLE penguin_redemption_book IS 'Redeemed book codes';
+
+COMMENT ON COLUMN penguin_redemption_book.penguin_id IS 'Unique penguin ID';
+COMMENT ON COLUMN penguin_redemption_book.book_id IS 'Unique book ID';
+
 
 DROP TABLE IF EXISTS redemption_award_card;
 CREATE TABLE redemption_award_card (
