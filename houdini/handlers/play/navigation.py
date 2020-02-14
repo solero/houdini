@@ -1,13 +1,16 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
+from houdini.data import db
 from houdini.data.room import Room
-from houdini.data.penguin import Login
+from houdini.data.penguin import Penguin, Login
 from houdini.data.room import PenguinIglooRoom, PenguinBackyardRoom, RoomCollection
 from houdini.constants import ClientType, StatusField
 
 import random
 import time
-from datetime import datetime
+import pytz
+from datetime import date, datetime
+
 
 @handlers.boot
 async def rooms_load(server):
@@ -44,7 +47,7 @@ async def handle_join_server(p, penguin_id: int, login_key: str):
         minutes_until_timer_end = datetime.combine(datetime.today(), p.timer_end) - datetime.now()
         minutes_until_timer_end = minutes_until_timer_end.total_seconds() // 60
 
-        minutes_played_today = await p.minutes_played_today
+        minutes_played_today = await get_minutes_played_today(p)
         minutes_left_today = (p.timer_total.total_seconds() // 60) - minutes_played_today
         p.egg_timer_minutes = int(min(minutes_until_timer_end, minutes_left_today))
     else:
@@ -79,6 +82,13 @@ async def handle_join_room(p, room: Room, x: int, y: int):
         await p.send_xt('jr', room.id)
     p.x, p.y = x, y
     await p.join_room(room)
+
+
+async def get_minutes_played_today(p):
+    yesterday = datetime.combine(date.today(), datetime.min.time())
+    minutes_played_today = await db.select([db.func.sum(Login.minutes_played)]) \
+        .where((Login.penguin_id == p.id) & (Login.date > yesterday)).gino.scalar()
+    return minutes_played_today or 0
 
 
 async def create_temporary_room(p, penguin_id):

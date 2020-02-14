@@ -1,4 +1,4 @@
-from datetime import datetime, date
+from datetime import datetime
 
 from houdini.data import db
 
@@ -111,15 +111,6 @@ class Penguin(db.Model):
 
     def status_field_get(self, field_bitmask):
         return (self.status_field & field_bitmask) != 0
-
-    @property
-    def minutes_played_today(self):
-        async def get_minutes():
-            yesterday = datetime.combine(date.today(), datetime.min.time())
-            minutes_played_today = await db.select([db.func.sum(Login.minutes_played)]) \
-                .where((Login.penguin_id == self.id) & (Login.date > yesterday)).gino.scalar()
-            return minutes_played_today or 0
-        return get_minutes()
 
     @property
     @lru_cache()
