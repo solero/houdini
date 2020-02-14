@@ -6,7 +6,7 @@ import defusedxml.cElementTree as Et
 from xml.etree.cElementTree import Element, SubElement, tostring
 
 from houdini.constants import ClientType
-from houdini.handlers import AuthorityError, DummyEventPacket
+from houdini.handlers import AuthorityError
 
 
 class Spheniscidae:
@@ -142,21 +142,13 @@ class Spheniscidae:
     async def _client_connected(self):
         self.logger.info(f'Client {self.peer_name} connected')
 
-        dummy_event = DummyEventPacket('connected')
-        if dummy_event in self.server.dummy_event_listeners:
-            dummy_event_listeners = self.server.dummy_event_listeners[dummy_event]
-            for listener in dummy_event_listeners:
-                await listener(self)
+        await self.server.dummy_event_listeners.fire('connected', self)
 
     async def _client_disconnected(self):
         del self.server.peers_by_ip[self.peer_name]
         self.logger.info(f'Client {self.peer_name} disconnected')
 
-        dummy_event = DummyEventPacket('disconnected')
-        if dummy_event in self.server.dummy_event_listeners:
-            dummy_event_listeners = self.server.dummy_event_listeners[dummy_event]
-            for listener in dummy_event_listeners:
-                await listener(self)
+        await self.server.dummy_event_listeners.fire('disconnected', self)
 
     async def __data_received(self, data):
         data = data.decode()[:-1]

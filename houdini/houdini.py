@@ -173,14 +173,13 @@ class Houdini:
 
             await self.xml_listeners.setup(houdini.handlers, exclude_load='houdini.handlers.login.login')
             await self.xt_listeners.setup(houdini.handlers)
-            await self.dummy_event_listeners.setup(houdini.handlers)
             self.logger.info('World server started')
         else:
             await self.xml_listeners.setup(houdini.handlers, 'houdini.handlers.login.login')
             self.logger.info('Login server started')
 
-        self.items = await ItemCollection.get_collection()
-        self.logger.info(f'Loaded {len(self.items)} clothing items')
+        await self.dummy_event_listeners.setup(houdini.handlers)
+        await self.dummy_event_listeners.fire('boot', self)
 
         self.igloos = await IglooCollection.get_collection()
         self.logger.info(f'Loaded {len(self.igloos)} igloos')

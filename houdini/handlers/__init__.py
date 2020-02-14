@@ -188,6 +188,13 @@ class XMLListenerManager(_ListenerManager):
 class DummyEventListenerManager(_ListenerManager):
     ListenerClass = _DummyListener
 
+    async def fire(self, event, *args, **kwargs):
+        dummy_event = DummyEventPacket(event)
+        if dummy_event in self.server.dummy_event_listeners:
+            dummy_event_listeners = self.server.dummy_event_listeners[dummy_event]
+            for listener in dummy_event_listeners:
+                await listener(*args, **kwargs)
+
 
 def handler(packet, **kwargs):
     if not issubclass(type(packet), _Packet):
@@ -197,6 +204,7 @@ def handler(packet, **kwargs):
     return _listener(listener_class, packet, **kwargs)
 
 
+boot = _listener(_DummyListener, DummyEventPacket('boot'))
 connected = _listener(_DummyListener, DummyEventPacket('connected'))
 disconnected = _listener(_DummyListener, DummyEventPacket('disconnected'))
 
