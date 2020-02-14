@@ -26,7 +26,7 @@ async def get_com_messages(p):
 @handlers.handler(XTPacket('l', 'mst'), before=handle_start_mail_engine)
 async def handle_send_job_mail(p):
     postcards = []
-    if not p.agent_status and random.random() < 0.1:
+    if p.is_legacy_client and not p.agent_status and random.random() < 0.1:
         epf_invited = await PenguinPostcard.query.where(
             (PenguinPostcard.penguin_id == p.id) & ((PenguinPostcard.postcard_id == 112)
                                                     | (PenguinPostcard.postcard_id == 47))).gino.scalar()
