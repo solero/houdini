@@ -210,10 +210,13 @@ class WorldCredentialsConverter(IConverter):
     async def convert(self, ctx):
         raw_login_data = ctx.argument[0][0].text
         password_hashes = ctx.argument[0][1].text
-        penguin_id, _, username, login_key, language_approved, language_rejected = raw_login_data.split('|')
+        penguin_id, _, username, login_key, _, language_approved, language_rejected = raw_login_data.split('|')
         client_key, confirmation_hash = password_hashes.split('#')
-        return WorldCredentials(int(penguin_id), username.lower(), login_key, int(language_approved), int(language_rejected),
-                                client_key, confirmation_hash)
+        return WorldCredentials(int(penguin_id), username.lower(), login_key,
+                                int(language_approved),
+                                int(language_rejected),
+                                client_key,
+                                confirmation_hash)
 
 
 class VersionChkConverter(IConverter):
