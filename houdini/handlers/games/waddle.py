@@ -1,10 +1,19 @@
 from houdini import handlers
-from houdini.handlers import XTPacket
+from houdini.handlers import XTPacket, check
+from houdini.handlers.play.navigation import handle_join_room, handle_join_player_room
+
+
+def waddle_handler(waddle):
+    def check_waddle_game(_, p):
+        if p.waddle is not None and type(p.waddle) == waddle:
+            return True
+        return False
+    return check(check_waddle_game)
 
 
 @handlers.handler(XTPacket('gw', ext='z'))
 async def handle_get_waddle_population(p):
-    await p.send_xt('gw', '%'.join(f'{waddle.id}|{",".join(penguin.safe_name for penguin in waddle.penguins)}'
+    await p.send_xt('gw', '%'.join(f'{waddle.id}|{",".join(penguin.safe_name if penguin else str() for penguin in waddle.penguins)}'
                                    for waddle in p.room.waddles.values()))
 
 
