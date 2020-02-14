@@ -120,3 +120,15 @@ async def handle_set_game_data(p, index: OptionalConverter(int) = 0, *, game_dat
         )
 
         await data_insert.gino.scalar()
+
+
+@handlers.handler(XTPacket('zr', ext='z'), client=ClientType.Vanilla)
+@handlers.player_attribute(agent_status=True)
+async def handle_get_game_again(p):
+    games = list(range(1, 11))
+
+    games_string = f'{games.pop(random.randrange(len(games)))},' \
+                   f'{games.pop(random.randrange(len(games)))},' \
+                   f'{games.pop(random.randrange(len(games)))}'
+    await p.send_xt('zr', games_string, random.randint(1, 6))
+
