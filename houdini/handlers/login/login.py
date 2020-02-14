@@ -1,6 +1,7 @@
 from houdini import handlers
 from houdini.handlers import XMLPacket
 from houdini.handlers.login import get_server_presence
+from houdini.handlers.play.navigation import get_minutes_played_today
 from houdini.converters import Credentials
 from houdini.data.penguin import Penguin
 from houdini.data.moderator import Ban
@@ -78,7 +79,8 @@ async def handle_login(p, credentials: Credentials):
         if not data.timer_start < datetime.now().time() < data.timer_end:
             return await p.send_error_and_disconnect(911, data.timer_start, data.timer_end)
 
-        if await data.minutes_played_today >= data.timer_total.total_seconds() // 60:
+        minutes_played_today = await get_minutes_played_today(p)
+        if minutes_played_today >= data.timer_total.total_seconds() // 60:
             return await p.send_error_and_disconnect(910, data.timer_total)
 
     active_ban = await Ban.query.where((Ban.penguin_id == data.id) & (Ban.expires >= datetime.now())).gino.first()
@@ -105,8 +107,7 @@ async def handle_login(p, credentials: Credentials):
     world_populations, buddy_presence = await get_server_presence(p, data)
 
     if p.client_type == ClientType.Vanilla:
-        raw_login_data = '|'.join([str(data.id), str(data.id), data.username, login_key, str(data.approval),
-                                   str(data.rejection)])
+        raw_login_data = f'{data.id}|{data.id}|{data.username}|{login_key}|houdini|{data.approval}|{data.rejection}'
         if not data.active:
             await p.send_xt('l', raw_login_data, confirmation_hash, '', world_populations, buddy_presence,
                             data.email, int(preactivation_hours))
