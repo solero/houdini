@@ -1,7 +1,7 @@
 from houdini import handlers
-from houdini.handlers import XTPacket
+from houdini.handlers import XMLPacket, XTPacket, Priority
 from houdini.handlers.play.navigation import handle_join_server, handle_join_room
-from houdini.data.stamp import Stamp, CoverStamp, CoverItem, PenguinStampCollection
+from houdini.data.stamp import Stamp, CoverStamp, CoverItem, PenguinStampCollection, StampCollection
 from houdini.data.penguin import Penguin
 
 from aiocache import cached
@@ -47,8 +47,13 @@ async def get_player_stamps_string(p, player_id):
     return '|'.join(map(str, stamp_inventory.keys()))
 
 
-@handlers.handler(XTPacket('j', 'js'), after=handle_join_server)
-@handlers.player_attribute(joined_world=True)
+@handlers.boot
+async def stamps_load(server):
+    server.stamps = await StampCollection.get_collection()
+    server.logger.info(f'Loaded {len(server.stamps)} stamps')
+
+
+@handlers.handler(XMLPacket('login'), priority=Priority.Low)
 @handlers.allow_once
 async def load_stamp_inventory(p):
     p.stamps = await PenguinStampCollection.get_collection(p.id)

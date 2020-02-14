@@ -1,10 +1,11 @@
 from houdini import handlers
-from houdini.handlers import XTPacket
-from houdini.handlers.play.navigation import handle_join_room, handle_join_server
+from houdini.handlers import XMLPacket, XTPacket
+from houdini.handlers.play.navigation import handle_join_room
+from houdini.handlers import Priority
 
 from houdini.data.penguin import Penguin
 from houdini.data.buddy import BuddyList, BuddyRequest, BuddyListCollection, \
-    BuddyRequestCollection, CharacterBuddyCollection
+    BuddyRequestCollection, CharacterBuddyCollection, CharacterCollection
 from houdini.constants import ClientType
 
 
@@ -26,8 +27,13 @@ async def update_player_presence(p):
                 await penguin.send_xt('caon', p.character, p.server.config.id, p.room.id)
 
 
-@handlers.handler(XTPacket('j', 'js'), after=handle_join_server)
-@handlers.player_attribute(joined_world=True)
+@handlers.boot
+async def characters_load(server):
+    server.characters = await CharacterCollection.get_collection()
+    server.logger.info(f'Loaded {len(server.characters)} characters')
+
+
+@handlers.handler(XMLPacket('login'), priority=Priority.Low)
 @handlers.allow_once
 async def load_buddy_inventory(p):
     p.buddies = await BuddyListCollection.get_collection(p.id)

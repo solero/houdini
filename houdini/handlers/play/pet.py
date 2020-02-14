@@ -1,9 +1,11 @@
 from houdini import handlers
-from houdini.handlers import XTPacket
-from houdini.handlers.play.navigation import handle_join_server
+from houdini.handlers import XMLPacket, XTPacket, Priority
 from houdini.constants import ClientType, StatusField
 
-from houdini.data.pet import PenguinPuffleCollection, PenguinPuffleItemCollection, PenguinPuffle
+from houdini.data.pet import PenguinPuffleCollection, PenguinPuffleItemCollection, PenguinPuffle, \
+    PuffleCollection, PuffleItemCollection, \
+    PuffleTreasureFurniture, PuffleTreasureItem, \
+    PuffleTreasurePuffleItem
 from houdini.data.room import PenguinBackyardRoom, PenguinIglooRoom
 from houdini.data.mail import PenguinPostcard
 
@@ -223,7 +225,19 @@ def check_name(p, puffle_name):
     return characters_ok and length_ok and clean
 
 
-@handlers.handler(XTPacket('j', 'js'), before=handle_join_server, pre_login=True)
+@handlers.boot
+async def puffles_load(server):
+    server.puffles = await PuffleCollection.get_collection()
+    server.puffle_items = await PuffleItemCollection.get_collection()
+    server.logger.info(f'Loaded {len(server.puffle_items)} puffle care items')
+    server.logger.info(f'Loaded {len(server.puffles)} puffles')
+
+    server.puffle_food_treasure = await PuffleTreasurePuffleItem.query.gino.all()
+    server.puffle_furniture_treasure = await PuffleTreasureFurniture.query.gino.all()
+    server.puffle_clothing_treasure = await PuffleTreasureItem.query.gino.all()
+
+
+@handlers.handler(XMLPacket('login'), priority=Priority.Low)
 @handlers.allow_once
 async def load_pet_inventory(p):
     p.puffles = await PenguinPuffleCollection.get_collection(p.id)

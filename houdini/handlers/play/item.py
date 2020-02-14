@@ -1,7 +1,6 @@
 from houdini import handlers
-from houdini.handlers import XTPacket
-from houdini.handlers.play.navigation import handle_join_server
-from houdini.data.item import Item, PenguinItemCollection
+from houdini.handlers import XMLPacket, XTPacket, Priority
+from houdini.data.item import Item, ItemCollection, PenguinItemCollection
 from houdini.data.permission import PenguinPermissionCollection
 
 import time
@@ -45,8 +44,11 @@ async def get_awards_string(p, player_id):
     return '%'.join(awards)
 
 
-@handlers.handler(XTPacket('j', 'js'), after=handle_join_server)
-@handlers.player_attribute(joined_world=True)
+@handlers.boot
+async def items_load(server):
+    server.items = await ItemCollection.get_collection()
+    server.logger.info(f'Loaded {len(server.items)} clothing items')
+
 @handlers.allow_once
 async def load_inventory(p):
     p.inventory = await PenguinItemCollection.get_collection(p.id)

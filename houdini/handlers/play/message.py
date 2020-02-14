@@ -2,6 +2,14 @@ from houdini import handlers
 from houdini.handlers import XTPacket
 from houdini.commands import invoke_command_string, has_command_prefix
 
+from houdini.data.moderator import ChatFilterRuleCollection
+
+
+@handlers.boot
+async def filter_load(server):
+    server.chat_filter_words = await ChatFilterRuleCollection.get_collection()
+    server.logger.info(f'Loaded {len(server.chat_filter_words)} filter words')
+
 
 @handlers.handler(XTPacket('m', 'sm'))
 @handlers.cooldown(.5)

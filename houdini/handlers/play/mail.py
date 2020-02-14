@@ -4,9 +4,15 @@ from houdini.handlers import XTPacket
 from houdini.data import db
 from houdini.data.penguin import Penguin
 from houdini.data.buddy import IgnoreList
-from houdini.data.mail import PenguinPostcard
+from houdini.data.mail import PenguinPostcard, PostcardCollection
 
 import time
+
+
+@handlers.boot
+async def postcards_load(server):
+    server.postcards = await PostcardCollection.get_collection()
+    server.logger.info(f'Loaded {len(server.postcards)} postcards')
 
 
 @handlers.handler(XTPacket('l', 'mst'))

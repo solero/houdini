@@ -4,7 +4,7 @@ import time
 from datetime import datetime, timedelta
 
 from houdini import handlers
-from houdini.handlers import XTPacket
+from houdini.handlers import XMLPacket, XTPacket, Priority
 from houdini.converters import SeparatorConverter
 from houdini.constants import ClientType, StatusField
 from houdini.handlers.play.navigation import handle_join_server
@@ -13,6 +13,8 @@ from houdini.data import db
 from houdini.data.penguin import Penguin
 from houdini.data.room import PenguinIglooRoom
 from houdini.data.igloo import IglooFurniture, IglooLike, Igloo, Furniture, Flooring, Location, \
+    IglooCollection, FurnitureCollection, \
+    FlooringCollection, LocationCollection,\
     PenguinIglooCollection, PenguinFurnitureCollection, \
     PenguinFlooringCollection, PenguinLocationCollection
 from houdini.data.room import PenguinIglooRoomCollection
@@ -141,8 +143,18 @@ async def save_igloo_furniture(p, furniture_list=None):
         await IglooFurniture.insert().values(furniture).gino.status()
 
 
-@handlers.handler(XTPacket('j', 'js'), after=handle_join_server)
-@handlers.player_attribute(joined_world=True)
+@handlers.boot
+async def igloos_load(server):
+    server.igloos = await IglooCollection.get_collection()
+    server.furniture = await FurnitureCollection.get_collection()
+    server.locations = await LocationCollection.get_collection()
+    server.flooring = await FlooringCollection.get_collection()
+
+    server.logger.info(f'Loaded {len(server.igloos)} igloos')
+    server.logger.info(f'Loaded {len(server.furniture)} furniture items')
+    server.logger.info(f'Loaded {len(server.locations)} igloo locations')
+    server.logger.info(f'Loaded {len(server.flooring)} igloo flooring')
+
 @handlers.allow_once
 async def load_igloo_inventory(p):
     p.igloos = await PenguinIglooCollection.get_collection(p.id)

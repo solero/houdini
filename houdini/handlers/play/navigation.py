@@ -2,13 +2,19 @@ from houdini import handlers
 from houdini.handlers import XTPacket
 from houdini.data.room import Room
 from houdini.data.penguin import Login
-from houdini.data.penguin import Penguin
-from houdini.data.room import PenguinIglooRoom, PenguinBackyardRoom
+from houdini.data.room import PenguinIglooRoom, PenguinBackyardRoom, RoomCollection
 from houdini.constants import ClientType, StatusField
 
 import random
 import time
 from datetime import datetime
+
+@handlers.boot
+async def rooms_load(server):
+    server.rooms = await RoomCollection.get_collection()
+    await server.rooms.setup_tables()
+    await server.rooms.setup_waddles()
+    server.logger.info(f'Loaded {len(server.rooms)} rooms ({len(server.rooms.spawn_rooms)} spawn)')
 
 
 @handlers.handler(XTPacket('j', 'js'), pre_login=True)

@@ -181,48 +181,7 @@ class Houdini:
         await self.dummy_event_listeners.setup(houdini.handlers)
         await self.dummy_event_listeners.fire('boot', self)
 
-        self.igloos = await IglooCollection.get_collection()
-        self.logger.info(f'Loaded {len(self.igloos)} igloos')
-
-        self.furniture = await FurnitureCollection.get_collection()
-        self.logger.info(f'Loaded {len(self.furniture)} furniture items')
-
-        self.locations = await LocationCollection.get_collection()
-        self.logger.info(f'Loaded {len(self.locations)} igloo locations')
-
-        self.flooring = await FlooringCollection.get_collection()
-        self.logger.info(f'Loaded {len(self.flooring)} igloo flooring')
-
-        self.rooms = await RoomCollection.get_collection()
-        self.spawn_rooms = self.rooms.spawn_rooms
-        await self.rooms.setup_tables()
-        await self.rooms.setup_waddles()
-        self.logger.info(f'Loaded {len(self.rooms)} rooms ({len(self.spawn_rooms)} spawn)')
-
-        self.postcards = await PostcardCollection.get_collection()
-        self.logger.info(f'Loaded {len(self.postcards)} postcards')
-
-        self.stamps = await StampCollection.get_collection()
-        self.logger.info(f'Loaded {len(self.stamps)} stamps')
-
-        self.cards = await CardCollection.get_collection()
-        self.logger.info(f'Loaded {len(self.cards)} ninja cards')
-
-        self.puffles = await PuffleCollection.get_collection()
-        self.logger.info(f'Loaded {len(self.puffles)} puffles')
-
-        self.puffle_items = await PuffleItemCollection.get_collection()
-        self.logger.info(f'Loaded {len(self.puffle_items)} puffle care items')
-
-        self.puffle_food_treasure = await PuffleTreasurePuffleItem.query.gino.all()
-        self.puffle_furniture_treasure = await PuffleTreasureFurniture.query.gino.all()
-        self.puffle_clothing_treasure = await PuffleTreasureItem.query.gino.all()
-
-        self.characters = await CharacterCollection.get_collection()
-        self.logger.info(f'Loaded {len(self.characters)} characters')
-
         self.permissions = await PermissionCollection.get_collection()
-        self.chat_filter_words = await ChatFilterRuleCollection.get_collection()
 
         self.logger.info(f'Multi-client support is '
                          f'{"enabled" if not self.config.single_client_mode else "disabled"}')

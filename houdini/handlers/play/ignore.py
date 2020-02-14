@@ -1,13 +1,11 @@
 from houdini import handlers
-from houdini.handlers import XTPacket
-from houdini.handlers.play.navigation import handle_join_server
+from houdini.handlers import XMLPacket, XTPacket, Priority
 
 from houdini.data.penguin import Penguin
 from houdini.data.buddy import IgnoreList, IgnoreListCollection
 
 
-@handlers.handler(XTPacket('j', 'js'), after=handle_join_server)
-@handlers.player_attribute(joined_world=True)
+@handlers.handler(XMLPacket('login'), priority=Priority.Low)
 @handlers.allow_once
 async def load_ignore_inventory(p):
     p.ignore = await IgnoreListCollection.get_collection(p.id)
