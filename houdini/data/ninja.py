@@ -22,6 +22,7 @@ class PenguinCard(db.Model):
     card_id = db.Column(db.ForeignKey('card.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
                         nullable=False)
     quantity = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
+    member_quantity = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
 
 
 class CardCollection(AbstractDataCollection):

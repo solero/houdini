@@ -833,6 +833,7 @@ CREATE TABLE penguin_card (
   penguin_id INT NOT NULL,
   card_id INT NOT NULL,
   quantity SMALLINT NOT NULL DEFAULT 1,
+  member_quantity SMALLINT NOT NULL DEFAULT 0,
   PRIMARY KEY (penguin_id, card_id),
   CONSTRAINT penguin_card_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT penguin_card_ibfk_2 FOREIGN KEY (card_id) REFERENCES card (id) ON DELETE RESTRICT ON UPDATE CASCADE
@@ -845,6 +846,7 @@ COMMENT ON TABLE penguin_card IS 'Penguin Card Jitsu decks';
 COMMENT ON COLUMN penguin_card.penguin_id IS 'Owner penguin ID';
 COMMENT ON COLUMN penguin_card.card_id IS 'Card type ID';
 COMMENT ON COLUMN penguin_card.quantity IS 'Quantity owned';
+COMMENT ON COLUMN penguin_card.member_quantity IS 'Quantity owned as member';
 
 DROP TABLE IF EXISTS penguin_furniture;
 CREATE TABLE penguin_furniture (

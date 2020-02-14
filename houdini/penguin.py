@@ -175,12 +175,13 @@ class Penguin(Spheniscidae, penguin.Penguin):
 
         return True
 
-    async def add_card(self, card, quantity=1):
+    async def add_card(self, card, quantity=1, member_quantity=0):
         if card.id in self.cards:
             penguin_card = self.cards[card.id]
 
             await penguin_card.update(
-                quantity=penguin_card.quantity + quantity).apply()
+                quantity=penguin_card.quantity + quantity,
+                member_quantity=member_quantity).apply()
         else:
             await self.cards.insert(card_id=card.id)
 
