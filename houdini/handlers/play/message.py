@@ -1,5 +1,7 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
+from houdini.handlers.play.moderation import moderator_ban
+
 from houdini.commands import invoke_command_string, has_command_prefix
 
 from houdini.data.moderator import ChatFilterRuleCollection
@@ -23,15 +25,16 @@ async def handle_send_message(p, penguin_id: int, message: str):
                 await penguin.send_xt("mm", message, penguin_id)
         return
 
-    tokens = message.lower()
-    for word, consequence in p.server.chat_filter_words.items():
-        if word in tokens:
-            if consequence.ban:
-                return
-            elif consequence.warn:
-                return
-            elif consequence.filter:
-                return
+    tokens = message.lower().split()
+
+    word, consequence = next(((w, c) for w, c in p.server.chat_filter_words.items() if w in tokens))
+
+    if consequence.ban:
+        return await moderator_ban(p, p.id, comment='Inappropriate language', message=message)
+    elif consequence.warn:
+        return
+    elif consequence.filter:
+        return
 
     if has_command_prefix(p.server.config.command_prefix, message):
         await invoke_command_string(p.server.commands, p, message)
