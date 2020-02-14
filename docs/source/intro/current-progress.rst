@@ -214,7 +214,7 @@ Party cookies        N/A      Yes
 -------------------- -------- ---------
 **Avatar**
 -------------------- ------------------
-Transformations      N/A      No
+Transformations      N/A      Yes
 -------------------- -------- ---------
 **Redemption**
 -------------------- ------------------
@@ -234,13 +234,13 @@ Treasure Hunt\*      Yes      Yes
 -------------------- -------- ---------
 **Waddle Games**
 -------------------- ------------------
-Sled racing\*        No       No
+Sled racing\*        Yes      Yes
 -------------------- -------- ---------
-Dance competitions\* No       No
+Dance competitions\* Yes      Yes
 -------------------- -------- ---------
 **Ninja**
 -------------------- ------------------
-Ninja Progress       No       No
+Ninja Progress       Yes      Yes
 -------------------- -------- ---------
 Purchase cards       N/A      No
 -------------------- -------- ---------
