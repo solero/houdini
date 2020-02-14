@@ -414,8 +414,9 @@ DROP TABLE IF EXISTS dance_song;
 CREATE TABLE dance_song (
   id INT NOT NULL,
   name VARCHAR (30) NOT NULL,
-  song_length INT NOT NULL DEFAULT 100000,
-  millis_per_bar INT NOT NULL DEFAULT 2000,
+  song_length_millis INT NOT NULL,
+  song_length INT NOT NULL,
+  millis_per_bar INT NOT NULL,
   PRIMARY KEY (id)
 );
 
@@ -423,7 +424,8 @@ COMMENT ON TABLE dance_song IS 'Dance contest multiplayer tracks';
 
 COMMENT ON COLUMN dance_song.id IS 'Unique song ID';
 COMMENT ON COLUMN dance_song.name IS 'Name of song';
-COMMENT ON COLUMN dance_song.song_length IS 'Length of song in milliseconds';
+COMMENT ON COLUMN dance_song.song_length_millis IS 'Length of song in milliseconds';
+COMMENT ON COLUMN dance_song.song_length IS 'Length of song in beats';
 COMMENT ON COLUMN dance_song.millis_per_bar IS 'Milliseconds per song note';
 
 CREATE TABLE room_waddle (
@@ -11425,13 +11427,13 @@ INSERT INTO redemption_book_word (book_id, page, line, word_number, answer) VALU
  (26, 78, 11, 3, 'sunshine'),
  (26, 78, 8, 4, 'race');
  
-INSERT INTO dance_song (id, name, song_length, millis_per_bar) VALUES
- (0, 'Penguin Band Boogie', 123000, 2000),
- (1, 'The Generic Way', 117000, 2070),
- (2, 'Epic Win', 124000, 2666),
- (3, 'Lets Bounce', 130000, 1714),
- (4, 'Go West', 139000, 2181),
- (5, 'Patrick''s Jig', 118000, 2790);
+INSERT INTO dance_song (id, name, song_length_millis, song_length, millis_per_bar) VALUES
+ (0, 'Penguin Band Boogie', 123000, 241, 2000),
+ (1, 'The Generic Way', 117000, 221, 2070),
+ (2, 'Epic Win', 124000, 176, 2666),
+ (3, 'Lets Bounce', 130000, 288, 1714),
+ (4, 'Go West', 139000, 248, 2181),
+ (5, 'Patrick''s Jig', 118000, 168, 2790);
  
 INSERT INTO character (id, name, gift_id, stamp_id) VALUES
  (1, 'Rockhopper', 9215, 7),

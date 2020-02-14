@@ -1,4 +1,4 @@
-from houdini.data import db
+from houdini.data import db, AbstractDataCollection
 
 
 class DanceSong(db.Model):
@@ -6,5 +6,12 @@ class DanceSong(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), nullable=False)
-    song_length = db.Column(db.Integer, nullable=False, server_default=db.text("100000"))
-    millis_per_bar = db.Column(db.Integer, nullable=False, server_default=db.text("2000"))
+    song_length_millis = db.Column(db.Integer, nullable=False)
+    song_length = db.Column(db.Integer, nullable=False)
+    millis_per_bar = db.Column(db.Integer, nullable=False)
+
+
+class DanceSongCollection(AbstractDataCollection):
+    __model__ = DanceSong
+    __indexby__ = 'id'
+    __filterby__ = 'id'
