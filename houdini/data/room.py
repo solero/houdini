@@ -116,7 +116,14 @@ class Room(db.Model, RoomMixin):
         RoomMixin.__init__(self, *args, **kwargs)
         super().__init__(*args, **kwargs)
 
+        self.blackhole_penguins = {}
+
     async def add_penguin(self, p):
+        if self.blackhole and p.is_vanilla_client:
+            self.blackhole_penguins[p.id] = p.room
+            p.room = self
+            return await p.send_xt('jnbhg', self.id)
+
         await RoomMixin.add_penguin(self, p)
 
         if self.game:
@@ -126,6 +133,13 @@ class Room(db.Model, RoomMixin):
         else:
             await p.send_xt('jr', self.id, await self.get_string())
             await self.send_xt('ap', await p.string)
+
+    async def remove_penguin(self, p):
+        await RoomMixin.remove_penguin(self, p)
+
+    async def leave_blackhole(self, p):
+        if p.id in self.blackhole_penguins and p.is_vanilla_client:
+            p.room = self.blackhole_penguins.pop(p.id)
 
 
 class PenguinIglooRoom(db.Model, RoomMixin):
