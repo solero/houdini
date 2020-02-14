@@ -373,6 +373,7 @@ async def handle_add_igloo_map(p):
 
 
 @handlers.disconnected
+@handlers.player_attribute(joined_world=True)
 async def handle_remove_igloo_map(p):
     if p.id in p.server.open_igloos_by_penguin_id:
         del p.server.open_igloos_by_penguin_id[p.id]
