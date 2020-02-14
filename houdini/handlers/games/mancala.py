@@ -1,7 +1,7 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
 from houdini.handlers.games.table import table_handler
-from houdini.data.room import MancalaLogic
+from houdini.games.mancala import MancalaLogic
 
 
 @handlers.handler(XTPacket('gz', ext='z'))
@@ -39,7 +39,7 @@ async def handle_send_move(p, hollow: int):
             if not p.table.logic.is_valid_move(hollow):
                 return
 
-            move_result = p.table.logic.place_stone(hollow)
+            move_result = p.table.logic.make_move(hollow)
             await p.table.send_xt('zm', seat_id, hollow, move_result)
             opponent = p.table.penguins[1 if p.table.logic.current_player == 1 else 0]
 

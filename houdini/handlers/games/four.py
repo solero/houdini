@@ -1,7 +1,7 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
 from houdini.handlers.games.table import table_handler
-from houdini.data.room import ConnectFourLogic
+from houdini.games.four import ConnectFourLogic
 
 
 @handlers.handler(XTPacket('gz', ext='z'))
@@ -37,7 +37,7 @@ async def handle_send_move(p, col: int, row: int):
             if not p.table.logic.is_valid_move(col, row):
                 return
             await p.table.send_xt('zm', p.table.logic.current_player - 1, col, row)
-            p.table.logic.place_chip(col, row)
+            p.table.logic.make_move(col, row)
             opponent = p.table.penguins[1 if p.table.logic.current_player == 1 else 0]
             if p.table.logic.is_position_win(col, row):
                 await p.add_coins(10)

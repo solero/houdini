@@ -1,7 +1,7 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
 from houdini.handlers.games.table import table_handler
-from houdini.data.room import TreasureHuntLogic
+from houdini.games.treasure import TreasureHuntLogic
 
 
 @handlers.handler(XTPacket('gz', ext='z'))
