@@ -1,7 +1,6 @@
 from houdini import handlers
 from houdini.converters import SeparatorConverter
-from houdini.handlers import XTPacket
-from houdini.handlers.play.navigation import handle_join_server
+from houdini.handlers import XTPacket, XMLPacket, Priority
 from houdini.data import db
 from houdini.data.penguin import Penguin, PenguinMembership
 from houdini.data.mail import PenguinPostcard
@@ -86,14 +85,15 @@ MemberWarningPostcardsLegacy = [163]
 MemberExpiredPostcard = 124
 MemberStartPostcardVanilla = 121
 MemberStartPostcardLegacy = 164
+FullBadgeAge = 25 * 30
 
 
-@handlers.handler(XTPacket('j', 'js'), pre_login=True, before=handle_join_server)
+@handlers.handler(XMLPacket('login'), priority=Priority.Low)
 @handlers.allow_once
-async def handle_setup_membership(p):
+async def setup_membership(p):
     if not p.server.config.expire_membership or p.moderator or p.character:
         p.is_member = True
-        p.membership_days_total = p.age
+        p.membership_days_total = FullBadgeAge if p.moderator or p.character else p.age
         return
 
     membership_history = PenguinMembership.query.where(PenguinMembership.penguin_id == p.id)
