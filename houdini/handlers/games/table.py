@@ -19,29 +19,33 @@ async def handle_get_waddle_population(p):
 
 @handlers.handler(XTPacket('a', 'jt'))
 async def handle_join_table(p, table_id: int):
-    table = p.room.tables[table_id]
-    await table.add(p)
+    try:
+        table = p.room.tables[table_id]
+        await table.add_penguin(p)
+    except KeyError:
+        p.logger.warn(f'{p.username} tried to join a table that doesn\'t exist')
 
 
 @handlers.handler(XTPacket('a', 'lt'))
 async def handle_leave_table(p):
-    if p.table is not None:
-        await p.table.remove(p)
+    if p.table:
+        await p.table.remove_penguin(p)
 
 
 @handlers.handler(XTPacket('j', 'jr'), after=handle_join_room)
 async def handle_join_room_table(p):
-    if p.table is not None:
-        await p.table.remove(p)
+    if p.table:
+        await p.table.remove_penguin(p)
 
 
 @handlers.handler(XTPacket('j', 'jp'), after=handle_join_player_room)
 async def handle_join_player_room_table(p):
-    if p.table is not None:
-        await p.table.remove(p)
+    if p.table:
+        await p.table.remove_penguin(p)
 
 
 @handlers.disconnected
+@handlers.player_attribute(joined_world=True)
 async def handle_disconnect_table(p):
-    if p.table is not None:
-        await p.table.remove(p)
+    if p.table:
+        await p.table.remove_penguin(p)

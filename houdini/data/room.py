@@ -208,23 +208,30 @@ class RoomTable(db.Model):
         self.room = None
         self.logic = None
 
-    async def add(self, p):
+    async def add_penguin(self, p):
         self.penguins.append(p)
 
         seat_id = len(self.penguins) - 1
 
-        await p.send_xt("jt", self.id, seat_id + 1)
-        await p.room.send_xt("ut", self.id, len(self.penguins))
+        await p.send_xt('jt', self.id, seat_id + 1)
+        await p.room.send_xt('ut', self.id, len(self.penguins))
         p.table = self
 
         return seat_id
 
-    async def remove(self, p):
-        self.penguins.remove(p)
+    async def remove_penguin(self, p):
+        seat_id = self.get_seat_id(p)
+        is_player = seat_id < 2
+        game_ready = len(self.penguins) > 1
+        if is_player and game_ready:
+            await self.send_xt('cz', p.safe_name)
+            await self.reset()
+        else:
+            self.penguins.remove(p)
 
-        await p.send_xt("lt")
-        await self.room.send_xt("ut", self.id, len(self.penguins))
-        p.table = None
+            await p.send_xt('lt')
+            await self.room.send_xt('ut', self.id, len(self.penguins))
+            p.table = None
 
     async def reset(self):
         for penguin in self.penguins:
@@ -232,7 +239,7 @@ class RoomTable(db.Model):
 
         self.logic = type(self.logic)()
         self.penguins = []
-        await self.room.send_xt("ut", self.id, 0)
+        await self.room.send_xt('ut', self.id, 0)
 
     def get_seat_id(self, p):
         return self.penguins.index(p)
@@ -242,11 +249,11 @@ class RoomTable(db.Model):
             return str()
         elif len(self.penguins) == 1:
             player_one, = self.penguins
-            return "%".join([player_one.safe_name, str(), self.logic.get_string()])
+            return '%'.join([player_one.safe_name, str(), self.logic.get_string()])
         player_one, player_two = self.penguins[:2]
         if len(self.penguins) == 2:
-            return "%".join([player_one.safe_name, player_two.safe_name, self.logic.get_string()])
-        return "%".join([player_one.safe_name, player_two.safe_name, self.logic.get_string(), "1"])
+            return '%'.join([player_one.safe_name, player_two.safe_name, self.logic.get_string()])
+        return '%'.join([player_one.safe_name, player_two.safe_name, self.logic.get_string(), '1'])
 
     async def send_xt(self, *data):
         for penguin in self.penguins:
@@ -263,7 +270,7 @@ class RoomWaddle(db.Model):
     game = db.Column(db.String(20), nullable=False)
 
     GameClassMapping = {
-
+        'sled': SledRacingLogic
     }
 
     def __init__(self, *args, **kwargs):
@@ -271,7 +278,7 @@ class RoomWaddle(db.Model):
 
         self.penguins = []
 
-    async def add(self, p):
+    async def add_penguin(self, p):
         if not self.penguins:
             self.penguins = [None] * self.seats
 
@@ -283,9 +290,12 @@ class RoomWaddle(db.Model):
         p.waddle = self
 
         if self.penguins.count(None) == 0:
+            game_instance = RoomWaddle.GameClassMapping[self.game](self)
+            await game_instance.start()
+
             await self.reset()
 
-    async def remove(self, p):
+    async def remove_penguin(self, p):
         seat_id = self.get_seat_id(p)
         self.penguins[seat_id] = None
         await p.room.send_xt("uw", self.id, seat_id)

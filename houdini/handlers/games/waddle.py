@@ -12,12 +12,31 @@ async def handle_get_waddle_population(p):
 async def handle_join_waddle(p, waddle_id: int):
     try:
         waddle = p.room.waddles[waddle_id]
-        await waddle.add(p)
+        await waddle.add_penguin(p)
     except KeyError:
-        pass
+        p.logger.warn(f'{p.username} tried to join a waddle that doesn\'t exist')
 
 
 @handlers.handler(XTPacket('lw', ext='z'))
 async def handle_leave_waddle(p):
     if p.waddle:
-        await p.waddle.remove(p)
+        await p.waddle.remove_penguin(p)
+
+
+@handlers.handler(XTPacket('j', 'jr'), after=handle_join_room)
+async def handle_join_room_waddle(p):
+    if p.waddle:
+        await p.waddle.remove_penguin(p)
+
+
+@handlers.handler(XTPacket('j', 'jp'), after=handle_join_player_room)
+async def handle_join_player_room_waddle(p):
+    if p.waddle:
+        await p.waddle.remove_penguin(p)
+
+
+@handlers.disconnected
+@handlers.player_attribute(joined_world=True)
+async def handle_disconnect_waddle(p):
+    if p.waddle:
+        await p.waddle.remove_penguin(p)
