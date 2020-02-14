@@ -1058,7 +1058,7 @@ CREATE TABLE login (
   id SERIAL,
   penguin_id INT NOT NULL,
   date TIMESTAMP NOT NULL,
-  ip_address CHAR(255) NOT NULL,
+  ip_hash CHAR(128) NOT NULL,
   minutes_played INT NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   CONSTRAINT login_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE
@@ -1071,7 +1071,7 @@ COMMENT ON TABLE login IS 'Penguin login records';
 COMMENT ON COLUMN login.id IS 'Unique login ID';
 COMMENT ON COLUMN login.penguin_id IS 'Login penguin ID';
 COMMENT ON COLUMN login.date IS 'Login date';
-COMMENT ON COLUMN login.ip_address IS 'Connection IP address';
+COMMENT ON COLUMN login.ip_hash IS 'Connection IP address';
 COMMENT ON COLUMN login.minutes_played IS 'Minutes played for session';
 
 DROP TABLE IF EXISTS penguin_postcard;

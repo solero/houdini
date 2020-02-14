@@ -9,6 +9,7 @@ from houdini.constants import ClientType, StatusField
 import random
 import time
 import pytz
+import hashlib
 from datetime import date, datetime
 
 
@@ -139,9 +140,12 @@ async def handle_disconnect_room(p):
     await p.room.remove_penguin(p)
 
     minutes_played = (datetime.now() - p.login_timestamp).total_seconds() / 60.0
+
+    ip = p.peer_name[0] + p.server.config.auth_key
+    hashed_ip = hashlib.sha3_512(ip.encode()).hexdigest()
     await Login.create(penguin_id=p.id,
                        date=p.login_timestamp,
-                       ip_address=p.peer_name[0],
+                       ip_hash=hashed_ip,
                        minutes_played=minutes_played)
 
     await p.update(minutes_played=p.minutes_played + minutes_played).apply()
