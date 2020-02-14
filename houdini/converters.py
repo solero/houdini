@@ -58,8 +58,7 @@ class _ArgumentDeserializer:
                         await self.cooldown.callback(self.instance, p)
                     else:
                         await self.cooldown.callback(p)
-                else:
-                    raise CooldownError(f'{p} invoked listener during cooldown')
+                raise CooldownError(f'{p} invoked listener during cooldown')
 
     def _check_list(self, p):
         if not self._can_run(p):
