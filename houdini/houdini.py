@@ -13,18 +13,7 @@ import aioredis
 from aiocache import SimpleMemoryCache, caches
 
 from houdini.data import db
-from houdini.data.item import ItemCollection
-from houdini.data.igloo import IglooCollection, FurnitureCollection, \
-    LocationCollection, FlooringCollection
-from houdini.data.room import RoomCollection
-from houdini.data.stamp import StampCollection
-from houdini.data.ninja import CardCollection
-from houdini.data.mail import PostcardCollection
-from houdini.data.pet import PuffleCollection, PuffleItemCollection, PuffleTreasurePuffleItem, \
-    PuffleTreasureFurniture, PuffleTreasureItem
 from houdini.data.permission import PermissionCollection
-from houdini.data.buddy import CharacterCollection
-from houdini.data.moderator import ChatFilterRuleCollection
 
 try:
     import uvloop
@@ -43,6 +32,7 @@ from houdini.handlers.play.player import server_heartbeat, server_egg_timer
 from houdini.handlers.play.pet import decrease_stats
 
 from houdini.handlers.play.music import SoundStudio
+from houdini.handlers.games.dance import DanceFloor
 
 
 class Houdini:
@@ -92,14 +82,14 @@ class Houdini:
         self.puffle_furniture_treasure = None
         self.puffle_clothing_treasure = None
         self.characters = None
-
-        self.spawn_rooms = None
+        self.dance_songs = None
 
         self.heartbeat = None
         self.egg_timer = None
         self.puffle_killer = None
 
         self.music = None
+        self.dance_floor = None
 
         self.puck = (0, 0)
 
