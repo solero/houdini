@@ -59,7 +59,7 @@ async def handle_join_server(p, penguin_id: int, login_key: str):
                     p.membership_days_remain, server_time_offset, int(p.opened_playercard),
                     p.map_category, p.status_field)
 
-    spawn = random.choice(p.server.spawn_rooms)
+    spawn = random.choice(p.server.rooms.spawn_rooms)
     await p.join_room(spawn)
 
     p.server.penguins_by_id[p.id] = p
@@ -76,8 +76,12 @@ async def handle_join_server(p, penguin_id: int, login_key: str):
     await p.server.redis.hincrby('houdini.population', p.server.config.id, 1)
 
 
+async def room_cooling(p):
+    return await p.send_error(210)
+
+
 @handlers.handler(XTPacket('j', 'jr'))
-@handlers.cooldown(1)
+@handlers.cooldown(1, callback=room_cooling)
 async def handle_join_room(p, room: Room, x: int, y: int):
     if p.is_legacy_client and room.tables:
         await p.send_xt('jr', room.id)
@@ -107,7 +111,7 @@ async def create_temporary_room(p, penguin_id):
 
 
 @handlers.handler(XTPacket('j', 'jp'), client=ClientType.Vanilla)
-@handlers.cooldown(1)
+@handlers.cooldown(1, callback=room_cooling)
 async def handle_join_player_room(p, penguin_id: int, room_type: str):
     if room_type == 'backyard' and p.room.igloo and p.room.penguin_id == p.id:
         backyard = PenguinBackyardRoom()
@@ -137,6 +141,8 @@ async def handle_refresh_room(p):
 @handlers.disconnected
 @handlers.player_attribute(joined_world=True)
 async def handle_disconnect_room(p):
+    if p.room.blackhole:
+        await p.room.leave_blackhole(p)
     await p.room.remove_penguin(p)
 
     minutes_played = (datetime.now() - p.login_timestamp).total_seconds() / 60.0
