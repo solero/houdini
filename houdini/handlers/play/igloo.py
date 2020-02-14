@@ -380,7 +380,7 @@ async def handle_remove_igloo_map(p):
 
 @handlers.handler(XTPacket('g', 'pio'), client=ClientType.Vanilla)
 async def handle_is_player_igloo_open(p, penguin_id: int):
-    await p.send_xt('pio', int(penguin_id in p.server.open_igloos_by_penguin_id))
+    await p.send_xt('pio', int(penguin_id in p.server.open_igloos_by_penguin_id or p.moderator))
 
 
 @handlers.handler(XTPacket('g', 'al'), client=ClientType.Vanilla)
