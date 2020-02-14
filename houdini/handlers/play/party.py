@@ -13,7 +13,6 @@ DefaultPartyCookie = {
 
 
 @handlers.handler(XTPacket('party', 'partycookie'))
-@handlers.allow_once
 async def handle_party_cookie(p):
     cookie = await p.server.redis.hget('partycookie', p.id)
     if cookie is None:
