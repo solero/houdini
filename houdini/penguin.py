@@ -8,11 +8,29 @@ from houdini.handlers.play.pet import get_my_player_walking_puffle
 
 class Penguin(Spheniscidae, penguin.Penguin):
 
-    __slots__ = ['x', 'y', 'frame', 'toy', 'room', 'waddle', 'table',
-                 'data', 'muted', 'login_key', 'is_member', 'membership_days_total',
-                 'membership_days_remain', 'avatar', 'walking_puffle', 'permissions',
-                 'active_quests', 'legacy_buddy_requests', 'heartbeat', 'login_timestamp',
-                 'egg_timer_minutes']
+    __slots__ = (
+        'x', 'y',
+        'frame',
+        'toy',
+        'room',
+        'waddle',
+        'table',
+        'muted',
+
+        'login_key',
+
+        'is_member',
+        'membership_days_total',
+        'membership_days_remain',
+
+        'avatar',
+        'active_quests',
+        'legacy_buddy_requests',
+
+        'heartbeat',
+        'login_timestamp',
+        'egg_timer_minutes'
+    )
 
     def __init__(self, *args):
         super().__init__(*args)
