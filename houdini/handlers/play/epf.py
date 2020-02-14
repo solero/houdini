@@ -131,3 +131,13 @@ async def handle_get_com_messages(p):
         await p.send_xt('epfgm', int(bool(unread_com_message)), com_messages)
     else:
         await p.send_xt('epfgm', int(bool(unread_com_message)))
+
+
+@handlers.handler(XTPacket('f', 'epfgrantreward'))
+@handlers.cooldown(60)
+@handlers.player_attribute(agent_status=False)
+async def handle_epf_grant_reward(p, medals: int):
+    medals = min(45, medals)
+    await p.update(career_medals=p.career_medals + medals,
+                   agent_medals=p.agent_medals + medals).apply()
+    await p.send_xt('epfgr', p.career_medals, p.agent_medals)
