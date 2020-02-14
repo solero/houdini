@@ -132,3 +132,11 @@ async def handle_get_game_again(p):
                    f'{games.pop(random.randrange(len(games)))}'
     await p.send_xt('zr', games_string, random.randint(1, 6))
 
+
+@handlers.handler(XTPacket('zc', ext='z'), client=ClientType.Vanilla)
+@handlers.player_attribute(agent_status=True)
+@handlers.cooldown(5)
+async def handle_game_complete(p, medals: int):
+    medals = min(6, medals)
+    await p.update(career_medals=p.career_medals + medals,
+                   agent_medals=p.agent_medals + medals).apply()
