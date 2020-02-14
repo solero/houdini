@@ -155,6 +155,13 @@ async def igloos_load(server):
     server.logger.info(f'Loaded {len(server.locations)} igloo locations')
     server.logger.info(f'Loaded {len(server.flooring)} igloo flooring')
 
+
+DefaultFurnitureItems = [787, 788, 790, 792, 793]
+DefaultIglooId = 1
+DefaultLocationId = 1
+
+
+@handlers.handler(XMLPacket('login'), priority=Priority.Low)
 @handlers.allow_once
 async def load_igloo_inventory(p):
     p.igloos = await PenguinIglooCollection.get_collection(p.id)
@@ -162,6 +169,16 @@ async def load_igloo_inventory(p):
     p.furniture = await PenguinFurnitureCollection.get_collection(p.id)
     p.flooring = await PenguinFlooringCollection.get_collection(p.id)
     p.locations = await PenguinLocationCollection.get_collection(p.id)
+
+    if DefaultIglooId not in p.igloos:
+        await p.igloos.insert(igloo_id=DefaultIglooId)
+
+    if DefaultLocationId not in p.locations:
+        await p.locations.insert(location_id=DefaultLocationId)
+
+    for default_item_id in DefaultFurnitureItems:
+        if default_item_id not in p.furniture:
+            await p.furniture.insert(furniture_id=default_item_id)
 
 
 @handlers.handler(XTPacket('g', 'gm'))
