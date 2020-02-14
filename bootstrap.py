@@ -25,6 +25,8 @@ if __name__ == '__main__':
                         nargs='*', help='Plugins to load')
     parser.add_argument('-l', '--lang', action='store', default='en', help='Houdini language',
                         choices=['en', 'fr', 'pt', 'es', 'de', 'ru'])
+    parser.add_argument('-tz', '--timezone', action='store', default='America/Vancouver',
+                        help='Server timezone')
 
     login_group = parser.add_argument_group('login')
     login_group.add_argument('--login-failure-limit', action='store', default=5, help='Limit before flood limit',

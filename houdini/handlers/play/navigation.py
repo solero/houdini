@@ -29,7 +29,10 @@ async def handle_join_server(p, penguin_id: int, login_key: str):
 
     current_time = int(time.time())
     penguin_standard_time = current_time * 1000
-    server_time_offset = 7
+
+    pst = pytz.timezone(p.server.config.timezone)
+    dt = datetime.fromtimestamp(current_time, pst)
+    server_time_offset = abs(int(dt.strftime('%z')) // 100)
 
     if p.timer_active:
         minutes_until_timer_end = datetime.combine(datetime.today(), p.timer_end) - datetime.now()
