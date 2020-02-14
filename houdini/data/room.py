@@ -26,6 +26,9 @@ class RoomMixin:
         self.waddles = {}
 
     async def add_penguin(self, p):
+        if len(self.penguins_by_id) >= self.max_users and not p.moderator:
+            return await p.send_error(210)
+
         if p.room:
             await p.room.remove_penguin(p)
         self.penguins_by_id[p.id] = p
