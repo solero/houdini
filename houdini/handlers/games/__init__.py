@@ -10,6 +10,7 @@ from houdini.data.game import PenguinGameData
 from sqlalchemy.dialects.postgresql import insert
 
 import time
+import random
 
 
 default_score_games = {904, 905, 906, 912, 916, 917, 918, 919, 950, 952}
@@ -72,7 +73,7 @@ async def handle_get_puck(p):
 @handlers.handler(XTPacket('zo', ext='z'))
 @handlers.cooldown(10, callback=game_over_cooling)
 async def handle_get_game_over(p, score: int):
-    if p.room.game:
+    if p.room.game and not p.waddle and not p.table:
         coins_earned = determine_coins_earned(p, score)
         if await determine_coins_overdose(p, coins_earned):
             await cheat_ban(p, p.id, comment='Coins overdose')
