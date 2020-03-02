@@ -14,6 +14,7 @@ class Item(db.Model):
     epf = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     tour = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     release_date = db.Column(db.Date, nullable=False, server_default=db.text("now()"))
+    treasure = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
 
     def is_color(self):
         return self.type == 1

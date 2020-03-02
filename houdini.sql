@@ -10,6 +10,7 @@ CREATE TABLE item (
   epf BOOLEAN NOT NULL DEFAULT FALSE,
   tour BOOLEAN NOT NULL DEFAULT FALSE,
   release_date DATE NOT NULL,
+  treasure BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (id)
 );
 
@@ -27,6 +28,7 @@ COMMENT ON COLUMN item.patched IS 'Is item patched?';
 COMMENT ON COLUMN item.epf IS 'Is EPF item?';
 COMMENT ON COLUMN item.tour IS 'Gives tour status?';
 COMMENT ON COLUMN item.release_date IS 'Release date of item';
+COMMENT ON COLUMN item.treasure IS 'Is a treasure item?';
 
 DROP TABLE IF EXISTS postcard;
 CREATE TABLE postcard (
