@@ -451,8 +451,9 @@ async def handle_wear_puffle(p, item_id: int):
 @handlers.disconnected
 @handlers.player_attribute(client_type=ClientType.Legacy)
 async def handle_stop_walking(p):
-    if p.walking:
-        await p.update(hand=None, walking=None).apply()
+    if p.joined_world:
+        if p.walking:
+            await p.update(hand=None, walking=None).apply()
 
 
 @handlers.handler(XTPacket('p', 'pp'), client=ClientType.Vanilla)
