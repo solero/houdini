@@ -8,6 +8,8 @@ class Flooring(db.Model):
     name = db.Column(db.String(50))
     cost = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
     patched = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    legacy_inventory = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    vanilla_inventory = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
 
 
 class Furniture(db.Model):
@@ -20,6 +22,8 @@ class Furniture(db.Model):
     cost = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
     member = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     patched = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    legacy_inventory = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    vanilla_inventory = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     bait = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     max_quantity = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
 
@@ -31,6 +35,8 @@ class Igloo(db.Model):
     name = db.Column(db.String(50), nullable=False)
     cost = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
     patched = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    legacy_inventory = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    vanilla_inventory = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
 
 
 class IglooFurniture(db.Model):
@@ -64,6 +70,8 @@ class Location(db.Model):
     name = db.Column(db.String(50), nullable=False)
     cost = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
     patched = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    legacy_inventory = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    vanilla_inventory = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
 
 
 class PenguinIgloo(db.Model):
