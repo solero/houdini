@@ -183,7 +183,7 @@ CREATE TABLE stamp_group (
   name VARCHAR(50) NOT NULL,
   parent_id INT DEFAULT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT stamp_group_ibfk_1 FOREIGN KEY (parent_id) REFERENCES stamp_group (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT stamp_group_ibfk_1 FOREIGN KEY (parent_id) REFERENCES stamp_group (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE stamp_group IS 'Stamp group collections';
@@ -201,7 +201,7 @@ CREATE TABLE stamp (
   rank SMALLINT NOT NULL DEFAULT 1,
   description VARCHAR(255) NOT NULL DEFAULT '',
   PRIMARY KEY(id),
-  CONSTRAINT stamp_ibfk_1 FOREIGN KEY (group_id) REFERENCES stamp_group (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT stamp_ibfk_1 FOREIGN KEY (group_id) REFERENCES stamp_group (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE stamp IS 'Server stamp crumbs';
@@ -226,8 +226,8 @@ CREATE TABLE room (
   spawn BOOLEAN NOT NULL DEFAULT FALSE,
   stamp_group INT DEFAULT NULL,
   PRIMARY KEY(id),
-  CONSTRAINT room_ibfk_1 FOREIGN KEY (required_item) REFERENCES item (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT room_ibfk_2 FOREIGN KEY (stamp_group) REFERENCES stamp_group (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT room_ibfk_1 FOREIGN KEY (required_item) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT room_ibfk_2 FOREIGN KEY (stamp_group) REFERENCES stamp_group (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE UNIQUE INDEX room_internal_id ON room (internal_id);
@@ -251,8 +251,8 @@ CREATE TABLE character (
   gift_id INT DEFAULT NULL,
   stamp_id INT DEFAULT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT character_ibfk_1 FOREIGN KEY (gift_id) REFERENCES item (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT character_ibfk_2 FOREIGN KEY (stamp_id) REFERENCES stamp (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT character_ibfk_1 FOREIGN KEY (gift_id) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT character_ibfk_2 FOREIGN KEY (stamp_id) REFERENCES stamp (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE character IS 'Server character crumbs';
@@ -267,7 +267,7 @@ CREATE TABLE epf_com_message (
   message TEXT NOT NULL,
   character_id INT NOT NULL,
   date TIMESTAMP NOT NULL,
-  CONSTRAINT epf_com_message_ibfk_1 FOREIGN KEY (character_id) REFERENCES character(id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT epf_com_message_ibfk_1 FOREIGN KEY (character_id) REFERENCES character(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE epf_com_message IS 'EPF phone com messages';
@@ -293,7 +293,7 @@ CREATE TABLE puffle_item (
   play_effect SMALLINT NOT NULL DEFAULT 0,
   clean_effect SMALLINT NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
-  CONSTRAINT puffle_item_ibfk_1 FOREIGN KEY (parent_id) REFERENCES puffle_item (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT puffle_item_ibfk_1 FOREIGN KEY (parent_id) REFERENCES puffle_item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE puffle_item IS 'Server puffle care item crumbs';
@@ -322,10 +322,10 @@ CREATE TABLE puffle (
   favourite_toy SMALLINT DEFAULT NULL,
   runaway_postcard SMALLINT DEFAULT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT puffle_ibfk_1 FOREIGN KEY (parent_id) REFERENCES puffle (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT puffle_ibfk_2 FOREIGN KEY (favourite_food) REFERENCES puffle_item (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT puffle_ibfk_3 FOREIGN KEY (favourite_toy) REFERENCES puffle_item (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT puffle_ibfk_4 FOREIGN KEY (runaway_postcard) REFERENCES postcard (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT puffle_ibfk_1 FOREIGN KEY (parent_id) REFERENCES puffle (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT puffle_ibfk_2 FOREIGN KEY (favourite_food) REFERENCES puffle_item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT puffle_ibfk_3 FOREIGN KEY (favourite_toy) REFERENCES puffle_item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT puffle_ibfk_4 FOREIGN KEY (runaway_postcard) REFERENCES postcard (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE puffle IS 'Server puffle crumbs';
@@ -343,8 +343,8 @@ CREATE TABLE puffle_treasure_item (
   puffle_id INT NOT NULL,
   item_id INT NOT NULL,
   PRIMARY KEY (puffle_id, item_id),
-  CONSTRAINT puffle_treasure_item_ibfk_1 FOREIGN KEY (puffle_id) REFERENCES puffle (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT puffle_treasure_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT puffle_treasure_item_ibfk_1 FOREIGN KEY (puffle_id) REFERENCES puffle (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT puffle_treasure_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE puffle_treasure_item IS 'Puffle digging treasure clothing';
@@ -357,8 +357,8 @@ CREATE TABLE puffle_treasure_furniture (
   puffle_id INT NOT NULL,
   furniture_id INT NOT NULL,
   PRIMARY KEY (puffle_id, furniture_id),
-  CONSTRAINT puffle_treasure_furniture_ibfk_1 FOREIGN KEY (puffle_id) REFERENCES puffle (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT puffle_treasure_furniture_ibfk_2 FOREIGN KEY (furniture_id) REFERENCES furniture (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT puffle_treasure_furniture_ibfk_1 FOREIGN KEY (puffle_id) REFERENCES puffle (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT puffle_treasure_furniture_ibfk_2 FOREIGN KEY (furniture_id) REFERENCES furniture (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE puffle_treasure_furniture IS 'Puffle digging treasure furniture';
@@ -371,8 +371,8 @@ CREATE TABLE puffle_treasure_puffle_item (
   puffle_id INT NOT NULL,
   puffle_item_id INT NOT NULL,
   PRIMARY KEY (puffle_id, puffle_item_id),
-  CONSTRAINT puffle_treasure_puffle_item_ibfk_1 FOREIGN KEY (puffle_id) REFERENCES puffle (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT puffle_treasure_puffle_item_ibfk_2 FOREIGN KEY (puffle_item_id) REFERENCES puffle_item (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT puffle_treasure_puffle_item_ibfk_1 FOREIGN KEY (puffle_id) REFERENCES puffle (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT puffle_treasure_puffle_item_ibfk_2 FOREIGN KEY (puffle_item_id) REFERENCES puffle_item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE puffle_treasure_puffle_item IS 'Puffle digging treasure puffle care items';
@@ -397,8 +397,8 @@ CREATE TABLE quest_award_item (
   quest_id INT NOT NULL,
   item_id INT NOT NULL,
   PRIMARY KEY (quest_id, item_id),
-  CONSTRAINT quest_award_item_ibfk_1 FOREIGN KEY (quest_id) REFERENCES quest (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT quest_award_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT quest_award_item_ibfk_1 FOREIGN KEY (quest_id) REFERENCES quest (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT quest_award_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON COLUMN quest_award_item.quest_id IS 'Quest ID';
@@ -410,8 +410,8 @@ CREATE TABLE quest_award_furniture (
   furniture_id INT NOT NULL,
   quantity SMALLINT NOT NULL DEFAULT 1,
   PRIMARY KEY (quest_id, furniture_id),
-  CONSTRAINT quest_award_furniture_ibfk_1 FOREIGN KEY (quest_id) REFERENCES quest (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT quest_award_furniture_ibfk_2 FOREIGN KEY (furniture_id) REFERENCES furniture (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT quest_award_furniture_ibfk_1 FOREIGN KEY (quest_id) REFERENCES quest (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT quest_award_furniture_ibfk_2 FOREIGN KEY (furniture_id) REFERENCES furniture (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON COLUMN quest_award_furniture.quest_id IS 'Quest ID';
@@ -423,8 +423,8 @@ CREATE TABLE quest_award_puffle_item (
   puffle_item_id INT NOT NULL,
   quantity SMALLINT NOT NULL DEFAULT 1,
   PRIMARY KEY (quest_id, puffle_item_id),
-  CONSTRAINT quest_award_puffle_item_ibfk_1 FOREIGN KEY (quest_id) REFERENCES quest (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT quest_award_puffle_item_ibfk_2 FOREIGN KEY (puffle_item_id) REFERENCES puffle_item (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT quest_award_puffle_item_ibfk_1 FOREIGN KEY (quest_id) REFERENCES quest (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT quest_award_puffle_item_ibfk_2 FOREIGN KEY (puffle_item_id) REFERENCES puffle_item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON COLUMN quest_award_puffle_item.quest_id IS 'Quest ID';
@@ -438,8 +438,8 @@ CREATE TABLE quest_task (
   room_id INT DEFAULT NULL,
   data VARCHAR(50) DEFAULT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT quest_task_ibfk_1 FOREIGN KEY (quest_id) REFERENCES quest (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT quest_task_ibfk_2 FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT quest_task_ibfk_1 FOREIGN KEY (quest_id) REFERENCES quest (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT quest_task_ibfk_2 FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE quest_task IS 'Player map quest tasks';
@@ -473,7 +473,7 @@ CREATE TABLE room_waddle (
   seats SMALLINT NOT NULL DEFAULT 2,
   game VARCHAR(20) NOT NULL,
   PRIMARY KEY (id, room_id),
-  CONSTRAINT room_waddle_ibfk_1 FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT room_waddle_ibfk_1 FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE room_waddle IS 'Server waddle games';
@@ -488,7 +488,7 @@ CREATE TABLE room_table (
   room_id INT NOT NULL,
   game VARCHAR(20) NOT NULL,
   PRIMARY KEY (id, room_id),
-  CONSTRAINT room_table_ibfk_1 FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT room_table_ibfk_1 FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE room_table IS 'Server table games';
@@ -588,16 +588,16 @@ CREATE TABLE penguin (
   rejection_de BOOLEAN NOT NULL DEFAULT FALSE,
   rejection_ru BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (id),
-  CONSTRAINT penguin_ibfk_1 FOREIGN KEY (color) REFERENCES item (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_2 FOREIGN KEY (head) REFERENCES item (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_3 FOREIGN KEY (face) REFERENCES item (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_4 FOREIGN KEY (neck) REFERENCES item (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_5 FOREIGN KEY (body) REFERENCES item (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_6 FOREIGN KEY (hand) REFERENCES item (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_7 FOREIGN KEY (feet) REFERENCES item (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_8 FOREIGN KEY (photo) REFERENCES item (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_9 FOREIGN KEY (flag) REFERENCES item (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_10 FOREIGN KEY (character) REFERENCES character (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT penguin_ibfk_1 FOREIGN KEY (color) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_2 FOREIGN KEY (head) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_3 FOREIGN KEY (face) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_4 FOREIGN KEY (neck) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_5 FOREIGN KEY (body) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_6 FOREIGN KEY (hand) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_7 FOREIGN KEY (feet) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_8 FOREIGN KEY (photo) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_9 FOREIGN KEY (flag) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_10 FOREIGN KEY (character) REFERENCES character (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX penguin_email ON Penguin(email);
@@ -680,7 +680,7 @@ CREATE TABLE activation_key (
   penguin_id INT NOT NULL,
   activation_key CHAR(255) NOT NULL,
   PRIMARY KEY (penguin_id, activation_key),
-  CONSTRAINT activation_key_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin(id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT activation_key_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE activation_key IS 'Penguin activation keys';
@@ -708,8 +708,8 @@ CREATE TABLE penguin_permission (
   penguin_id INT NOT NULL,
   permission_id INT NOT NULL,
   PRIMARY KEY (penguin_id),
-  CONSTRAINT penguin_permission_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin(id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_permission_ibfk_2 FOREIGN KEY (permission_id) REFERENCES permission(id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT penguin_permission_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_permission_ibfk_2 FOREIGN KEY (permission_id) REFERENCES permission(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_permission IS 'Penguin permissions';
@@ -727,9 +727,9 @@ CREATE TABLE report (
   server_id INT NOT NULL,
   room_id INT NOT NULL,
   PRIMARY KEY(id),
-  CONSTRAINT report_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT report_ibfk_2 FOREIGN KEY (reporter_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT report_ibfk_3 FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT report_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT report_ibfk_2 FOREIGN KEY (reporter_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT report_ibfk_3 FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 ALTER TABLE report ALTER COLUMN date SET DEFAULT now();
@@ -752,8 +752,8 @@ CREATE TABLE ban (
   comment TEXT DEFAULT NULL,
   message TEXT DEFAULT NULL,
   PRIMARY KEY (penguin_id, issued, expires),
-  CONSTRAINT ban_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT ban_ibfk_2 FOREIGN KEY (moderator_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT ban_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT ban_ibfk_2 FOREIGN KEY (moderator_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX ban_moderator_id ON ban (moderator_id);
@@ -777,7 +777,7 @@ CREATE TABLE warning (
   issued TIMESTAMP NOT NULL,
   expires TIMESTAMP NOT NULL,
   PRIMARY KEY (penguin_id, issued, expires),
-  CONSTRAINT warning_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT warning_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE warning IS 'Penguin moderator warnings';
@@ -792,8 +792,8 @@ CREATE TABLE buddy_list (
   buddy_id INT NOT NULL,
   best_buddy BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (penguin_id,buddy_id),
-  CONSTRAINT buddy_list_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT buddy_list_ibfk_2 FOREIGN KEY (buddy_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT buddy_list_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT buddy_list_ibfk_2 FOREIGN KEY (buddy_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX buddy_id ON buddy_list (buddy_id);
@@ -805,8 +805,8 @@ CREATE TABLE buddy_request (
   penguin_id INT NOT NULL,
   requester_id INT NOT NULL,
   PRIMARY KEY (penguin_id, requester_id),
-  CONSTRAINT buddy_request_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT buddy_request_ibfk_2 FOREIGN KEY (requester_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT buddy_request_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT buddy_request_ibfk_2 FOREIGN KEY (requester_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE buddy_request IS 'Penguin buddy requests';
@@ -817,8 +817,8 @@ CREATE TABLE character_buddy (
   character_id SMALLINT NOT NULL,
   best_buddy BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (penguin_id, character_id),
-  CONSTRAINT character_buddy_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT character_buddy_ibfk_2 FOREIGN KEY (character_id) REFERENCES character (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT character_buddy_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT character_buddy_ibfk_2 FOREIGN KEY (character_id) REFERENCES character (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE character_buddy IS 'Penguin character buddies';
@@ -832,8 +832,8 @@ CREATE TABLE cover_stamp (
   rotation SMALLINT NOT NULL DEFAULT 0,
   depth SMALLINT NOT NULL DEFAULT 0,
   PRIMARY KEY (penguin_id, stamp_id),
-  CONSTRAINT cover_stamp_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT cover_stamp_ibfk_2 FOREIGN KEY (stamp_id) REFERENCES stamp (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT cover_stamp_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT cover_stamp_ibfk_2 FOREIGN KEY (stamp_id) REFERENCES stamp (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE cover_stamp IS 'Stamps placed on book cover';
@@ -854,8 +854,8 @@ CREATE TABLE cover_item (
   rotation SMALLINT NOT NULL DEFAULT 0,
   depth SMALLINT NOT NULL DEFAULT 0,
   PRIMARY KEY (penguin_id, item_id),
-  CONSTRAINT cover_item_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT cover_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT cover_item_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT cover_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE cover_item IS 'Items placed on book cover';
@@ -874,8 +874,8 @@ CREATE TABLE penguin_card (
   quantity SMALLINT NOT NULL DEFAULT 1,
   member_quantity SMALLINT NOT NULL DEFAULT 0,
   PRIMARY KEY (penguin_id, card_id),
-  CONSTRAINT penguin_card_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_card_ibfk_2 FOREIGN KEY (card_id) REFERENCES card (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT penguin_card_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_card_ibfk_2 FOREIGN KEY (card_id) REFERENCES card (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX penguin_card_penguin_id ON penguin_card(penguin_id);
@@ -893,8 +893,8 @@ CREATE TABLE penguin_furniture (
   furniture_id SMALLINT NOT NULL,
   quantity SMALLINT NOT NULL DEFAULT 1,
   PRIMARY KEY (penguin_id, furniture_id),
-  CONSTRAINT penguin_furniture_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_furniture_ibfk_2 FOREIGN KEY (furniture_id) REFERENCES furniture (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT penguin_furniture_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_furniture_ibfk_2 FOREIGN KEY (furniture_id) REFERENCES furniture (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_furniture IS 'Penguin owned furniture';
@@ -908,8 +908,8 @@ CREATE TABLE penguin_flooring (
   penguin_id INT NOT NULL,
   flooring_id SMALLINT NOT NULL,
   PRIMARY KEY(penguin_id, flooring_id),
-  CONSTRAINT penguin_flooring_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penugin_flooring_ibfk_2 FOREIGN KEY (flooring_id) REFERENCES flooring (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT penguin_flooring_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penugin_flooring_ibfk_2 FOREIGN KEY (flooring_id) REFERENCES flooring (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_flooring IS 'Penguin owned furniture';
@@ -927,13 +927,13 @@ CREATE TABLE penguin_igloo_room (
   location INT NOT NULL,
   locked BOOLEAN NOT NULL DEFAULT TRUE,
   PRIMARY KEY (id),
-  CONSTRAINT igloo_room_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT igloo_room_ibfk_2 FOREIGN KEY (type) REFERENCES igloo (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT igloo_room_ibfk_3 FOREIGN KEY (flooring) REFERENCES flooring (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT igloo_room_ibfk_4 FOREIGN KEY (location) REFERENCES location (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT igloo_room_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT igloo_room_ibfk_2 FOREIGN KEY (type) REFERENCES igloo (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT igloo_room_ibfk_3 FOREIGN KEY (flooring) REFERENCES flooring (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT igloo_room_ibfk_4 FOREIGN KEY (location) REFERENCES location (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-ALTER TABLE penguin ADD CONSTRAINT penguin_ibfk_11 FOREIGN KEY (igloo) REFERENCES penguin_igloo_room (id) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE penguin ADD CONSTRAINT penguin_ibfk_11 FOREIGN KEY (igloo) REFERENCES penguin_igloo_room (id) ON DELETE CASCADE ON UPDATE CASCADE;
 
 COMMENT ON TABLE penguin_igloo_room IS 'Penguin igloo settings';
 
@@ -951,8 +951,8 @@ CREATE TABLE igloo_like (
   count SMALLINT NOT NULL DEFAULT 1,
   date TIMESTAMP NOT NULL,
   PRIMARY KEY (igloo_id, player_id),
-  CONSTRAINT igloo_like_ibfk_1 FOREIGN KEY (igloo_id) REFERENCES penguin_igloo_room (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT igloo_like_ibfk_2 FOREIGN KEY (player_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT igloo_like_ibfk_1 FOREIGN KEY (igloo_id) REFERENCES penguin_igloo_room (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT igloo_like_ibfk_2 FOREIGN KEY (player_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 ALTER TABLE igloo_like ALTER COLUMN date SET DEFAULT now();
@@ -970,8 +970,8 @@ CREATE TABLE penguin_location (
   penguin_id INT NOT NULL,
   location_id INT NOT NULL,
   PRIMARY KEY (penguin_id, location_id),
-  CONSTRAINT penguin_location_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_location_ibfk_2 FOREIGN KEY (location_id) REFERENCES location (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT penguin_location_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_location_ibfk_2 FOREIGN KEY (location_id) REFERENCES location (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_location IS 'Penguin owned locations';
@@ -988,8 +988,8 @@ CREATE TABLE igloo_furniture (
   frame SMALLINT NOT NULL DEFAULT 0,
   rotation SMALLINT NOT NULL DEFAULT 0,
   PRIMARY KEY (igloo_id, furniture_id, x, y, frame, rotation),
-  CONSTRAINT igloo_furniture_ibfk_1 FOREIGN KEY (igloo_id) REFERENCES penguin_igloo_room (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT igloo_furniture_ibfk_2 FOREIGN KEY (furniture_id) REFERENCES furniture (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT igloo_furniture_ibfk_1 FOREIGN KEY (igloo_id) REFERENCES penguin_igloo_room (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT igloo_furniture_ibfk_2 FOREIGN KEY (furniture_id) REFERENCES furniture (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX igloo_furniture_igloo_id ON igloo_furniture(igloo_id);
@@ -1008,8 +1008,8 @@ CREATE TABLE penguin_igloo (
   penguin_id INT NOT NULL,
   igloo_id INT NOT NULL,
   PRIMARY KEY (penguin_id, igloo_id),
-  CONSTRAINT penguin_igloo_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_igloo_ibfk_2 FOREIGN KEY (igloo_id) REFERENCES igloo (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT penguin_igloo_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_igloo_ibfk_2 FOREIGN KEY (igloo_id) REFERENCES igloo (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_igloo IS 'Penguin owned igloos';
@@ -1025,7 +1025,7 @@ CREATE TABLE penguin_track (
   sharing BOOLEAN NOT NULL DEFAULT FALSE,
   pattern TEXT NOT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT penguin_track_ibfk_1 FOREIGN KEY (owner_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT penguin_track_ibfk_1 FOREIGN KEY (owner_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_track IS 'Penguin SoundStudio tracks';
@@ -1042,8 +1042,8 @@ CREATE TABLE track_like (
   track_id INT NOT NULL,
   date TIMESTAMP NOT NULL,
   PRIMARY KEY (track_id, penguin_id, date),
-  CONSTRAINT track_like_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT track_like_ibfk_2 FOREIGN KEY (track_id) REFERENCES penguin_track (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT track_like_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT track_like_ibfk_2 FOREIGN KEY (track_id) REFERENCES penguin_track (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX track_like_track_id ON track_like (track_id);
@@ -1063,8 +1063,8 @@ CREATE TABLE penguin_game_data (
   index INT DEFAULT NULL,
   data TEXT DEFAULT '',
   PRIMARY KEY (penguin_id, room_id, index),
-  CONSTRAINT penguin_game_data_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_game_data_ibfk_2 FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT penguin_game_data_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_game_data_ibfk_2 FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 DROP TABLE IF EXISTS ignore_list;
@@ -1072,8 +1072,8 @@ CREATE TABLE ignore_list (
   penguin_id INT NOT NULL,
   ignore_id INT NOT NULL,
   PRIMARY KEY (penguin_id, ignore_id),
-  CONSTRAINT ignore_list_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT ignore_list_ibfk_2 FOREIGN KEY (ignore_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT ignore_list_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT ignore_list_ibfk_2 FOREIGN KEY (ignore_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX ignore_list_ignore_id ON ignore_list (ignore_id);
@@ -1085,8 +1085,8 @@ CREATE TABLE penguin_item (
   penguin_id INT NOT NULL,
   item_id SMALLINT NOT NULL,
   PRIMARY KEY (penguin_id, item_id),
-  CONSTRAINT penguin_item_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT penguin_item_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_item IS 'Penguin owned clothing items';
@@ -1102,7 +1102,7 @@ CREATE TABLE login (
   ip_hash CHAR(128) NOT NULL,
   minutes_played INT NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
-  CONSTRAINT login_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT login_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 ALTER TABLE login ALTER COLUMN date SET DEFAULT now();
@@ -1125,9 +1125,9 @@ CREATE TABLE penguin_postcard (
   details VARCHAR(255) NOT NULL DEFAULT '',
   has_read BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (id),
-  CONSTRAINT penguin_postcard_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_postcard_ibfk_2 FOREIGN KEY (sender_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_postcard_ibfk_3 FOREIGN KEY (postcard_id) REFERENCES postcard (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT penguin_postcard_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_postcard_ibfk_2 FOREIGN KEY (sender_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_postcard_ibfk_3 FOREIGN KEY (postcard_id) REFERENCES postcard (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 ALTER TABLE penguin_postcard ALTER COLUMN send_date SET DEFAULT now();
@@ -1160,9 +1160,9 @@ CREATE TABLE penguin_puffle (
   backyard BOOLEAN DEFAULT FALSE,
   has_dug BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (id),
-  CONSTRAINT penguin_puffle_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_puffle_ibfk_2 FOREIGN KEY (puffle_id) REFERENCES puffle (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_puffle_ibfk_3 FOREIGN KEY (hat) REFERENCES puffle_item (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT penguin_puffle_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_puffle_ibfk_2 FOREIGN KEY (puffle_id) REFERENCES puffle (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_puffle_ibfk_3 FOREIGN KEY (hat) REFERENCES puffle_item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 ALTER TABLE penguin_puffle ALTER COLUMN adoption_date SET DEFAULT now();
@@ -1182,7 +1182,7 @@ COMMENT ON COLUMN penguin_puffle.hat IS 'Puffle hat item ID';
 COMMENT ON COLUMN penguin_puffle.backyard IS 'Is in backyard?';
 COMMENT ON COLUMN penguin_puffle.has_dug IS 'Has dug?';
 
-ALTER TABLE penguin ADD CONSTRAINT penguin_ibfk_12 FOREIGN KEY (walking) REFERENCES penguin_puffle (id) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE penguin ADD CONSTRAINT penguin_ibfk_12 FOREIGN KEY (walking) REFERENCES penguin_puffle (id) ON DELETE CASCADE ON UPDATE CASCADE;
 
 DROP TABLE IF EXISTS penguin_puffle_item;
 CREATE TABLE penguin_puffle_item (
@@ -1190,8 +1190,8 @@ CREATE TABLE penguin_puffle_item (
   item_id INT NOT NULL,
   quantity SMALLINT NOT NULL DEFAULT 1,
   PRIMARY KEY (penguin_id, item_id),
-  CONSTRAINT penguin_puffle_item_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_puffle_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES puffle_item (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT penguin_puffle_item_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_puffle_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES puffle_item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_puffle_item IS 'Owned puffle care items';
@@ -1242,7 +1242,7 @@ CREATE TABLE redemption_book_word (
   word_number SMALLINT NOT NULL DEFAULT 1,
   answer VARCHAR(20) NOT NULL,
   PRIMARY KEY(book_id, page, line, word_number),
-  CONSTRAINT redemption_book_word_ibfk_1 FOREIGN KEY (book_id) REFERENCES redemption_book (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT redemption_book_word_ibfk_1 FOREIGN KEY (book_id) REFERENCES redemption_book (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE redemption_book_word IS 'Redemption book answers';
@@ -1258,8 +1258,8 @@ CREATE TABLE penguin_redemption_code (
   penguin_id INT NOT NULL,
   code_id INT NOT NULL,
   PRIMARY KEY (penguin_id, code_id),
-  CONSTRAINT penguin_redemption_code_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_redemption_code_ibfk_2 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT penguin_redemption_code_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_redemption_code_ibfk_2 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX penguin_redemption_code_code_id ON penguin_redemption_code (code_id);
@@ -1275,8 +1275,8 @@ CREATE TABLE penguin_redemption_book (
   penguin_id INT NOT NULL,
   book_id INT NOT NULL,
   PRIMARY KEY (penguin_id, book_id),
-  CONSTRAINT penguin_redemption_book_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_redemption_book_ibfk_2 FOREIGN KEY (book_id) REFERENCES redemption_book (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT penguin_redemption_book_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_redemption_book_ibfk_2 FOREIGN KEY (book_id) REFERENCES redemption_book (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX penguin_redemption_book_book_id ON penguin_redemption_book (book_id);
@@ -1292,8 +1292,8 @@ CREATE TABLE redemption_award_card (
   code_id INT NOT NULL,
   card_id INT DEFAULT NULL,
   PRIMARY KEY (code_id, card_id),
-  CONSTRAINT redemption_award_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT redemption_award_ibfk_2 FOREIGN KEY (card_id) REFERENCES card (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT redemption_award_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT redemption_award_ibfk_2 FOREIGN KEY (card_id) REFERENCES card (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE redemption_award_card IS 'Redemption code card awards';
@@ -1306,8 +1306,8 @@ CREATE TABLE redemption_award_item (
   code_id INT NOT NULL,
   item_id INT DEFAULT NULL,
   PRIMARY KEY (code_id, item_id),
-  CONSTRAINT redemption_award_item_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT redemption_award_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT redemption_award_item_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT redemption_award_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE redemption_award_item IS 'Redemption code item awards';
@@ -1320,8 +1320,8 @@ CREATE TABLE redemption_award_furniture (
   code_id INT NOT NULL,
   furniture_id INT DEFAULT NULL,
   PRIMARY KEY (code_id, furniture_id),
-  CONSTRAINT redemption_award_furniture_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT redemption_award_furniture_ibfk_2 FOREIGN KEY (furniture_id) REFERENCES furniture (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT redemption_award_furniture_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT redemption_award_furniture_ibfk_2 FOREIGN KEY (furniture_id) REFERENCES furniture (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE redemption_award_furniture IS 'Redemption code furniture awards';
@@ -1334,8 +1334,8 @@ CREATE TABLE redemption_award_igloo (
   code_id INT NOT NULL,
   igloo_id INT DEFAULT NULL,
   PRIMARY KEY (code_id, igloo_id),
-  CONSTRAINT redemption_award_igloo_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT redemption_award_igloo_ibfk_2 FOREIGN KEY (igloo_id) REFERENCES igloo (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT redemption_award_igloo_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT redemption_award_igloo_ibfk_2 FOREIGN KEY (igloo_id) REFERENCES igloo (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE redemption_award_igloo IS 'Redemption code igloo awards';
@@ -1348,8 +1348,8 @@ CREATE TABLE redemption_award_location (
   code_id INT NOT NULL,
   location_id INT DEFAULT NULL,
   PRIMARY KEY (code_id, location_id),
-  CONSTRAINT redemption_award_location_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT redemption_award_location_ibfk_2 FOREIGN KEY (location_id) REFERENCES location (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT redemption_award_location_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT redemption_award_location_ibfk_2 FOREIGN KEY (location_id) REFERENCES location (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE redemption_award_location IS 'Redemption code location awards';
@@ -1362,8 +1362,8 @@ CREATE TABLE redemption_award_flooring (
   code_id INT NOT NULL,
   flooring_id INT DEFAULT NULL,
   PRIMARY KEY (code_id, flooring_id),
-  CONSTRAINT redemption_award_flooring_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT redemption_award_flooring_ibfk_2 FOREIGN KEY (flooring_id) REFERENCES flooring (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT redemption_award_flooring_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT redemption_award_flooring_ibfk_2 FOREIGN KEY (flooring_id) REFERENCES flooring (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE redemption_award_flooring IS 'Redemption code flooring awards';
@@ -1376,8 +1376,8 @@ CREATE TABLE redemption_award_puffle (
   code_id INT NOT NULL,
   puffle_id INT DEFAULT NULL,
   PRIMARY KEY (code_id, puffle_id),
-  CONSTRAINT redemption_award_puffle_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT redemption_award_puffle_ibfk_2 FOREIGN KEY (puffle_id) REFERENCES puffle (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT redemption_award_puffle_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT redemption_award_puffle_ibfk_2 FOREIGN KEY (puffle_id) REFERENCES puffle (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE redemption_award_puffle IS 'Redemption code puffle awards';
@@ -1390,8 +1390,8 @@ CREATE TABLE redemption_award_puffle_item (
   code_id INT NOT NULL,
   puffle_item_id INT DEFAULT NULL,
   PRIMARY KEY (code_id, puffle_item_id),
-  CONSTRAINT redemption_award_puffle_item_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT redemption_award_puffle_item_ibfk_2 FOREIGN KEY (puffle_item_id) REFERENCES puffle_item (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT redemption_award_puffle_item_ibfk_1 FOREIGN KEY (code_id) REFERENCES redemption_code (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT redemption_award_puffle_item_ibfk_2 FOREIGN KEY (puffle_item_id) REFERENCES puffle_item (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE redemption_award_puffle_item IS 'Redemption code puffle care item awards';
@@ -1405,8 +1405,8 @@ CREATE TABLE penguin_stamp (
   stamp_id INT NOT NULL,
   recent BOOLEAN NOT NULL DEFAULT TRUE,
   PRIMARY KEY (penguin_id, stamp_id),
-  CONSTRAINT stamp_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT stamp_ibfk_2 FOREIGN KEY (stamp_id) REFERENCES stamp (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT stamp_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT stamp_ibfk_2 FOREIGN KEY (stamp_id) REFERENCES stamp (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_stamp IS 'Penguin earned stamps';
@@ -1425,7 +1425,7 @@ CREATE TABLE penguin_membership (
   expires_aware BOOLEAN DEFAULT FALSE,
   expired_aware BOOLEAN DEFAULT FALSE,
   PRIMARY KEY(penguin_id, start),
-  CONSTRAINT penguin_membership_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT penguin_membership_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_membership IS 'Penguin membership records';
@@ -1440,8 +1440,8 @@ CREATE TABLE penguin_quest_task (
   penguin_id INT NOT NULL,
   complete BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (task_id, penguin_id),
-  CONSTRAINT penguin_quest_task_ibfk_1 FOREIGN KEY (task_id) REFERENCES quest_task (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT penguin_quest_task_ibfk_2 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT penguin_quest_task_ibfk_1 FOREIGN KEY (task_id) REFERENCES quest_task (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT penguin_quest_task_ibfk_2 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_quest_task IS 'Completed quest tasks';
