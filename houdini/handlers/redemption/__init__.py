@@ -7,6 +7,7 @@ from houdini.data.redemption import RedemptionCode, RedemptionAwardCard, Redempt
     RedemptionAwardFurniture, RedemptionAwardIgloo, RedemptionAwardItem, RedemptionAwardLocation,\
     RedemptionAwardPuffle, RedemptionAwardPuffleItem, PenguinRedemptionBook, PenguinRedemptionCode
 
+import random
 from datetime import datetime
 
 
@@ -69,10 +70,42 @@ async def handle_code(p, redemption_code: str):
         return await p.send_xt('rsc', 'treasurebook', 3, owned_ids, num_redeemed_codes)
 
     if code.type == 'INNOCENT':
-        innocent_items = [item.id for item in p.server.items.values() if item.id in p.inventory and item.innocent]
-        innocent_furniture = [item.id for item in p.server.furniture.values() if item.id in p.furniture and item.innocent]
-        innocent_items = innocent_items + innocent_furniture
+        all_innocent_items = [item.id for item in p.server.items.values() if item.id in p.inventory and item.innocent]
+        all_innocent_furniture = [item.id for item in p.server.furniture.values() if item.id in p.furniture and item.innocent]
+        innocent_redeemed = all_innocent_items + all_innocent_furniture
 
-    await p.send_xt('rsc', code.type, '', code.coins)
+        innocent_furniture = ['f' + str(item.id) for item in p.server.furniture.values() if item.innocent]
+        innocent_clothing = [str(item.id) for item in p.server.items.values() if item.innocent]
+
+        innocent_items = innocent_clothing + innocent_furniture
+        awards = []
+
+        while len(awards) < 3:
+            if len(innocent_redeemed) >= len(innocent_items):
+                choice = random.choice(innocent_furniture)
+                if choice not in awards:
+                    p.add_furniture(int(choice[1:]), 1, False)
+                    awards.append(choice)
+                else:
+                    choice = random.choice(innocent_items)
+                    if choice in innocent_clothing:
+                        if int(choice) not in innocent_redeemed and choice not in awards:
+                            p.add_inventory(int(choice), False)
+                            awards.append(choice)
+                        elif choice in innocent_furniture:
+                            if int(choice[1:]) not in innocent_redeemed and choice not in awards:
+                                p.add_furniture(int(choice[1:]), 1, False)
+                                awards.append(choice)
+
+        redeemed = len(innocent_redeemed) + 3
+        if redeemed == len(innocent_items):
+            redeemed += 1
+            p.add_igloo(53, False)
+            awards.append("g53")
+
+        if code.uses != -1:
+            await PenguinRedemptionCode.create(penguin_id=p.id, code_id=code.id)
+
+        await p.send_xt('rsc', 'INNOCENT', ','.join(map(str, awards)), redeemed, len(innocent_items))
 
 
