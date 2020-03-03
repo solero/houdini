@@ -108,4 +108,8 @@ async def handle_code(p, redemption_code: str):
 
         await p.send_xt('rsc', 'INNOCENT', ','.join(map(str, awards)), redeemed, len(innocent_items))
 
+    if code.type == 'GOLDEN':
+        await p.send_xt('rsc', 'GOLDEN', p.ninja_rank, p.fire_ninja_rank, p.water_ninja_rank, 0,
+                        int(p.fire_ninja_rank > 0), int(p.water_ninja_rank > 0), 0)
+
 
