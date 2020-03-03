@@ -64,8 +64,15 @@ async def handle_code(p, redemption_code: str):
         num_redeemed_codes = await PenguinRedemptionCode.join(RedemptionCode).count().where(
             (PenguinRedemptionCode.penguin_id == p.id) & (RedemptionCode.type == 'CATALOG')
         ).gino.scalar()
-        owned_ids = ','.join((str(item.item_id) for item in code.items if item.item_id in p.inventory and p.server.items[item.item_id].treasure))
+        owned_ids = ','.join((str(item.id) for item in p.server.items.values() if item.treasure and item.id in p.inventory))
+        p.tb_validation = True
         return await p.send_xt('rsc', 'treasurebook', 3, owned_ids, num_redeemed_codes)
 
+    if code.type == 'INNOCENT':
+        innocent_items = [item.id for item in p.server.items.values() if item.id in p.inventory and item.innocent]
+        innocent_furniture = [item.id for item in p.server.furniture.values() if item.id in p.furniture and item.innocent]
+        innocent_items = innocent_items + innocent_furniture
+
     await p.send_xt('rsc', code.type, '', code.coins)
+
 

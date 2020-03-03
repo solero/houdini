@@ -11,6 +11,7 @@ CREATE TABLE item (
   tour BOOLEAN NOT NULL DEFAULT FALSE,
   release_date DATE NOT NULL,
   treasure BOOLEAN NOT NULL DEFAULT FALSE,
+  innocent BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (id)
 );
 
@@ -29,6 +30,7 @@ COMMENT ON COLUMN item.epf IS 'Is EPF item?';
 COMMENT ON COLUMN item.tour IS 'Gives tour status?';
 COMMENT ON COLUMN item.release_date IS 'Release date of item';
 COMMENT ON COLUMN item.treasure IS 'Is a treasure item?';
+COMMENT ON COLUMN item.innocent IS 'Is a innocent item?';
 
 DROP TABLE IF EXISTS postcard;
 CREATE TABLE postcard (
@@ -87,6 +89,7 @@ CREATE TABLE furniture (
   patched BOOLEAN NOT NULL DEFAULT FALSE,
   bait BOOLEAN NOT NULL DEFAULT FALSE,
   max_quantity SMALLINT NOT NULL DEFAULT 100,
+  innocent BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY(id)
 );
 
@@ -100,6 +103,7 @@ COMMENT ON COLUMN furniture.member IS 'Is member-only?';
 COMMENT ON COLUMN furniture.patched IS 'Is furniture patched?';
 COMMENT ON COLUMN furniture.bait IS 'Is furniture bait?';
 COMMENT ON COLUMN furniture.max_quantity IS 'Max inventory quantity';
+COMMENT ON COLUMN furniture.innocent IS 'Is furniture innocent?';
 
 DROP TABLE IF EXISTS flooring;
 CREATE TABLE flooring (

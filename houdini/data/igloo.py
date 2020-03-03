@@ -22,6 +22,7 @@ class Furniture(db.Model):
     patched = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     bait = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     max_quantity = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
+    innocent = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
 
 
 class Igloo(db.Model):
