@@ -14,6 +14,16 @@ class Card(db.Model):
     description = db.Column(db.String(255), nullable=False, server_default=db.text("''::character varying"))
 
 
+class CardStarterDeck(db.Model):
+    __tablename__ = 'card_starter_deck'
+
+    item_id = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False, index=True)
+    card_id = db.Column(db.ForeignKey('card.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
+    quantity = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
+
+
 class PenguinCard(db.Model):
     __tablename__ = 'penguin_card'
 

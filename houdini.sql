@@ -161,6 +161,22 @@ COMMENT ON COLUMN card.color IS 'Card color';
 COMMENT ON COLUMN card.value IS 'Value of card';
 COMMENT ON COLUMN card.description IS 'Play description';
 
+DROP TABLE IF EXISTS card_starter_deck;
+CREATE TABLE card_starter_deck (
+  item_id INT NOT NULL,
+  card_id INT NOT NULL,
+  quantity SMALLINT NOT NULL DEFAULT 1,
+  PRIMARY KEY (item_id, card_id),
+  CONSTRAINT card_starter_deck_ibfk_1 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT card_starter_deck_ibfk_2 FOREIGN KEY (card_id) REFERENCES card(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+COMMENT ON TABLE card_starter_deck IS 'Jitsu card starter decks';
+
+COMMENT ON COLUMN card_starter_deck.item_id IS 'Starter deck item ID';
+COMMENT ON COLUMN card_starter_deck.card_id IS 'Starter deck card ID';
+COMMENT ON COLUMN card_starter_deck.quantity IS 'Card quantity';
+
 DROP TABLE IF EXISTS stamp_group;
 CREATE TABLE stamp_group (
   id INT NOT NULL,
@@ -7273,31 +7289,40 @@ INSERT INTO card (id, name, set_id, power_id, element, color, value, description
  (803, 'Mobile Water 1', 8, 0, 'w', 'b', 8, ''),
  (804, 'Mobile Fire Power Card 1', 8, 2, 'f', 'p', 11, 'When this is scored, your card gets +2 for the next round');
 
-INSERT INTO flooring (id, name, cost) VALUES
- (0, 'Floor Removal', 20),
- (1, 'Terracotta Tile', 680),
- (2, 'Maple Hardwood', 620),
- (3, 'Green Carpet', 530),
- (4, 'Burgundy Carpet', 530),
- (5, 'Black & White Tile', 510),
- (6, 'Linoleum', 540),
- (7, 'Dance Floor', 1000),
- (8, 'Painted Dance Steps', 280),
- (9, 'Bamboo Floor', 370),
- (10, 'Dirt & Leaves', 400),
- (11, 'Blue Turf', 530),
- (12, 'Whirlpool', 750),
- (13, 'Cherry Hardwood', 620),
- (14, 'Phony Lawn', 700),
- (15, 'Black Carpet', 530),
- (16, 'Dark Stone Tile', 800),
- (17, 'Pink Carpet', 530),
- (18, 'Sand Floor', 400),
- (19, 'Sunny Sky Floor', 530),
- (20, 'Cobblestone', 1200),
- (21, 'Snowy Floor', 400),
- (22, 'Lime Green Carpet', 530),
- (23, 'Woven Rice Mat', 750);
+INSERT INTO card_starter_deck (item_id, card_id, quantity) VALUES
+ (821, 1, 1),
+ (821, 6, 1),
+ (821, 9, 1),
+ (821, 14, 1),
+ (821, 17, 1),
+ (821, 20, 1),
+ (821, 22, 1),
+ (821, 23, 1),
+ (821, 26, 1),
+ (821, 73, 1),
+ (821, 89, 1),
+ (821, 81, 1),
+ (8006, 3, 1),
+ (8006, 18, 1),
+ (8006, 216, 1),
+ (8006, 222, 1),
+ (8006, 229, 1),
+ (8006, 303, 1),
+ (8006, 304, 1),
+ (8006, 314, 1),
+ (8006, 319, 1),
+ (8006, 250, 1),
+ (8006, 352, 1),
+ (8010, 202, 1),
+ (8010, 204, 1),
+ (8010, 305, 1),
+ (8010, 15, 1),
+ (8010, 13, 1),
+ (8010, 312, 1),
+ (8010, 218, 1),
+ (8010, 220, 1),
+ (8010, 29, 1),
+ (8010, 90, 1);
 
 INSERT INTO flooring (id, name, cost, patched, legacy_inventory, vanilla_inventory) VALUES
  (0, 'Floor Removal', 20, FALSE, FALSE, FALSE),
