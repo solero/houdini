@@ -265,7 +265,7 @@ async def handle_buy_furniture(p, furniture: Furniture):
     if furniture is None:
         return await p.send_error(402)
 
-    if furniture.id in p.igloos:
+    if furniture.id in p.furniture:
         return await p.send_error(400)
 
     if p.coins < furniture.cost:
