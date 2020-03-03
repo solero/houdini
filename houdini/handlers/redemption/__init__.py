@@ -42,6 +42,7 @@ async def handle_code(p, redemption_code: str):
                                 puffle_items=RedemptionAwardPuffleItem)\
         .query.where(RedemptionCode.code == redemption_code)
     code = await query.gino.first()
+    items = []
 
     if code is None:
         return await p.send_error(720)
@@ -106,10 +107,17 @@ async def handle_code(p, redemption_code: str):
         if code.uses != -1:
             await PenguinRedemptionCode.create(penguin_id=p.id, code_id=code.id)
 
-        await p.send_xt('rsc', 'INNOCENT', ','.join(map(str, awards)), redeemed, len(innocent_items))
+        return await p.send_xt('rsc', 'INNOCENT', ','.join(map(str, awards)), redeemed, len(innocent_items))
 
     if code.type == 'GOLDEN':
-        await p.send_xt('rsc', 'GOLDEN', p.ninja_rank, p.fire_ninja_rank, p.water_ninja_rank, 0,
+        return await p.send_xt('rsc', 'GOLDEN', p.ninja_rank, p.fire_ninja_rank, p.water_ninja_rank, 0,
                         int(p.fire_ninja_rank > 0), int(p.water_ninja_rank > 0), 0)
 
+    if code.type == 'GOLDEN':
+        return await p.send_xt('rsc', 'GOLDEN', p.ninja_rank, p.fire_ninja_rank, p.water_ninja_rank, 0,
+                        int(p.fire_ninja_rank > 0), int(p.water_ninja_rank > 0), 0)
 
+    if code.type == 'CARD':
+        for award in code.cards:
+            items.append(str(award.card_id))
+            await p.add_card(p.server.cards[award.card_id])
