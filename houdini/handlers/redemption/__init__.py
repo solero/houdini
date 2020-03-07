@@ -1,7 +1,8 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
 from houdini.constants import ClientType
-
+from houdini.data.item import Item
+from houdini.data.igloo import Furniture, Igloo
 from houdini.data import db
 from houdini.data.redemption import RedemptionCode, RedemptionAwardCard, RedemptionAwardFlooring, \
     RedemptionAwardFurniture, RedemptionAwardIgloo, RedemptionAwardItem, RedemptionAwardLocation,\
@@ -32,92 +33,150 @@ async def handle_join_redemption_server_vanilla(p, credentials: str, confirmatio
 @handlers.handler(XTPacket('rsc', ext='red'), pre_login=True)
 @handlers.depends_on_packet(XTPacket('rjs', ext='red'))
 async def handle_code(p, redemption_code: str):
-    query = RedemptionCode.load(cards=RedemptionAwardCard,
-                                flooring=RedemptionAwardFlooring,
-                                furniture=RedemptionAwardFurniture,
-                                igloos=RedemptionAwardIgloo,
-                                items=RedemptionAwardItem,
-                                locations=RedemptionAwardLocation,
-                                puffles=RedemptionAwardPuffle,
-                                puffle_items=RedemptionAwardPuffleItem)\
+    query = RedemptionCode.distinct(RedemptionCode.id)\
+        .load(cards=RedemptionAwardCard.distinct(RedemptionAwardCard.card_id),
+              items=RedemptionAwardItem.distinct(RedemptionAwardItem.item_id),
+              furniture=RedemptionAwardFurniture.distinct(RedemptionAwardFurniture.furniture_id),
+              igloos=RedemptionAwardIgloo.distinct(RedemptionAwardIgloo.igloo_id),
+              locations=RedemptionAwardLocation.distinct(RedemptionAwardLocation.location_id),
+              puffles=RedemptionAwardPuffle.distinct(RedemptionAwardPuffle.puffle_id),
+              puffle_items=RedemptionAwardPuffleItem.distinct(RedemptionAwardPuffleItem.puffle_item_id)
+              )\
         .query.where(RedemptionCode.code == redemption_code)
-    code = await query.gino.first()
-    items = []
+    code = await query.gino.all()
+    awards = []
 
-    if code is None:
+    if code[0] is None:
         return await p.send_error(720)
 
-    if code.uses is not None:
+    if code[0].uses is not None:
         redeemed_count = await db.select([db.func.count(PenguinRedemptionCode.code_id)]).where(
-            PenguinRedemptionCode.code_id == code.id).gino.scalar()
+            PenguinRedemptionCode.code_id == code[0].id).gino.scalar()
 
-        if redeemed_count >= code.uses:
+        if redeemed_count >= code[0].uses:
             return await p.send_error(721)
 
-    penguin_redeemed = await PenguinRedemptionCode.query.where((PenguinRedemptionCode.code_id == code.id) &
+    penguin_redeemed = await PenguinRedemptionCode.query.where((PenguinRedemptionCode.code_id == code[0].id) &
                                                                (PenguinRedemptionCode.penguin_id == p.id)).gino.scalar()
     if penguin_redeemed:
         return await p.send_error(721)
 
-    if code.expires is not None and code.expires < datetime.now():
+    if code[0].expires is not None and code[0].expires < datetime.now():
         return await p.send_error(726)
 
-    if code.type == 'CATALOG':
+    if code[0].type == 'CATALOG':
         num_redeemed_codes = await PenguinRedemptionCode.join(RedemptionCode).count().where(
             (PenguinRedemptionCode.penguin_id == p.id) & (RedemptionCode.type == 'CATALOG')
         ).gino.scalar()
-        owned_ids = ','.join((str(item.id) for item in p.server.items.values() if item.treasure and item.id in p.inventory))
-        p.tb_validation = True
+        owned_ids = ','.join((str(item) for item in p.server.items.treasure if item in p.inventory))
         return await p.send_xt('rsc', 'treasurebook', 3, owned_ids, num_redeemed_codes)
 
-    if code.type == 'INNOCENT':
-        all_innocent_items = [item.id for item in p.server.items.values() if item.id in p.inventory and item.innocent]
-        all_innocent_furniture = [item.id for item in p.server.furniture.values() if item.id in p.furniture and item.innocent]
-        innocent_redeemed = all_innocent_items + all_innocent_furniture
+    if code[0].type == 'INNOCENT':
+        innocent_redeemed_items = { item for item in p.server.items.innocent if item.id in p.inventory }
+        innocent_redeemed_furniture = { item for item in p.server.furniture.innocent if item.id in p.furniture }
+        innocent_redeemed = innocent_redeemed_items.union(innocent_redeemed_furniture)
+        innocent_items = set(p.server.items.innocent + p.server.furniture.innocent)
 
-        innocent_furniture = ['f' + str(item.id) for item in p.server.furniture.values() if item.innocent]
-        innocent_clothing = [str(item.id) for item in p.server.items.values() if item.innocent]
+        innocent_remaining = innocent_items - innocent_redeemed
 
-        innocent_items = innocent_clothing + innocent_furniture
-        awards = []
+        choices = random.sample(innocent_remaining, min(len(innocent_remaining), 3))
+        if len(innocent_redeemed) + 3 == len(innocent_items):
+            choices.append(p.server.igloos[53])
+        for item in choices:
+            if type(item) is Item:
+                awards.append(str(item.id))
+                await p.add_inventory(item, notify=False)
+            elif type(item) is Igloo:
+                awards.append('g' + str(item.id))
+                await p.add_igloo(item, notify=False)
+            elif type(item) is Furniture:
+                awards.append('f' + str(item.id))
+                await p.add_furniture(item, notify=False)
 
-        while len(awards) < 3:
-            if len(innocent_redeemed) >= len(innocent_items):
-                choice = random.choice(innocent_furniture)
-                if choice not in awards:
-                    p.add_furniture(int(choice[1:]), 1, False)
-                    awards.append(choice)
-                else:
-                    choice = random.choice(innocent_items)
-                    if choice in innocent_clothing:
-                        if int(choice) not in innocent_redeemed and choice not in awards:
-                            p.add_inventory(int(choice), False)
-                            awards.append(choice)
-                        elif choice in innocent_furniture:
-                            if int(choice[1:]) not in innocent_redeemed and choice not in awards:
-                                p.add_furniture(int(choice[1:]), 1, False)
-                                awards.append(choice)
+        await PenguinRedemptionCode.create(penguin_id=p.id, code_id=code[0].id)
 
-        redeemed = len(innocent_redeemed) + 3
-        if redeemed == len(innocent_items):
-            redeemed += 1
-            p.add_igloo(53, False)
-            awards.append("g53")
-
-        if code.uses != -1:
-            await PenguinRedemptionCode.create(penguin_id=p.id, code_id=code.id)
-
-        return await p.send_xt('rsc', 'INNOCENT', ','.join(map(str, awards)), redeemed, len(innocent_items))
-
-    if code.type == 'GOLDEN':
+        return await p.send_xt('rsc', 'INNOCENT', ','.join(map(str, awards)), 
+                            len(innocent_redeemed) + len(choices), 
+                            len(innocent_items))
+    if code[0].type == 'GOLDEN':
         return await p.send_xt('rsc', 'GOLDEN', p.ninja_rank, p.fire_ninja_rank, p.water_ninja_rank, 0,
                         int(p.fire_ninja_rank > 0), int(p.water_ninja_rank > 0), 0)
 
-    if code.type == 'GOLDEN':
-        return await p.send_xt('rsc', 'GOLDEN', p.ninja_rank, p.fire_ninja_rank, p.water_ninja_rank, 0,
-                        int(p.fire_ninja_rank > 0), int(p.water_ninja_rank > 0), 0)
-
-    if code.type == 'CARD':
-        for award in code.cards:
-            items.append(str(award.card_id))
+    if code[0].type == 'CARD':
+        for award in code[0].cards:
+            awards.append(str(award.card_id))
             await p.add_card(p.server.cards[award.card_id])
+
+    else:
+        if code[0].items:
+            for award in code[0].items:
+                awards.append(str(award.item_id))
+                await p.add_inventory(p.server.items[award.item_id], notify=False)
+            
+        if code[0].furniture:
+            for award in code[0].furniture:
+                awards.append('f'+str(award.furniture_id))
+                await p.add_furniture(p.server.furniture[award.furniture_id], notify=False)
+
+        if code[0].igloos:
+            for award in code[0].igloos:
+                awards.append('g'+str(award.igloo_id))
+                await p.add_igloo(p.server.igloos[award.igloo_id], notify=False)
+
+        if code[0].locations:
+            for award in code[0].locations:
+                awards.append('loc'+str(award.location_id))
+                await p.add_location(p.server.locations[award.location_id], notify=False)
+        
+        if code[0].flooring:
+            for award in code[0].flooring:
+                awards.append('flr'+str(award.flooring_id))
+                await p.add_flooring(p.server.flooring[award.flooring_id], notify=False)
+            
+        if code[0].puffles:
+            for award in code[0].puffles:
+                awards.append('p'+str(award.puffle_id))
+        
+        if code[0].puffle_items:
+            for award in code[0].puffle_items:
+                awards.append('pi'+str(award.puffle_item_id))
+                await p.add_puffle_item(p.server.puffle_items[award.puffle_item_id], notify=False)
+
+
+        await PenguinRedemptionCode.create(penguin_id=p.id, code_id=code[0].id)
+        await p.update(coins=p.coins + code[0].coins).apply()
+        coins = "" if code[0].coins == 0 else code[0].coins
+        return await p.send_xt('rsc', code[0].type, ','.join(map(str, awards)), coins)
+
+
+@handlers.handler(XTPacket('rsgc', ext='red'), pre_login=True)
+@handlers.depends_on_packet(XTPacket('rsc', ext='red'))
+async def handle_golden_choice(p, redemption_code: str, choice: int):    
+    query = RedemptionCode.distinct(RedemptionCode.id)\
+        .load(cards=RedemptionAwardCard.distinct(RedemptionAwardCard.card_id),
+              items=RedemptionAwardItem.distinct(RedemptionAwardItem.item_id),
+              furniture=RedemptionAwardFurniture.distinct(RedemptionAwardFurniture.furniture_id),
+              igloos=RedemptionAwardIgloo.distinct(RedemptionAwardIgloo.igloo_id),
+              locations=RedemptionAwardLocation.distinct(RedemptionAwardLocation.location_id),
+              puffles=RedemptionAwardPuffle.distinct(RedemptionAwardPuffle.puffle_id),
+              puffle_items=RedemptionAwardPuffleItem.distinct(RedemptionAwardPuffleItem.puffle_item_id)
+              )\
+        .query.where(RedemptionCode.code == redemption_code)
+    code = await query.gino.all()
+
+    if len(code[0].cards) < 6:
+        return await p.close()
+
+    penguin_redeemed = await PenguinRedemptionCode.query.where((PenguinRedemptionCode.code_id == code[0].id) & (PenguinRedemptionCode.penguin_id == p.id)).gino.scalar()
+
+    if penguin_redeemed:
+        return await p.close()
+
+    if choice == 1:
+        
+
+
+
+    
+    
+

@@ -1,5 +1,5 @@
 from houdini.data import db, AbstractDataCollection
-
+from functools import cached_property
 
 class Flooring(db.Model):
     __tablename__ = 'flooring'
@@ -23,6 +23,7 @@ class Furniture(db.Model):
     bait = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     max_quantity = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
     innocent = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+
 
 
 class Igloo(db.Model):
@@ -132,6 +133,10 @@ class FurnitureCollection(AbstractDataCollection):
     __model__ = Furniture
     __indexby__ = 'id'
     __filterby__ = 'id'
+
+    @cached_property
+    def innocent(self):
+        return [item for item in self.values() if item.innocent]
 
 
 class PenguinFurnitureCollection(AbstractDataCollection):

@@ -1,6 +1,5 @@
 from houdini.data import db, AbstractDataCollection
-
-
+from functools import cached_property
 class Item(db.Model):
     __tablename__ = 'item'
 
@@ -61,6 +60,14 @@ class ItemCollection(AbstractDataCollection):
     __model__ = Item
     __indexby__ = 'id'
     __filterby__ = 'id'
+
+    @cached_property
+    def treasure(self):
+        return [item for item in self.values() if item.treasure]
+
+    @cached_property
+    def innocent(self):
+        return [item for item in self.values() if item.innocent]
 
 
 class PenguinItemCollection(AbstractDataCollection):
