@@ -194,12 +194,6 @@ class RoomTable(db.Model):
                         nullable=False)
     game = db.Column(db.String(20), nullable=False)
 
-    GameClassMapping = {
-        'four': ConnectFourLogic,
-        'mancala': MancalaLogic,
-        'treasure': TreasureHuntLogic
-    }
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.penguins = []
@@ -267,9 +261,8 @@ class RoomWaddle(db.Model):
     seats = db.Column(db.SmallInteger, nullable=False, server_default=db.text("2"))
     game = db.Column(db.String(20), nullable=False)
 
-    GameClassMapping = {
+    def __init__(self, *args, **kwargs):
         self.temporary = kwargs.pop('temporary', False)
-    }
         self.penguins = []
         self.logic = None
         self.room = None
@@ -288,7 +281,7 @@ class RoomWaddle(db.Model):
         p.waddle = self
 
         if self.penguins.count(None) == 0:
-            game_instance = RoomWaddle.GameClassMapping[self.game](self)
+            game_instance = self.logic(self)
             await game_instance.start()
 
             await self.reset()
@@ -330,16 +323,3 @@ class RoomCollection(AbstractDataCollection):
     @property
     def spawn_rooms(self):
         return [room for room in self.values() if room.spawn]
-
-    async def setup_tables(self):
-        async with db.transaction():
-            async for table in RoomTable.query.gino.iterate():
-                self[table.room_id].tables[table.id] = table
-                table.room = self[table.room_id]
-                table.logic = RoomTable.GameClassMapping[table.game]()
-
-    async def setup_waddles(self):
-        async with db.transaction():
-            async for waddle in RoomWaddle.query.gino.iterate():
-                self[waddle.room_id].waddles[waddle.id] = waddle
-                waddle.room = self[waddle.room_id]
