@@ -258,3 +258,19 @@ def player_in_room(*room_ids):
     def check_room_id(_, p):
         return p.room is not None and p.room.id in room_ids
     return check(check_room_id)
+
+
+def table(*logic):
+    def check_table_game(_, p):
+        if p.table is not None and type(p.table.logic) in logic:
+            return True
+        return False
+    return check(check_table_game)
+
+
+def waddle(*waddle):
+    def check_waddle_game(_, p):
+        if p.waddle is not None and type(p.waddle) in waddle:
+            return True
+        return False
+    return check(check_waddle_game)

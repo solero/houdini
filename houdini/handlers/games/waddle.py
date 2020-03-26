@@ -1,14 +1,7 @@
 from houdini import handlers
-from houdini.handlers import XTPacket, check
-from houdini.handlers.play.navigation import handle_join_room, handle_join_player_room
-
-
-def waddle_handler(waddle):
-    def check_waddle_game(_, p):
-        if p.waddle is not None and type(p.waddle) == waddle:
-            return True
-        return False
-    return check(check_waddle_game)
+from houdini.data.room import Room
+from houdini.handlers import XTPacket
+from houdini.handlers.play.navigation import handle_join_player_room, handle_join_room
 
 
 @handlers.handler(XTPacket('gw', ext='z'))

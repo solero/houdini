@@ -1,14 +1,6 @@
 from houdini import handlers
-from houdini.handlers import XTPacket, check
-from houdini.handlers.play.navigation import handle_join_room, handle_join_player_room
-
-
-def table_handler(logic):
-    def check_table_game(_, p):
-        if p.table is not None and type(p.table.logic) == logic:
-            return True
-        return False
-    return check(check_table_game)
+from houdini.handlers import XTPacket
+from houdini.handlers.play.navigation import handle_join_player_room, handle_join_room
 
 
 @handlers.handler(XTPacket('a', 'gt'))
