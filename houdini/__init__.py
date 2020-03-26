@@ -1,11 +1,10 @@
+import asyncio
+import importlib
+import logging
+import pkgutil
+from abc import ABC, abstractmethod
 from collections import OrderedDict
 from types import FunctionType
-from abc import abstractmethod
-
-import asyncio
-import logging
-import importlib
-import pkgutil
 
 
 def get_package_modules(package):

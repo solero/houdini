@@ -1,7 +1,7 @@
-from houdini import handlers
+from houdini import ITable, handlers
 from houdini.handlers import XTPacket
-from houdini.handlers.games.table import table_handler
-from houdini.games.four import ConnectFourLogic
+
+
 
 
 @handlers.handler(XTPacket('gz', ext='z'))

@@ -1,9 +1,7 @@
-from houdini import handlers
-from houdini.handlers import XTPacket
-
-
 import ujson
 
+from houdini import handlers
+from houdini.handlers import XTPacket
 
 DefaultPartyCookie = {
     'msgViewedArray': [0] * 10,

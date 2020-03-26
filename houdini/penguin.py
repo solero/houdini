@@ -1,9 +1,9 @@
 import time
 
-from houdini.spheniscidae import Spheniscidae
 from houdini.data import penguin
 from houdini.data.mail import PenguinPostcard
 from houdini.handlers.play.pet import get_my_player_walking_puffle
+from houdini.spheniscidae import Spheniscidae
 
 
 class Penguin(Spheniscidae, penguin.Penguin):

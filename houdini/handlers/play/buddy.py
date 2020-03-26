@@ -1,12 +1,10 @@
 from houdini import handlers
-from houdini.handlers import XMLPacket, XTPacket
-from houdini.handlers.play.navigation import handle_join_room
-from houdini.handlers import Priority
-
-from houdini.data.penguin import Penguin
-from houdini.data.buddy import BuddyList, BuddyRequest, BuddyListCollection, \
-    BuddyRequestCollection, CharacterBuddyCollection, CharacterCollection
 from houdini.constants import ClientType
+from houdini.data.buddy import BuddyList, BuddyListCollection, BuddyRequest, BuddyRequestCollection, \
+    CharacterBuddyCollection, CharacterCollection
+from houdini.data.penguin import Penguin
+from houdini.handlers import Priority, XMLPacket, XTPacket
+from houdini.handlers.play.navigation import handle_join_room
 
 
 async def update_player_presence(p):

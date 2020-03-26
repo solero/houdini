@@ -1,10 +1,10 @@
-from houdini import handlers
-from houdini.handlers import XMLPacket, XTPacket, Priority
-from houdini.handlers.play.navigation import handle_join_server, handle_join_room
-from houdini.data.stamp import Stamp, CoverStamp, CoverItem, PenguinStampCollection, StampCollection
-from houdini.data.penguin import Penguin
-
 from aiocache import cached
+
+from houdini import handlers
+from houdini.data.penguin import Penguin
+from houdini.data.stamp import CoverItem, CoverStamp, PenguinStampCollection, Stamp, StampCollection
+from houdini.handlers import Priority, XMLPacket, XTPacket
+from houdini.handlers.play.navigation import handle_join_room, handle_join_server
 
 
 def get_book_cover_key(_, p, player_id):

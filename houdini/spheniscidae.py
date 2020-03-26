@@ -1,12 +1,10 @@
-from houdini.handlers import XMLPacket, XTPacket
-
-from asyncio import IncompleteReadError, CancelledError
-
-import defusedxml.cElementTree as Et
+from asyncio import CancelledError, IncompleteReadError
 from xml.etree.cElementTree import Element, SubElement, tostring
 
+import defusedxml.cElementTree as Et
+
 from houdini.constants import ClientType
-from houdini.handlers import AuthorityError
+from houdini.handlers import AuthorityError, XMLPacket, XTPacket
 
 
 class Spheniscidae:

@@ -1,4 +1,4 @@
-from houdini.data import db, AbstractDataCollection
+from houdini.data import AbstractDataCollection, db
 
 
 class Flooring(db.Model):

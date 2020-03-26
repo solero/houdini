@@ -1,9 +1,9 @@
+import argparse
 import asyncio
 import logging
-import argparse
 
+from houdini.constants import ClientType, ConflictResolution, Language
 from houdini.houdini import Houdini
-from houdini.constants import Language, ConflictResolution, ClientType
 
 if __name__ == '__main__':
     logger = logging.getLogger('houdini')

@@ -1,7 +1,6 @@
 from houdini import handlers
-from houdini.handlers import XTPacket
-
 from houdini.data.item import Item
+from houdini.handlers import XTPacket
 
 
 @handlers.handler(XTPacket('s', 'upc'))

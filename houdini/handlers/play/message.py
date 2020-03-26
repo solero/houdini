@@ -1,10 +1,8 @@
 from houdini import handlers
+from houdini.commands import has_command_prefix, invoke_command_string
+from houdini.data.moderator import ChatFilterRuleCollection
 from houdini.handlers import XTPacket
 from houdini.handlers.play.moderation import moderator_ban
-
-from houdini.commands import invoke_command_string, has_command_prefix
-
-from houdini.data.moderator import ChatFilterRuleCollection
 
 
 @handlers.boot

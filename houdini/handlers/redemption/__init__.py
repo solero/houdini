@@ -1,13 +1,12 @@
-from houdini import handlers
-from houdini.handlers import XTPacket
-from houdini.constants import ClientType
-
-from houdini.data import db
-from houdini.data.redemption import RedemptionCode, RedemptionAwardCard, RedemptionAwardFlooring, \
-    RedemptionAwardFurniture, RedemptionAwardIgloo, RedemptionAwardItem, RedemptionAwardLocation,\
-    RedemptionAwardPuffle, RedemptionAwardPuffleItem, PenguinRedemptionBook, PenguinRedemptionCode
-
 from datetime import datetime
+
+from houdini import handlers
+from houdini.constants import ClientType
+from houdini.data import db
+from houdini.data.redemption import PenguinRedemptionBook, PenguinRedemptionCode, RedemptionAwardCard, \
+    RedemptionAwardFlooring, RedemptionAwardFurniture, RedemptionAwardIgloo, RedemptionAwardItem, \
+    RedemptionAwardLocation, RedemptionAwardPuffle, RedemptionAwardPuffleItem, RedemptionCode
+from houdini.handlers import XTPacket
 
 
 @handlers.handler(XTPacket('rjs', ext='red'), pre_login=True, client=ClientType.Vanilla)

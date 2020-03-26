@@ -1,16 +1,17 @@
-from houdini import handlers
-from houdini.converters import SeparatorConverter
-from houdini.handlers import XTPacket, XMLPacket, Priority
-from houdini.data import db
-from houdini.data.penguin import Penguin, PenguinMembership
-from houdini.data.mail import PenguinPostcard
-from houdini.constants import ClientType
+import asyncio
+import random
+import time
+from datetime import datetime, timedelta
 
 from aiocache import cached
-from datetime import datetime, timedelta
-import random
-import asyncio
-import time
+
+from houdini import handlers
+from houdini.constants import ClientType
+from houdini.converters import SeparatorConverter
+from houdini.data import db
+from houdini.data.mail import PenguinPostcard
+from houdini.data.penguin import Penguin, PenguinMembership
+from houdini.handlers import Priority, XMLPacket, XTPacket
 
 
 def get_player_string_key(_, p, player_id):

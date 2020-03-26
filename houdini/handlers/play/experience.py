@@ -1,13 +1,12 @@
-from houdini import handlers
-from houdini.handlers import XTPacket
-from houdini.handlers.play.navigation import handle_join_server, handle_join_room, handle_join_player_room
-
-from houdini.data import db
-from houdini.data.quest import Quest, QuestAwardItem, QuestAwardFurniture, QuestAwardPuffleItem, QuestTask
-from houdini.data.quest import PenguinQuestTask
-
 import ujson
 from aiocache import cached
+
+from houdini import handlers
+from houdini.data import db
+from houdini.data.quest import PenguinQuestTask, Quest, QuestAwardFurniture, QuestAwardItem, QuestAwardPuffleItem, \
+    QuestTask
+from houdini.handlers import XTPacket
+from houdini.handlers.play.navigation import handle_join_player_room, handle_join_room, handle_join_server
 
 
 def get_status_key(_, p):

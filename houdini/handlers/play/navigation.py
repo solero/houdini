@@ -1,10 +1,23 @@
+import hashlib
+import random
+import time
+from datetime import date, datetime
+
+import pytz
+
 from houdini import handlers
-from houdini.handlers import XTPacket
-from houdini.data import db
-from houdini.data.room import Room
-from houdini.data.penguin import Penguin, Login
-from houdini.data.room import PenguinIglooRoom, PenguinBackyardRoom, RoomCollection
 from houdini.constants import ClientType, StatusField
+from houdini.data import db
+from houdini.data.penguin import Login, Penguin
+from houdini.data.room import PenguinBackyardRoom, PenguinIglooRoom, Room, RoomCollection, RoomTable, RoomWaddle
+from houdini.handlers import XTPacket
+from houdini.handlers.games.four import ConnectFourLogic
+from houdini.handlers.games.mancala import MancalaLogic
+from houdini.handlers.games.ninja.card import CardJitsuLogic, SenseiLogic
+from houdini.handlers.games.ninja.fire import CardJitsuFireLogic, FireSenseiLogic
+from houdini.handlers.games.ninja.water import CardJitsuWaterLogic, WaterSenseiLogic
+from houdini.handlers.games.sled import SledRacingLogic
+from houdini.handlers.games.treasure import TreasureHuntLogic
 
 import random
 import time

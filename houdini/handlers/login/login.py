@@ -1,18 +1,18 @@
+import asyncio
+import os
+from datetime import datetime, timedelta
+
+import bcrypt
+
 from houdini import handlers
+from houdini.constants import ClientType
+from houdini.converters import Credentials
+from houdini.crypto import Crypto
+from houdini.data.moderator import Ban
+from houdini.data.penguin import Penguin
 from houdini.handlers import XMLPacket
 from houdini.handlers.login import get_server_presence
 from houdini.handlers.play.navigation import get_minutes_played_today
-from houdini.converters import Credentials
-from houdini.data.penguin import Penguin
-from houdini.data.moderator import Ban
-from houdini.crypto import Crypto
-from houdini.constants import ClientType
-
-import asyncio
-import bcrypt
-import os
-
-from datetime import datetime, timedelta
 
 
 @handlers.handler(XMLPacket('login'))

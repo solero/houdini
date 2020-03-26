@@ -1,6 +1,5 @@
 from houdini import handlers
-from houdini.handlers import XMLPacket, XTPacket, Priority
-from houdini.data.ninja import PenguinCardCollection, CardCollection
+from houdini.handlers import XTPacket
 
 
 @handlers.boot

@@ -1,7 +1,7 @@
-from houdini import handlers
+from houdini import IWaddle, handlers
 from houdini.handlers import XTPacket
-from houdini.handlers.games.waddle import waddle_handler
-from houdini.games.sled import SledRacingLogic
+
+
 
 
 @handlers.handler(XTPacket('jz', ext='z'))

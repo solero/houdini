@@ -1,7 +1,5 @@
-from abc import ABC
-from abc import abstractmethod
-
 import inspect
+from abc import ABC, abstractmethod
 
 from houdini import _AbstractManager, get_package_modules
 

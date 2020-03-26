@@ -1,14 +1,13 @@
-from houdini import handlers
-from houdini.handlers import XTPacket
-from houdini.data.dance import DanceSongCollection
-from houdini.penguin import Penguin
-
-import random
-import time
 import asyncio
 import itertools
-
+import random
+import time
 from dataclasses import dataclass
+
+from houdini import handlers
+from houdini.data.dance import DanceSongCollection
+from houdini.handlers import XTPacket
+from houdini.penguin import Penguin
 
 
 @dataclass

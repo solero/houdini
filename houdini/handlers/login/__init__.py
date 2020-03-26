@@ -1,9 +1,8 @@
 from houdini import handlers
-from houdini.handlers import XMLPacket
-from houdini.converters import VersionChkConverter
 from houdini.constants import ClientType
-
+from houdini.converters import VersionChkConverter
 from houdini.data.buddy import BuddyList
+from houdini.handlers import XMLPacket
 
 
 @handlers.handler(XMLPacket('verChk'))
