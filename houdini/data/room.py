@@ -268,13 +268,13 @@ class RoomWaddle(db.Model):
     game = db.Column(db.String(20), nullable=False)
 
     GameClassMapping = {
-        'sled': SledRacingLogic
+        self.temporary = kwargs.pop('temporary', False)
     }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
         self.penguins = []
+        self.logic = None
+        self.room = None
+
+        super().__init__(*args, **kwargs)
 
     async def add_penguin(self, p):
         if not self.penguins:
@@ -293,12 +293,18 @@ class RoomWaddle(db.Model):
 
             await self.reset()
 
+            if self.temporary:
+                del p.server.rooms[self.room_id].waddles[self.id]
+
     async def remove_penguin(self, p):
         seat_id = self.get_seat_id(p)
         self.penguins[seat_id] = None
         await p.room.send_xt('uw', self.id, seat_id)
 
         p.waddle = None
+
+        if self.temporary and self.penguins.count(None) == self.seats:
+            del p.server.rooms[self.room_id].waddles[self.id]
 
     async def reset(self):
         for seat_id, penguin in enumerate(self.penguins):
