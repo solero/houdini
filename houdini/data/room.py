@@ -282,8 +282,8 @@ class RoomWaddle(db.Model):
 
         seat_id = self.penguins.index(None)
         self.penguins[seat_id] = p
-        await p.send_xt("jw", seat_id)
-        await p.room.send_xt("uw", self.id, seat_id, p.safe_name)
+        await p.send_xt('jw', seat_id)
+        await p.room.send_xt('uw', self.id, seat_id, p.safe_name)
 
         p.waddle = self
 
@@ -296,7 +296,7 @@ class RoomWaddle(db.Model):
     async def remove_penguin(self, p):
         seat_id = self.get_seat_id(p)
         self.penguins[seat_id] = None
-        await p.room.send_xt("uw", self.id, seat_id)
+        await p.room.send_xt('uw', self.id, seat_id)
 
         p.waddle = None
 
@@ -304,7 +304,7 @@ class RoomWaddle(db.Model):
         for seat_id, penguin in enumerate(self.penguins):
             if penguin:
                 self.penguins[seat_id] = None
-                await penguin.room.send_xt("uw", self.id, seat_id)
+                await penguin.room.send_xt('uw', self.id, seat_id)
 
     def get_seat_id(self, p):
         return self.penguins.index(p)
