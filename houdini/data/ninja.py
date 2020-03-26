@@ -40,6 +40,21 @@ class CardCollection(AbstractDataCollection):
     __indexby__ = 'id'
     __filterby__ = 'id'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.starter_decks = {}
+
+    def set_starter_decks(self, starter_deck_cards):
+        for card in starter_deck_cards:
+            starter_deck = self.starter_decks.get(card.item_id, [])
+            starter_deck.append((self.get(card.card_id), card.quantity))
+            self.starter_decks[card.item_id] = starter_deck
+
+    @property
+    def power_cards(self):
+        return [card for card in self.values() if card.power_id > 0]
+
 
 class PenguinCardCollection(AbstractDataCollection):
     __model__ = PenguinCard
