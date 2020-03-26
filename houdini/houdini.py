@@ -87,6 +87,9 @@ class Houdini:
 
         self.music = None
         self.dance_floor = None
+        self.match_making = None
+        self.water_match_making = None
+        self.fire_match_making = None
 
         self.puck = (0, 0)
 
