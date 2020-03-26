@@ -25,6 +25,11 @@ async def handle_leave_waddle(p):
         await p.waddle.remove_penguin(p)
 
 
+@handlers.handler(XTPacket('w', 'jx'))
+async def handle_start_waddle(p, room: Room, waddle: int):
+    await room.waddles[waddle].add_penguin(p)
+
+
 @handlers.handler(XTPacket('j', 'jr'), after=handle_join_room)
 async def handle_join_room_waddle(p):
     if p.waddle:
