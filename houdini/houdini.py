@@ -1,19 +1,17 @@
 import asyncio
+import logging
 import os
 import sys
-
-from houdini.spheniscidae import Spheniscidae
-from houdini.penguin import Penguin
-from houdini import PenguinStringCompiler
-
-import logging
 from logging.handlers import RotatingFileHandler
 
 import aioredis
 from aiocache import SimpleMemoryCache, caches
 
+from houdini import PenguinStringCompiler
 from houdini.data import db
 from houdini.data.permission import PermissionCollection
+from houdini.penguin import Penguin
+from houdini.spheniscidae import Spheniscidae
 
 try:
     import uvloop
@@ -32,7 +30,6 @@ from houdini.handlers.play.player import server_heartbeat, server_egg_timer
 from houdini.handlers.play.pet import decrease_stats
 
 from houdini.handlers.play.music import SoundStudio
-from houdini.handlers.games.dance import DanceFloor
 
 
 class Houdini:
@@ -90,6 +87,9 @@ class Houdini:
 
         self.music = None
         self.dance_floor = None
+        self.match_making = None
+        self.water_match_making = None
+        self.fire_match_making = None
 
         self.puck = (0, 0)
 

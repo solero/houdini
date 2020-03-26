@@ -1,12 +1,12 @@
-from houdini import handlers
-from houdini.handlers import XMLPacket, login
-from houdini.converters import WorldCredentials, Credentials
-from houdini.data.penguin import Penguin
-from houdini.data.moderator import Ban
-from houdini.crypto import Crypto
-from houdini.constants import ClientType
-
 from datetime import datetime
+
+from houdini import handlers
+from houdini.constants import ClientType
+from houdini.converters import Credentials, WorldCredentials
+from houdini.crypto import Crypto
+from houdini.data.moderator import Ban
+from houdini.data.penguin import Penguin
+from houdini.handlers import XMLPacket, login
 
 handle_version_check = login.handle_version_check
 handle_random_key = login.handle_random_key

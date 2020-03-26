@@ -1,21 +1,16 @@
-from houdini import handlers
-from houdini.handlers import XMLPacket, XTPacket, Priority
-from houdini.constants import ClientType, StatusField
-
-from houdini.data.pet import PenguinPuffleCollection, PenguinPuffleItemCollection, PenguinPuffle, \
-    PuffleCollection, PuffleItemCollection, \
-    PuffleTreasureFurniture, PuffleTreasureItem, \
-    PuffleTreasurePuffleItem
-from houdini.data.room import PenguinBackyardRoom, PenguinIglooRoom
-from houdini.data.mail import PenguinPostcard
-
-from datetime import datetime, timedelta
-
-import time
-import random
 import asyncio
 import operator
+import random
+import time
+from datetime import datetime, timedelta
 
+from houdini import handlers
+from houdini.constants import ClientType, StatusField
+from houdini.data.mail import PenguinPostcard
+from houdini.data.pet import PenguinPuffle, PenguinPuffleCollection, PenguinPuffleItemCollection, PuffleCollection, \
+    PuffleItemCollection, PuffleTreasureFurniture, PuffleTreasureItem, PuffleTreasurePuffleItem
+from houdini.data.room import PenguinBackyardRoom, PenguinIglooRoom
+from houdini.handlers import Priority, XMLPacket, XTPacket
 
 PuffleKillerInterval = 600
 LegacyPuffleIds = [0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -450,6 +445,7 @@ async def handle_wear_puffle(p, item_id: int):
 
 @handlers.disconnected
 @handlers.player_attribute(client_type=ClientType.Legacy)
+@handlers.player_attribute(joined_world=True)
 async def handle_stop_walking(p):
     if p.joined_world:
         if p.walking:

@@ -1,28 +1,23 @@
 import itertools
-import ujson
 import time
 from datetime import datetime, timedelta
 
-from houdini import handlers
-from houdini.handlers import XMLPacket, XTPacket, Priority
-from houdini.converters import SeparatorConverter
-from houdini.constants import ClientType, StatusField
-from houdini.handlers.play.navigation import handle_join_server
-
-from houdini.data import db
-from houdini.data.penguin import Penguin
-from houdini.data.room import PenguinIglooRoom
-from houdini.data.igloo import IglooFurniture, IglooLike, Igloo, Furniture, Flooring, Location, \
-    IglooCollection, FurnitureCollection, \
-    FlooringCollection, LocationCollection,\
-    PenguinIglooCollection, PenguinFurnitureCollection, \
-    PenguinFlooringCollection, PenguinLocationCollection
-from houdini.data.room import PenguinIglooRoomCollection
-from houdini.data.game import PenguinGameData
-
+import ujson
+from aiocache import cached
 from sqlalchemy.dialects.postgresql import insert
 
-from aiocache import cached
+from houdini import handlers
+from houdini.constants import ClientType, StatusField
+from houdini.converters import SeparatorConverter
+from houdini.data import db
+from houdini.data.game import PenguinGameData
+from houdini.data.igloo import Flooring, FlooringCollection, Furniture, FurnitureCollection, Igloo, IglooCollection, \
+    IglooFurniture, IglooLike, Location, LocationCollection, PenguinFlooringCollection, PenguinFurnitureCollection, \
+    PenguinIglooCollection, PenguinLocationCollection
+from houdini.data.penguin import Penguin
+from houdini.data.room import PenguinIglooRoom, PenguinIglooRoomCollection
+from houdini.handlers import Priority, XMLPacket, XTPacket
+from houdini.handlers.play.navigation import handle_join_server
 
 
 def get_layout_furniture_key(_, p, igloo_id):

@@ -1,9 +1,4 @@
-from houdini.games.sled import SledRacingLogic
-from houdini.games.four import ConnectFourLogic
-from houdini.games.mancala import MancalaLogic
-from houdini.games.treasure import TreasureHuntLogic
-
-from houdini.data import db, AbstractDataCollection
+from houdini.data import AbstractDataCollection, db
 
 
 def stealth_mod_filter(stealth_mod_id):
@@ -199,12 +194,6 @@ class RoomTable(db.Model):
                         nullable=False)
     game = db.Column(db.String(20), nullable=False)
 
-    GameClassMapping = {
-        'four': ConnectFourLogic,
-        'mancala': MancalaLogic,
-        'treasure': TreasureHuntLogic
-    }
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.penguins = []
@@ -272,14 +261,13 @@ class RoomWaddle(db.Model):
     seats = db.Column(db.SmallInteger, nullable=False, server_default=db.text("2"))
     game = db.Column(db.String(20), nullable=False)
 
-    GameClassMapping = {
-        'sled': SledRacingLogic
-    }
-
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
+        self.temporary = kwargs.pop('temporary', False)
         self.penguins = []
+        self.logic = None
+        self.room = None
+
+        super().__init__(*args, **kwargs)
 
     async def add_penguin(self, p):
         if not self.penguins:
@@ -287,29 +275,35 @@ class RoomWaddle(db.Model):
 
         seat_id = self.penguins.index(None)
         self.penguins[seat_id] = p
-        await p.send_xt("jw", seat_id)
-        await p.room.send_xt("uw", self.id, seat_id, p.safe_name)
+        await p.send_xt('jw', seat_id)
+        await p.room.send_xt('uw', self.id, seat_id, p.safe_name)
 
         p.waddle = self
 
         if self.penguins.count(None) == 0:
-            game_instance = RoomWaddle.GameClassMapping[self.game](self)
+            game_instance = self.logic(self)
             await game_instance.start()
 
             await self.reset()
 
+            if self.temporary:
+                del p.server.rooms[self.room_id].waddles[self.id]
+
     async def remove_penguin(self, p):
         seat_id = self.get_seat_id(p)
         self.penguins[seat_id] = None
-        await p.room.send_xt("uw", self.id, seat_id)
+        await p.room.send_xt('uw', self.id, seat_id)
 
         p.waddle = None
+
+        if self.temporary and self.penguins.count(None) == self.seats:
+            del p.server.rooms[self.room_id].waddles[self.id]
 
     async def reset(self):
         for seat_id, penguin in enumerate(self.penguins):
             if penguin:
                 self.penguins[seat_id] = None
-                await penguin.room.send_xt("uw", self.id, seat_id)
+                await penguin.room.send_xt('uw', self.id, seat_id)
 
     def get_seat_id(self, p):
         return self.penguins.index(p)
@@ -329,16 +323,3 @@ class RoomCollection(AbstractDataCollection):
     @property
     def spawn_rooms(self):
         return [room for room in self.values() if room.spawn]
-
-    async def setup_tables(self):
-        async with db.transaction():
-            async for table in RoomTable.query.gino.iterate():
-                self[table.room_id].tables[table.id] = table
-                table.room = self[table.room_id]
-                table.logic = RoomTable.GameClassMapping[table.game]()
-
-    async def setup_waddles(self):
-        async with db.transaction():
-            async for waddle in RoomWaddle.query.gino.iterate():
-                self[waddle.room_id].waddles[waddle.id] = waddle
-                waddle.room = self[waddle.room_id]

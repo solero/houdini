@@ -1,16 +1,17 @@
+from datetime import datetime
+
 from houdini import handlers
-from houdini.handlers import XTPacket
 from houdini.constants import ClientType
 from houdini.data.item import Item
 from houdini.data.igloo import Furniture, Igloo
 from houdini.data import db
-from houdini.data.redemption import RedemptionCode, RedemptionAwardCard, RedemptionAwardFlooring, \
-    RedemptionAwardFurniture, RedemptionAwardIgloo, RedemptionAwardItem, RedemptionAwardLocation,\
-    RedemptionAwardPuffle, RedemptionAwardPuffleItem, PenguinRedemptionBook, PenguinRedemptionCode
+from houdini.data.redemption import PenguinRedemptionBook, PenguinRedemptionCode, RedemptionAwardCard, \
+    RedemptionAwardFlooring, RedemptionAwardFurniture, RedemptionAwardIgloo, RedemptionAwardItem, \
+    RedemptionAwardLocation, RedemptionAwardPuffle, RedemptionAwardPuffleItem, RedemptionCode
+from houdini.handlers import XTPacket
 
 import random
 from datetime import datetime
-
 
 @handlers.handler(XTPacket('rjs', ext='red'), pre_login=True, client=ClientType.Vanilla)
 @handlers.allow_once
@@ -171,9 +172,6 @@ async def handle_golden_choice(p, redemption_code: str, choice: int):
 
     if penguin_redeemed:
         return await p.close()
-
-    if choice == 1:
-        
 
 
 

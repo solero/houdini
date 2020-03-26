@@ -1,5 +1,7 @@
 from houdini.data import db, AbstractDataCollection
 from functools import cached_property
+
+
 class Item(db.Model):
     __tablename__ = 'item'
 
@@ -10,6 +12,8 @@ class Item(db.Model):
     member = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     bait = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     patched = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    legacy_inventory = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    vanilla_inventory = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     epf = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     tour = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     release_date = db.Column(db.Date, nullable=False, server_default=db.text("now()"))

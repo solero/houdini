@@ -1,4 +1,4 @@
-from houdini.data import db, AbstractDataCollection
+from houdini.data import AbstractDataCollection, db
 
 
 class Card(db.Model):
@@ -12,6 +12,16 @@ class Card(db.Model):
     color = db.Column(db.CHAR(1), nullable=False, server_default=db.text("'b'::bpchar"))
     value = db.Column(db.SmallInteger, nullable=False, server_default=db.text("2"))
     description = db.Column(db.String(255), nullable=False, server_default=db.text("''::character varying"))
+
+
+class CardStarterDeck(db.Model):
+    __tablename__ = 'card_starter_deck'
+
+    item_id = db.Column(db.ForeignKey('item.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                           nullable=False, index=True)
+    card_id = db.Column(db.ForeignKey('card.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
+                        nullable=False)
+    quantity = db.Column(db.SmallInteger, nullable=False, server_default=db.text("1"))
 
 
 class PenguinCard(db.Model):
@@ -29,6 +39,21 @@ class CardCollection(AbstractDataCollection):
     __model__ = Card
     __indexby__ = 'id'
     __filterby__ = 'id'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.starter_decks = {}
+
+    def set_starter_decks(self, starter_deck_cards):
+        for card in starter_deck_cards:
+            starter_deck = self.starter_decks.get(card.item_id, [])
+            starter_deck.append((self.get(card.card_id), card.quantity))
+            self.starter_decks[card.item_id] = starter_deck
+
+    @property
+    def power_cards(self):
+        return [card for card in self.values() if card.power_id > 0]
 
 
 class PenguinCardCollection(AbstractDataCollection):

@@ -1,9 +1,9 @@
 import time
 
-from houdini.spheniscidae import Spheniscidae
 from houdini.data import penguin
 from houdini.data.mail import PenguinPostcard
 from houdini.handlers.play.pet import get_my_player_walking_puffle
+from houdini.spheniscidae import Spheniscidae
 
 
 class Penguin(Spheniscidae, penguin.Penguin):
@@ -193,15 +193,15 @@ class Penguin(Spheniscidae, penguin.Penguin):
 
         return True
 
-    async def add_card(self, card, quantity=1, member_quantity=0):
+    async def add_card(self, card, quantity=0, member_quantity=0):
         if card.id in self.cards:
             penguin_card = self.cards[card.id]
 
             await penguin_card.update(
                 quantity=penguin_card.quantity + quantity,
-                member_quantity=member_quantity).apply()
+                member_quantity=penguin_card.member_quantity + member_quantity).apply()
         else:
-            await self.cards.insert(card_id=card.id)
+            await self.cards.insert(card_id=card.id, quantity=quantity, member_quantity=member_quantity)
 
         self.logger.info(f'{self.username} added \'{card.name}\' to their ninja deck')
 

@@ -1,8 +1,7 @@
 from houdini import handlers
-from houdini.handlers import XMLPacket, XTPacket, Priority
-
-from houdini.data.penguin import Penguin
 from houdini.data.buddy import IgnoreList, IgnoreListCollection
+from houdini.data.penguin import Penguin
+from houdini.handlers import Priority, XMLPacket, XTPacket
 
 
 @handlers.handler(XMLPacket('login'), priority=Priority.Low)

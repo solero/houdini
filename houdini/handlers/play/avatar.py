@@ -1,6 +1,6 @@
 from houdini import handlers
-from houdini.handlers import XTPacket
 from houdini.constants import ClientType
+from houdini.handlers import XTPacket
 
 
 @handlers.handler(XTPacket('pt', 'spts'), client=ClientType.Vanilla)

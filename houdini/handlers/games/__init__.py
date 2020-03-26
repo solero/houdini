@@ -1,17 +1,16 @@
-from houdini import handlers
-from houdini.handlers import XTPacket
-from houdini.converters import OptionalConverter
-from houdini.constants import ClientType
-from houdini.handlers.play.navigation import handle_join_room
-from houdini.handlers.play.moderation import cheat_ban
-from houdini.data.room import Room
-from houdini.data.game import PenguinGameData
+import random
+import time
 
 from sqlalchemy.dialects.postgresql import insert
 
-import time
-import random
-
+from houdini import handlers
+from houdini.constants import ClientType
+from houdini.converters import OptionalConverter
+from houdini.data.game import PenguinGameData
+from houdini.data.room import Room
+from houdini.handlers import XTPacket
+from houdini.handlers.play.moderation import cheat_ban
+from houdini.handlers.play.navigation import handle_join_room
 
 default_score_games = {904, 905, 906, 912, 916, 917, 918, 919, 950, 952}
 

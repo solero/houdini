@@ -1,12 +1,11 @@
-from houdini import handlers
-from houdini.handlers import XTPacket
+import time
 
+from houdini import handlers
 from houdini.data import db
-from houdini.data.penguin import Penguin
 from houdini.data.buddy import IgnoreList
 from houdini.data.mail import PenguinPostcard, PostcardCollection
-
-import time
+from houdini.data.penguin import Penguin
+from houdini.handlers import XTPacket
 
 
 @handlers.boot

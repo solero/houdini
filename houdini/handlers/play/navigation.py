@@ -1,23 +1,66 @@
-from houdini import handlers
-from houdini.handlers import XTPacket
-from houdini.data import db
-from houdini.data.room import Room
-from houdini.data.penguin import Penguin, Login
-from houdini.data.room import PenguinIglooRoom, PenguinBackyardRoom, RoomCollection
-from houdini.constants import ClientType, StatusField
-
+import hashlib
 import random
 import time
-import pytz
-import hashlib
 from datetime import date, datetime
+
+import pytz
+
+from houdini import handlers
+from houdini.constants import ClientType, StatusField
+from houdini.data import db
+from houdini.data.penguin import Login, Penguin
+from houdini.data.room import PenguinBackyardRoom, PenguinIglooRoom, Room, RoomCollection, RoomTable, RoomWaddle
+from houdini.handlers import XTPacket
+from houdini.handlers.games.four import ConnectFourLogic
+from houdini.handlers.games.mancala import MancalaLogic
+from houdini.handlers.games.ninja.card import CardJitsuLogic, SenseiLogic
+from houdini.handlers.games.ninja.fire import CardJitsuFireLogic, FireSenseiLogic
+from houdini.handlers.games.ninja.water import CardJitsuWaterLogic, WaterSenseiLogic
+from houdini.handlers.games.sled import SledRacingLogic
+from houdini.handlers.games.treasure import TreasureHuntLogic
+
+TableLogicMapping = {
+    'four': ConnectFourLogic,
+    'mancala': MancalaLogic,
+    'treasure': TreasureHuntLogic
+}
+
+
+WaddleLogicMapping = {
+    'sled': SledRacingLogic,
+
+    'card': CardJitsuLogic,
+    'sensei': SenseiLogic,
+
+    'water': CardJitsuWaterLogic,
+    'watersensei': WaterSenseiLogic,
+
+    'fire': CardJitsuFireLogic,
+    'firesensei': FireSenseiLogic
+}
+
+
+async def setup_tables(room_collection):
+    async with db.transaction():
+        async for table in RoomTable.query.gino.iterate():
+            room_collection[table.room_id].tables[table.id] = table
+            table.room = room_collection[table.room_id]
+            table.logic = TableLogicMapping[table.game]()
+
+
+async def setup_waddles(room_collection):
+    async with db.transaction():
+        async for waddle in RoomWaddle.query.gino.iterate():
+            room_collection[waddle.room_id].waddles[waddle.id] = waddle
+            waddle.room = room_collection[waddle.room_id]
+            waddle.logic = WaddleLogicMapping[waddle.game]
 
 
 @handlers.boot
 async def rooms_load(server):
     server.rooms = await RoomCollection.get_collection()
-    await server.rooms.setup_tables()
-    await server.rooms.setup_waddles()
+    await setup_tables(server.rooms)
+    await setup_waddles(server.rooms)
     server.logger.info(f'Loaded {len(server.rooms)} rooms ({len(server.rooms.spawn_rooms)} spawn)')
 
 

@@ -1,14 +1,7 @@
 from houdini import handlers
-from houdini.handlers import XTPacket, check
-from houdini.handlers.play.navigation import handle_join_room, handle_join_player_room
-
-
-def waddle_handler(waddle):
-    def check_waddle_game(_, p):
-        if p.waddle is not None and type(p.waddle) == waddle:
-            return True
-        return False
-    return check(check_waddle_game)
+from houdini.data.room import Room
+from houdini.handlers import XTPacket
+from houdini.handlers.play.navigation import handle_join_player_room, handle_join_room
 
 
 @handlers.handler(XTPacket('gw', ext='z'))
@@ -30,6 +23,11 @@ async def handle_join_waddle(p, waddle_id: int):
 async def handle_leave_waddle(p):
     if p.waddle:
         await p.waddle.remove_penguin(p)
+
+
+@handlers.handler(XTPacket('w', 'jx'))
+async def handle_start_waddle(p, room: Room, waddle: int):
+    await room.waddles[waddle].add_penguin(p)
 
 
 @handlers.handler(XTPacket('j', 'jr'), after=handle_join_room)

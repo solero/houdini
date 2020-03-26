@@ -1,14 +1,13 @@
-from houdini import handlers
-from houdini.handlers import XTPacket
-from houdini.data.dance import DanceSongCollection
-from houdini.penguin import Penguin
-
-import random
-import time
 import asyncio
 import itertools
-
+import random
+import time
 from dataclasses import dataclass
+
+from houdini import handlers
+from houdini.data.dance import DanceSongCollection
+from houdini.handlers import XTPacket
+from houdini.penguin import Penguin
 
 
 @dataclass
@@ -56,6 +55,11 @@ class DanceFloor:
             self._dancers.pop(p.id)
             await self.send_xt('zm', self.get_string())
 
+    async def start(self):
+        while True:
+            await self.next_round()
+            await asyncio.sleep(self._current_track.song_length_millis // 1000)
+
     async def next_round(self):
         self._current_track = self._queued_track
 
@@ -83,9 +87,6 @@ class DanceFloor:
 
         self._queued_track = next(self._tracks)
         self._next_song_timestamp = int(round(time.time() * 1000)) + self._current_track.song_length_millis
-
-        await asyncio.sleep(self._current_track.song_length_millis // 1000)
-        await self.next_round()
 
     async def send_xt(self, *data):
         for dancer in self._dancers.values():
@@ -147,7 +148,7 @@ async def songs_load(server):
     server.logger.info(f'Loaded {len(server.dance_songs)} dance tracks')
 
     server.dance_floor = DanceFloor(server)
-    asyncio.create_task(server.dance_floor.next_round())
+    asyncio.create_task(server.dance_floor.start())
 
 
 @handlers.handler(XTPacket('gz', ext='z'))

@@ -1,18 +1,15 @@
-from abc import ABC
-from abc import abstractmethod
-
 import asyncio
-import itertools
-import inspect
 import collections
+import inspect
+import itertools
+from abc import ABC, abstractmethod
 
 from houdini.cooldown import CooldownError
-
-from houdini.data.room import Room
+from houdini.data.igloo import Flooring, Furniture, Igloo, Location
 from houdini.data.item import Item
-from houdini.data.igloo import Igloo, Furniture, Flooring, Location
+from houdini.data.pet import PenguinPuffle, Puffle
+from houdini.data.room import Room
 from houdini.data.stamp import Stamp
-from houdini.data.pet import Puffle, PenguinPuffle
 
 
 class ChecklistError(Exception):

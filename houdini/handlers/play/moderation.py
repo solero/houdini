@@ -1,11 +1,11 @@
-from houdini import handlers
-from houdini.data import db
-from houdini.handlers import XTPacket
-from houdini.data.moderator import Ban, Warning, Report
-from houdini.data.penguin import Penguin
-from houdini.constants import ClientType
-
 import datetime
+
+from houdini import handlers
+from houdini.constants import ClientType
+from houdini.data import db
+from houdini.data.moderator import Ban, Report, Warning
+from houdini.data.penguin import Penguin
+from houdini.handlers import XTPacket
 
 
 @handlers.handler(XTPacket('o', 'k'))

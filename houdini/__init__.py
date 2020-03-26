@@ -1,11 +1,10 @@
+import asyncio
+import importlib
+import logging
+import pkgutil
+from abc import ABC, abstractmethod
 from collections import OrderedDict
 from types import FunctionType
-from abc import abstractmethod
-
-import asyncio
-import logging
-import importlib
-import pkgutil
 
 
 def get_package_modules(package):
@@ -35,6 +34,56 @@ class _AbstractManager(dict):
     @abstractmethod
     async def load(self, module):
         """Loads entries from module"""
+
+
+class ITable(ABC):
+    """
+    All table game logic classes must implement this interface.
+    """
+
+    @abstractmethod
+    def make_move(self, *args):
+        """Tells logic a move has been made."""
+
+    @abstractmethod
+    def is_valid_move(self, *args):
+        """Returns true if the move is valid."""
+
+    @abstractmethod
+    def get_string(self):
+        """Returns string representation of the game."""
+
+
+class IWaddle(ABC):
+    """
+    All waddle game logic classes must implement this interface.
+    """
+
+    @property
+    @abstractmethod
+    def room_id(self):
+        """External ID of waddle game room."""
+
+    def __init__(self, waddle):
+        self.penguins = list(waddle.penguins)
+        self.seats = waddle.seats
+
+    async def start(self):
+        room_id = type(self).room_id
+        for penguin in self.penguins:
+            penguin.waddle = self
+            await penguin.join_room(penguin.server.rooms[room_id])
+
+    async def remove_penguin(self, p):
+        self.penguins.remove(p)
+        p.waddle = None
+
+    async def send_xt(self, *data):
+        for penguin in self.penguins:
+            await penguin.send_xt(*data)
+
+    def get_seat_id(self, p):
+        return self.penguins.index(p)
 
 
 class PenguinStringCompiler(OrderedDict):

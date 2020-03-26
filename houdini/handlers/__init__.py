@@ -1,12 +1,12 @@
-import inspect
 import enum
+import inspect
 import itertools
 from types import FunctionType
 
-from houdini.converters import _listener, _ArgumentDeserializer, get_converter, \
-    do_conversion, _ConverterContext, ChecklistError
-from houdini.cooldown import _Cooldown, _CooldownMapping, BucketType, CooldownError
-from houdini import plugins, _AbstractManager, get_package_modules
+from houdini import _AbstractManager, get_package_modules, plugins
+from houdini.converters import ChecklistError, _ArgumentDeserializer, _ConverterContext, _listener, do_conversion, \
+    get_converter
+from houdini.cooldown import BucketType, CooldownError, _Cooldown, _CooldownMapping
 
 
 class AuthorityError(Exception):
@@ -258,3 +258,19 @@ def player_in_room(*room_ids):
     def check_room_id(_, p):
         return p.room is not None and p.room.id in room_ids
     return check(check_room_id)
+
+
+def table(*logic):
+    def check_table_game(_, p):
+        if p.table is not None and type(p.table.logic) in logic:
+            return True
+        return False
+    return check(check_table_game)
+
+
+def waddle(*waddle):
+    def check_waddle_game(_, p):
+        if p.waddle is not None and type(p.waddle) in waddle:
+            return True
+        return False
+    return check(check_waddle_game)

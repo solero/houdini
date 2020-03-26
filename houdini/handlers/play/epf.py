@@ -1,17 +1,16 @@
-from houdini import handlers
-from houdini.handlers import XTPacket
-from houdini.handlers.play.mail import handle_start_mail_engine
+import datetime
+import random
+import time
 
+from aiocache import cached
+
+from houdini import handlers
+from houdini.constants import ClientType
 from houdini.data.item import Item
 from houdini.data.mail import PenguinPostcard
 from houdini.data.penguin import EpfComMessage
-from houdini.constants import ClientType
-
-import datetime
-import time
-import random
-
-from aiocache import cached
+from houdini.handlers import XTPacket
+from houdini.handlers.play.mail import handle_start_mail_engine
 
 
 @cached(alias='default', key='com_messages')

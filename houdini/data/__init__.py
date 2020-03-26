@@ -1,5 +1,6 @@
-from gino import Gino
 from collections.abc import Mapping
+
+from gino import Gino
 
 db = Gino()
 
