@@ -145,7 +145,7 @@ async def handle_join_water_match_making(p):
 @handlers.handler(XTPacket('jsen', ext='z'))
 @handlers.player_in_room(MatchMaking.SenseiRoom)
 async def handle_join_sensei_match(p):
-    waddle_room = p.server.rooms[CardJitsuLogic.__room_id__]
+    waddle_room = p.server.rooms[CardJitsuLogic.room_id]
     rw = RoomWaddle(id=p.id, room_id=waddle_room.id, seats=1, game='sensei', temporary=True)
     waddle_room.waddles[rw.id] = rw
 
@@ -155,7 +155,7 @@ async def handle_join_sensei_match(p):
 @handlers.handler(XTPacket('jsen', ext='z'))
 @handlers.player_in_room(MatchMaking.SenseiFireRoom)
 async def handle_join_fire_sensei_match(p):
-    waddle_room = p.server.rooms[CardJitsuFireLogic.__room_id__]
+    waddle_room = p.server.rooms[CardJitsuFireLogic.room_id]
     rw = RoomWaddle(id=p.id, room_id=waddle_room.id, seats=1, game='firesensei', temporary=True)
     waddle_room.waddles[rw.id] = rw
 
@@ -165,7 +165,7 @@ async def handle_join_fire_sensei_match(p):
 @handlers.handler(XTPacket('jsen', ext='z'))
 @handlers.player_in_room(MatchMaking.SenseiWaterRoom)
 async def handle_join_water_sensei_match(p):
-    waddle_room = p.server.rooms[CardJitsuWaterLogic.__room_id__]
+    waddle_room = p.server.rooms[CardJitsuWaterLogic.room_id]
     rw = RoomWaddle(id=p.id, room_id=waddle_room.id, seats=1, game='watersensei', temporary=True)
     waddle_room.waddles[rw.id] = rw
 
