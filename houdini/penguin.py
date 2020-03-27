@@ -103,8 +103,8 @@ class Penguin(Spheniscidae, penguin.Penguin):
 
         self.logger.info(f'{self.username} added \'{item.name}\' to their clothing inventory')
 
-        await self.server.cache.delete(f'pins.{self.id}')
-        await self.server.cache.delete(f'awards.{self.id}')
+        self.server.cache.delete(f'pins.{self.id}')
+        self.server.cache.delete(f'awards.{self.id}')
 
         return True
 
@@ -249,7 +249,7 @@ class Penguin(Spheniscidae, penguin.Penguin):
             await self.send_xt('aabs', stamp.id)
 
         self.logger.info(f'{self.username} earned stamp \'{stamp.name}\'')
-        await self.server.cache.delete(f'stamps.{self.id}')
+        self.server.cache.delete(f'stamps.{self.id}')
 
         return True
 

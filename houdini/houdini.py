@@ -5,7 +5,7 @@ import sys
 from logging.handlers import RotatingFileHandler
 
 import aioredis
-from aiocache import SimpleMemoryCache, caches
+from cacheout import Cache
 
 from houdini import PenguinStringCompiler
 from houdini.data import db
@@ -147,12 +147,7 @@ class Houdini:
             await self.redis.delete(f'houdini.players.{self.config.id}')
             await self.redis.hset(f'houdini.population', self.config.id, 0)
 
-            caches.set_config(dict(default=dict(
-                cache=SimpleMemoryCache,
-                namespace='houdini',
-                ttl=self.config.cache_expiry
-            )))
-            self.cache = caches.get('default')
+            self.cache = Cache(maxsize=None, ttl=self.config.cache_expiry)
 
             self.client_class = Penguin
             self.penguin_string_compiler = PenguinStringCompiler()

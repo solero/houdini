@@ -1,5 +1,4 @@
 import ujson
-from aiocache import cached
 
 from houdini import handlers
 from houdini.data import db
@@ -9,15 +8,6 @@ from houdini.handlers import XTPacket
 from houdini.handlers.play.navigation import handle_join_player_room, handle_join_room, handle_join_server
 
 
-def get_status_key(_, p):
-    return f'quest.status.{p.id}'
-
-
-def get_settings_key(_, p):
-    return f'quest.settings.{p.room.id}'
-
-
-@cached(alias='default', key_builder=get_status_key)
 async def get_player_quest_status(p):
     query = Quest.load(tasks=QuestTask,
                        items=QuestAwardItem,
@@ -63,7 +53,6 @@ AwardTypes = {
 }
 
 
-@cached(alias='default', key_builder=get_settings_key)
 async def get_quest_settings(p):
     query = Quest.load(items=QuestAwardItem,
                        furniture=QuestAwardFurniture,
@@ -127,15 +116,22 @@ async def load_active_quests(p):
 @handlers.handler(XTPacket('j', 'js'), after=handle_join_server)
 @handlers.allow_once
 async def handle_quest_join_server(p):
-    await p.server.cache.delete(f'quest.status.{p.id}')
+    p.server.cache.delete(f'quest.status.{p.id}')
 
     await load_active_quests(p)
-    await p.send_xt('nxquestsettings', await get_quest_settings(p))
-    await p.send_xt('nxquestdata', await get_player_quest_status(p))
+    quest_settings = p.server.cache.get(f'quest.settings.{p.room.id}')
+    quest_status = p.server.cache.get(f'quest.status.{p.id}')
+    quest_settings = await get_quest_settings(p) if quest_settings is None else quest_settings
+    quest_status = await get_player_quest_status(p) if quest_status is None else quest_status
+    p.server.cache.set(f'quest.settings.{p.room.id}', quest_settings)
+    p.server.cache.set(f'quest.status.{p.id}', quest_status)
+
+    await p.send_xt('nxquestsettings', quest_settings)
+    await p.send_xt('nxquestdata', quest_status)
 
 
 async def set_task_cleared(p, task_id):
-    await p.server.cache.delete(f'quest.status.{p.id}')
+    p.server.cache.delete(f'quest.status.{p.id}')
 
     await PenguinQuestTask.update.values(complete=True) \
         .where((PenguinQuestTask.task_id == task_id) &
@@ -166,7 +162,7 @@ async def handle_quest_join_player_room(p):
 
 @handlers.handler(XTPacket('nx', 'nxquestaward'))
 async def handle_quest_award(p, quest_id: int):
-    await p.server.cache.delete(f'quest.status.{p.id}')
+    p.server.cache.delete(f'quest.status.{p.id}')
 
     quest = await Quest.load(items=QuestAwardItem,
                              furniture=QuestAwardFurniture,
@@ -183,7 +179,7 @@ async def handle_quest_award(p, quest_id: int):
 @handlers.handler(XTPacket('nx', 'nxquestactivate'))
 @handlers.allow_once
 async def handle_quest_activate(p):
-    await p.server.cache.delete(f'quest.status.{p.id}')
+    p.server.cache.delete(f'quest.status.{p.id}')
 
     await init_all_quests(p)
     await p.send_xt('nxquestdata', await get_player_quest_status(p))

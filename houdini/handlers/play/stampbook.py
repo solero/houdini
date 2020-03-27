@@ -1,5 +1,3 @@
-from aiocache import cached
-
 from houdini import handlers
 from houdini.data.penguin import Penguin
 from houdini.data.stamp import CoverItem, CoverStamp, PenguinStampCollection, Stamp, StampCollection
@@ -7,15 +5,6 @@ from houdini.handlers import Priority, XMLPacket, XTPacket
 from houdini.handlers.play.navigation import handle_join_room, handle_join_server
 
 
-def get_book_cover_key(_, p, player_id):
-    return f'book.{player_id}'
-
-
-def get_player_stamps_key(_, p, player_id):
-    return f'stamps.{player_id}'
-
-
-@cached(alias='default', key_builder=get_book_cover_key)
 async def get_book_cover_string(p, player_id):
     if player_id in p.server.penguins_by_id:
         player = p.server.penguins_by_id[player_id]
@@ -38,7 +27,6 @@ async def get_book_cover_string(p, player_id):
     return '%'.join(map(str, cover_details))
 
 
-@cached(alias='default', key_builder=get_player_stamps_key)
 async def get_player_stamps_string(p, player_id):
     if player_id in p.server.penguins_by_id:
         stamp_inventory = p.server.penguins_by_id[player_id].stamps
@@ -83,7 +71,10 @@ async def handle_add_mascot_stamp(p):
 @handlers.handler(XTPacket('st', 'gps'))
 @handlers.cooldown(1)
 async def handle_get_player_stamps(p, player_id: int):
-    await p.send_xt('gps', p.id, await get_player_stamps_string(p, player_id))
+    stamps_string = p.server.cache.get(f'stamps.{player_id}')
+    stamps_string = await get_player_stamps_string(p, player_id) if stamps_string is None else stamps_string
+    p.server.cache.set(f'stamps.{player_id}', stamps_string)
+    await p.send_xt('gps', p.id, stamps_string)
 
 
 @handlers.handler(XTPacket('st', 'gmres'))
@@ -105,7 +96,10 @@ async def handle_stamp_add(p, stamp: Stamp):
 @handlers.handler(XTPacket('st', 'gsbcd'))
 @handlers.cooldown()
 async def handle_get_book_cover(p, player_id: int):
-    await p.send_xt('gsbcd', await get_book_cover_string(p, player_id))
+    book_string = p.server.cache.get(f'book.{player_id}')
+    book_string = await get_book_cover_string(p, player_id) if book_string is None else book_string
+    p.server.cache.set(f'book.{player_id}', book_string)
+    await p.send_xt('gsbcd', book_string)
 
 
 @handlers.handler(XTPacket('st', 'ssbcd'))
@@ -160,4 +154,4 @@ async def handle_update_book_cover(p, color: int, highlight: int, pattern: int, 
                    book_modified=1).apply()
 
     stringified_cover = '%'.join(cover)
-    await p.server.cache.set(f'book.{p.id}', f'{color}%{highlight}%{pattern}%{icon}%{stringified_cover}')
+    p.server.cache.set(f'book.{p.id}', f'{color}%{highlight}%{pattern}%{icon}%{stringified_cover}')

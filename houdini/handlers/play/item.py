@@ -1,40 +1,29 @@
 import operator
 import time
 
-from aiocache import cached
-
 from houdini import handlers
 from houdini.data.item import Item, ItemCollection, PenguinItemCollection
 from houdini.data.permission import PenguinPermissionCollection
 from houdini.handlers import Priority, XMLPacket, XTPacket
 
 
-def get_pin_string_key(_, p, player_id):
-    return f'pins.{player_id}'
-
-
-def get_awards_string_key(_, p, player_id):
-    return f'awards.{player_id}'
-
-
-@cached(alias='default', key_builder=get_pin_string_key)
 async def get_pin_string(p, player_id):
     if player_id in p.server.penguins_by_id:
         inventory = p.server.penguins_by_id[player_id].inventory
     else:
         inventory = await PenguinItemCollection.get_collection(player_id)
 
+    def is_free_pin(pin):
+        p.server.items[pin].is_flag() and p.server.items[pin].cost == 0
+    free_pins = (p.server.items[pin] for pin in inventory.keys() if is_free_pin(pin))
+    pins = sorted(free_pins, key=operator.attrgetter('release_date'))
+
     def get_string(pin):
         unix = int(time.mktime(pin.release_date.timetuple()))
         return f'{pin.id}|{unix}|{int(pin.member)}'
-
-    pins = sorted((p.server.items[pin] for pin in inventory.keys()
-                   if (p.server.items[pin].is_flag() and p.server.items[pin].cost == 0)),
-                  key=operator.attrgetter('release_date'))
     return '%'.join(get_string(pin) for pin in pins)
 
 
-@cached(alias='default', key_builder=get_awards_string_key)
 async def get_awards_string(p, player_id):
     if player_id in p.server.penguins_by_id:
         inventory = p.server.penguins_by_id[player_id].inventory
@@ -96,11 +85,17 @@ async def handle_buy_inventory(p, item: Item):
 @handlers.depends_on_packet(XTPacket('i', 'gi'))
 @handlers.cooldown(1)
 async def handle_query_player_pins(p, player_id: int):
-    await p.send_xt('qpp', await get_pin_string(p, player_id))
+    string = p.server.cache.get(f'pins.{player_id}')
+    string = await get_pin_string(p, player_id) if string is None else string
+    p.server.cache.set(f'pins.{player_id}', string)
+    await p.send_xt('qpp', string)
 
 
 @handlers.handler(XTPacket('i', 'qpa'))
 @handlers.depends_on_packet(XTPacket('i', 'gi'))
 @handlers.cooldown(1)
 async def handle_query_player_awards(p, player_id: int):
-    await p.send_xt('qpa', await get_awards_string(p, player_id))
+    string = p.server.cache.get(f'awards.{player_id}')
+    string = await get_awards_string(p, player_id) if string is None else string
+    p.server.cache.set(f'awards.{player_id}', string)
+    await p.send_xt('qpa', string)

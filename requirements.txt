@@ -1,7 +1,7 @@
 asyncio
 aioredis
+cacheout
 gino
-aiocache
 ujson
 defusedxml
 bcrypt

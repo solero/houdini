@@ -3,7 +3,6 @@ import time
 from datetime import datetime, timedelta
 
 import ujson
-from aiocache import cached
 from sqlalchemy.dialects.postgresql import insert
 
 from houdini import handlers
@@ -20,27 +19,6 @@ from houdini.handlers import Priority, XMLPacket, XTPacket
 from houdini.handlers.play.navigation import handle_join_server
 
 
-def get_layout_furniture_key(_, p, igloo_id):
-    return f'layout_furniture.{igloo_id}'
-
-
-def get_active_igloo_string_key(_, p, penguin_id):
-    return f'active_igloo.{penguin_id}'
-
-
-def get_legacy_igloo_string_key(_, p, penguin_id):
-    return f'legacy_igloo.{penguin_id}'
-
-
-def get_igloo_layouts_key(_, p):
-    return f'igloo_layouts.{p.id}'
-
-
-def get_layout_like_count_key(_, igloo_id):
-    return f'layout_like_count.{igloo_id}'
-
-
-@cached(alias='default', key_builder=get_layout_furniture_key)
 async def get_layout_furniture(p, igloo_id):
     igloo_furniture = IglooFurniture.query.where(IglooFurniture.igloo_id == igloo_id).gino
     async with p.server.db.transaction():
@@ -50,41 +28,48 @@ async def get_layout_furniture(p, igloo_id):
     return furniture_string
 
 
-@cached(alias='default', key_builder=get_active_igloo_string_key)
-async def get_active_igloo_string(p, penguin_id):
-    igloo = await PenguinIglooRoom.load(parent=Penguin.on(Penguin.igloo == PenguinIglooRoom.id))\
-         .where(PenguinIglooRoom.penguin_id == penguin_id).gino.first()
+async def get_igloo(penguin_id):
+    return await PenguinIglooRoom.load(parent=Penguin.on(Penguin.igloo == PenguinIglooRoom.id))\
+        .where(PenguinIglooRoom.penguin_id == penguin_id).gino.first()
 
-    furniture_string = await get_layout_furniture(p, igloo.id)
-    like_count = await get_layout_like_count(igloo.id)
+
+async def get_active_igloo_string(p, penguin_id):
+    igloo = await get_igloo(penguin_id)
+    furniture_string = p.server.cache.get(f'layout_furniture.{igloo.id}')
+    furniture_string = await get_layout_furniture(p, igloo.id) if furniture_string is None else furniture_string
+    like_count = p.server.cache.get(f'layout_like_count.{igloo.id}')
+    like_count = await get_layout_like_count(igloo.id) if like_count is None else like_count
+
+    p.server.cache.set(f'layout_furniture.{igloo.id}', furniture_string)
+    p.server.cache.set(f'layout_like_count.{igloo.id}', like_count)
     return f'{igloo.id}:1:0:{int(igloo.locked)}:{igloo.music}:{igloo.flooring}:' \
            f'{igloo.location}:{igloo.type}:{like_count}:{furniture_string}'
 
 
-@cached(alias='default', key_builder=get_legacy_igloo_string_key)
 async def get_legacy_igloo_string(p, penguin_id):
-    igloo = await PenguinIglooRoom.load(parent=Penguin.on(Penguin.igloo == PenguinIglooRoom.id))\
-         .where(PenguinIglooRoom.penguin_id == penguin_id).gino.first()
-
-    furniture_string = await get_layout_furniture(p, igloo.id)
+    igloo = await get_igloo(penguin_id)
+    furniture_string = p.server.cache.get(f'layout_furniture.{igloo.id}')
+    furniture_string = await get_layout_furniture(p, igloo.id) if furniture_string is None else furniture_string
+    p.server.cache.set(f'layout_furniture.{igloo.id}', furniture_string)
     return f'{igloo.type}%{igloo.music}%{igloo.flooring}%{furniture_string}'
 
 
-@cached(alias='default', key_builder=get_igloo_layouts_key)
 async def get_all_igloo_layouts(p):
     layout_details = []
-    slot = 0
-    for igloo in p.igloo_rooms.values():
-        slot += 1
-        furniture_string = await get_layout_furniture(p, igloo.id)
-        like_count = await get_layout_like_count(igloo.id)
+    for slot, igloo in enumerate(p.igloo_rooms.values()):
+        furniture_string = p.server.cache.get(f'layout_furniture.{igloo.id}')
+        furniture_string = await get_layout_furniture(p, igloo.id) if furniture_string is None else furniture_string
+        like_count = p.server.cache.get(f'layout_like_count.{igloo.id}')
+        like_count = await get_layout_like_count(igloo.id) if like_count is None else like_count
+
+        p.server.cache.set(f'layout_furniture.{igloo.id}', furniture_string)
+        p.server.cache.set(f'layout_like_count.{igloo.id}', like_count)
         igloo_details = f'{igloo.id}:{slot}:0:{int(igloo.locked)}:{igloo.music}:{igloo.flooring}' \
                         f':{igloo.location}:{igloo.type}:{like_count}:{furniture_string}'
         layout_details.append(igloo_details)
     return '%'.join(layout_details)
 
 
-@cached(alias='default', key_builder=get_layout_like_count_key)
 async def get_layout_like_count(igloo_id):
     layout_like_count = await db.select([db.func.sum(IglooLike.count)])\
         .where(IglooLike.igloo_id == igloo_id).gino.scalar()
@@ -180,14 +165,21 @@ async def load_igloo_inventory(p):
 @handlers.cooldown(1)
 async def handle_get_igloo_details(p, penguin_id: int):
     await create_first_igloo(p, penguin_id)
+    cache_key = f'active_igloo.{penguin_id}' if p.is_vanilla_client else f'legacy_igloo.{penguin_id}'
     igloo_string_method = get_active_igloo_string if p.is_vanilla_client else get_legacy_igloo_string
-    await p.send_xt('gm', penguin_id, await igloo_string_method(p, penguin_id))
+    igloo_string = p.server.cache.get(cache_key)
+    igloo_string = await igloo_string_method(p, penguin_id) if igloo_string is None else igloo_string
+    p.server.cache.set(cache_key, igloo_string)
+    await p.send_xt('gm', penguin_id, igloo_string)
 
 
 @handlers.handler(XTPacket('g', 'gail'), client=ClientType.Vanilla)
 async def handle_get_all_igloo_layouts(p):
     await p.status_field_set(StatusField.OpenedIglooViewer)
-    await p.send_xt('gail', p.id, 0, await get_all_igloo_layouts(p))
+    layouts_string = p.server.cache.get(f'igloo_layouts.{p.id}')
+    layouts_string = await get_all_igloo_layouts(p) if layouts_string is None else layouts_string
+    p.server.cache.set(f'igloo_layouts.{p.id}', layouts_string)
+    await p.send_xt('gail', p.id, 0, layouts_string)
 
 
 @handlers.handler(XTPacket('g', 'gail'), client=ClientType.Vanilla, after=handle_get_all_igloo_layouts)
@@ -195,7 +187,9 @@ async def handle_get_all_igloo_likes(p):
     total = 0
     like_strings = []
     for igloo in p.igloo_rooms.values():
-        like_count = await get_layout_like_count(igloo.id)
+        like_count = p.server.cache.get(f'layout_like_count.{igloo.id}')
+        like_count = await get_layout_like_count(igloo.id) if like_count is None else like_count
+        p.server.cache.set(f'layout_like_count.{igloo.id}', like_count)
         total += like_count
         like_strings.append(f'{igloo.id}|{like_count}')
     await p.send_xt('gaili', total, ','.join(like_strings))
@@ -222,9 +216,9 @@ async def handle_buy_flooring(p, flooring: Flooring):
 
         await p.send_xt('ag', flooring.id, p.coins)
 
-        await p.server.cache.delete(f'active_igloo.{p.id}')
-        await p.server.cache.delete(f'legacy_igloo.{p.id}')
-        await p.server.cache.delete(f'igloo_layouts.{p.id}')
+        p.server.cache.delete(f'active_igloo.{p.id}')
+        p.server.cache.delete(f'legacy_igloo.{p.id}')
+        p.server.cache.delete(f'igloo_layouts.{p.id}')
 
 
 @handlers.handler(XTPacket('g', 'aloc'), client=ClientType.Vanilla)
@@ -292,15 +286,17 @@ async def handle_update_igloo_configuration(p, igloo_id: int, igloo_type_id: int
                 music=music_id
             ).apply()
 
-        like_count = await get_layout_like_count(igloo.id)
+        like_count = p.server.cache.get(f'layout_like_count.{igloo.id}')
+        like_count = await get_layout_like_count(igloo.id) if like_count is None else like_count
+        p.server.cache.set(f'layout_like_count.{igloo.id}', like_count)
         active_igloo_string = f'{igloo.id}:1:0:{int(igloo.locked)}:{igloo.music}:{igloo.flooring}:' \
                               f'{igloo.location}:{igloo.type}:{like_count}:{furniture_data}'
         await p.room.send_xt('uvi', p.id, active_igloo_string)
 
-        await p.server.cache.set(f'layout_furniture.{igloo.id}', furniture_data)
-        await p.server.cache.set(f'active_igloo.{p.id}', active_igloo_string)
-        await p.server.cache.delete(f'legacy_igloo.{p.id}')
-        await p.server.cache.delete(f'igloo_layouts.{p.id}')
+        p.server.cache.set(f'layout_furniture.{igloo.id}', furniture_data)
+        p.server.cache.set(f'active_igloo.{p.id}', active_igloo_string)
+        p.server.cache.delete(f'legacy_igloo.{p.id}')
+        p.server.cache.delete(f'igloo_layouts.{p.id}')
 
 
 @handlers.handler(XTPacket('g', 'ur'), client=ClientType.Legacy)
@@ -308,8 +304,8 @@ async def handle_update_igloo_configuration(p, igloo_id: int, igloo_type_id: int
 async def handle_save_igloo_furniture(p, *furniture_data):
     await save_igloo_furniture(p, furniture_data)
 
-    await p.server.cache.set(f'layout_furniture.{p.igloo}', ','.join(furniture_data))
-    await p.server.cache.delete(f'legacy_igloo.{p.id}')
+    p.server.cache.set(f'layout_furniture.{p.igloo}', ','.join(furniture_data))
+    p.server.cache.delete(f'legacy_igloo.{p.id}')
 
 
 _slot_converter = SeparatorConverter(separator=',', mapper=str)
@@ -350,9 +346,9 @@ async def handle_update_igloo_slot_summary(p, igloo_id: int, slot_summary: _slot
                 if igloo.locked != bool(locked):
                     await igloo.update(locked=bool(locked)).apply()
 
-        await p.server.cache.delete(f'active_igloo.{p.id}')
-        await p.server.cache.delete(f'legacy_igloo.{p.id}')
-        await p.server.cache.delete(f'igloo_layouts.{p.id}')
+        p.server.cache.delete(f'active_igloo.{p.id}')
+        p.server.cache.delete(f'legacy_igloo.{p.id}')
+        p.server.cache.delete(f'igloo_layouts.{p.id}')
 
         active_igloo_string = await get_active_igloo_string(p, p.id)
         await p.room.send_xt('uvi', p.id, active_igloo_string)
@@ -393,7 +389,9 @@ async def handle_add_igloo_layout(p):
 @handlers.cooldown(1)
 async def handle_get_igloo_like_by(p, pagination_start: int, pagination_end: int):
     if p.room.igloo:
-        like_count = await get_layout_like_count(p.room.id)
+        like_count = p.server.cache.get(f'layout_like_count.{p.room.id}')
+        like_count = await get_layout_like_count(p.room.id) if like_count is None else like_count
+        p.server.cache.set(f'layout_like_count.{p.room.id}', like_count)
 
         liked_by = IglooLike.query.where(IglooLike.igloo_id == p.room.id). \
             limit(pagination_end - pagination_start).offset(pagination_start).gino
@@ -443,12 +441,20 @@ async def handle_can_like_igloo(p):
 async def handle_get_open_igloo_list(p):
     async def get_igloo_string(igloo):
         owner_name = p.server.penguins_by_id[igloo.penguin_id].safe_name
-        like_count = await get_layout_like_count(igloo.id)
+        like_count = p.server.cache.get(f'layout_like_count.{igloo.id}')
+        like_count = await get_layout_like_count(igloo.id) if like_count is None else like_count
+        p.server.cache.set(f'layout_like_count.{igloo.id}', like_count)
         igloo_population = len(igloo.penguins_by_id)
         return f'{igloo.penguin_id}|{owner_name}|{like_count}|{igloo_population}|{int(igloo.locked)}'
 
     open_igloos = [await get_igloo_string(igloo) for igloo in p.server.open_igloos_by_penguin_id.values()]
     local_room_population = 0
+
+    own_layout_like_count = p.server.cache.get(f'layout_like_count.{p.igloo}')
+    own_layout_like_count = 0 if p.igloo is None else await get_layout_like_count(p.igloo) \
+        if own_layout_like_count is None else own_layout_like_count
+    p.server.cache.set(f'layout_like_count.{p.igloo}', own_layout_like_count)
+
     own_layout_like_count = 0 if p.igloo is None else await get_layout_like_count(p.igloo)
     await p.send_xt('gr', own_layout_like_count, local_room_population, *open_igloos)
 
@@ -494,9 +500,9 @@ async def handle_update_igloo_music(p, music_id: int):
     if p.room.igloo and p.room.penguin_id == p.id and p.room.music != music_id:
         await p.room.update(music=music_id).apply()
 
-        await p.server.cache.delete(f'active_igloo.{p.id}')
-        await p.server.cache.delete(f'legacy_igloo.{p.id}')
-        await p.server.cache.delete(f'igloo_layouts.{p.id}')
+        p.server.cache.delete(f'active_igloo.{p.id}')
+        p.server.cache.delete(f'legacy_igloo.{p.id}')
+        p.server.cache.delete(f'igloo_layouts.{p.id}')
 
 
 @handlers.handler(XTPacket('g', 'ao'), client=ClientType.Legacy)
@@ -505,15 +511,18 @@ async def handle_activate_igloo_type(p, igloo_type_id: int):
             and igloo_type_id in p.igloos:
         await p.room.update(type=igloo_type_id, flooring=0).apply()
 
-        await p.server.cache.delete(f'active_igloo.{p.id}')
-        await p.server.cache.delete(f'legacy_igloo.{p.id}')
-        await p.server.cache.delete(f'igloo_layouts.{p.id}')
+        p.server.cache.delete(f'active_igloo.{p.id}')
+        p.server.cache.delete(f'legacy_igloo.{p.id}')
+        p.server.cache.delete(f'igloo_layouts.{p.id}')
 
 
 @handlers.handler(XTPacket('g', 'grf'), client=ClientType.Vanilla)
 async def handle_get_friends_igloo_list(p):
     async def get_friend_igloo_string(penguin):
-        like_count = 0 if penguin.igloo is None else await get_layout_like_count(penguin.igloo)
+        like_count = p.server.cache.get(f'layout_like_count.{penguin.igloo}')
+        like_count = 0 if penguin.igloo is None else await get_layout_like_count(penguin.igloo) \
+            if like_count is None else like_count
+        p.server.cache.set(f'layout_like_count.{penguin.igloo}', like_count)
         return f'{penguin.id}|{like_count}'
 
     friend_igloos = [await get_friend_igloo_string(penguin) for penguin in p.server.penguins_by_id.values()
@@ -535,7 +544,7 @@ async def handle_like_igloo(p):
         like_count = await like_insert.gino.scalar()
 
         await p.room.send_xt('lue', p.id, like_count, f=lambda penguin: penguin.id != p.id)
-        await p.server.cache.delete(f'layout_like_count.{p.room.id}')
+        p.server.cache.delete(f'layout_like_count.{p.room.id}')
 
 
 @handlers.handler(XTPacket('g', 'gii'), client=ClientType.Vanilla)

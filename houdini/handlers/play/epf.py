@@ -2,8 +2,6 @@ import datetime
 import random
 import time
 
-from aiocache import cached
-
 from houdini import handlers
 from houdini.constants import ClientType
 from houdini.data.item import Item
@@ -13,7 +11,6 @@ from houdini.handlers import XTPacket
 from houdini.handlers.play.mail import handle_start_mail_engine
 
 
-@cached(alias='default', key='com_messages')
 async def get_com_messages(p):
     async with p.server.db.transaction():
         messages = []
@@ -123,9 +120,11 @@ async def handle_get_com_messages(p):
     unread_com_message = await EpfComMessage.query.where(
         EpfComMessage.date > p.com_message_read_date).gino.scalar()
     if unread_com_message:
-        await p.server.cache.delete('com_messages')
+        p.server.cache.delete('com_messages')
         await p.update(com_message_read_date=datetime.datetime.now()).apply()
-    com_messages = await get_com_messages(p)
+    com_messages = p.server.cache.get('com_messages')
+    com_messages = await get_com_messages(p) if com_messages is None else com_messages
+    p.server.cache.set('com_messages', com_messages)
     if com_messages:
         await p.send_xt('epfgm', int(bool(unread_com_message)), com_messages)
     else:

@@ -3,8 +3,6 @@ import random
 import time
 from datetime import datetime, timedelta
 
-from aiocache import cached
-
 from houdini import handlers
 from houdini.constants import ClientType
 from houdini.converters import SeparatorConverter
@@ -14,15 +12,6 @@ from houdini.data.penguin import Penguin, PenguinMembership
 from houdini.handlers import Priority, XMLPacket, XTPacket
 
 
-def get_player_string_key(_, p, player_id):
-    return f'player.{player_id}'
-
-
-def get_mascot_string_key(_, p, mascot_id):
-    return f'mascot.{mascot_id}'
-
-
-@cached(alias='default', key_builder=get_player_string_key)
 async def get_player_string(p, penguin_id: int):
     if penguin_id in p.server.penguins_by_id:
         return await p.server.penguins_by_id[penguin_id].string
@@ -32,7 +21,6 @@ async def get_player_string(p, penguin_id: int):
         return string
 
 
-@cached(alias='default', key_builder=get_mascot_string_key)
 async def get_mascot_string(p, mascot_id: int):
     if mascot_id in p.server.penguins_by_character_id:
         return await p.server.penguins_by_character_id[mascot_id].string
@@ -163,13 +151,18 @@ async def handle_heartbeat(p):
 @handlers.handler(XTPacket('u', 'gp'))
 @handlers.cooldown(1)
 async def handle_get_player(p, penguin_id: int):
-    await p.send_xt('gp', await get_player_string(p, penguin_id))
+    player_string = p.server.cache.get(f'player.{penguin_id}')
+    player_string = await get_player_string(p, penguin_id) if player_string is None else player_string
+    await p.send_xt('gp', player_string)
 
 
 @handlers.handler(XTPacket('u', 'gmo'), client=ClientType.Vanilla)
 @handlers.cooldown(1)
 async def handle_get_mascot(p, mascot_id: int):
-    await p.send_xt('gmo', await get_mascot_string(p, mascot_id))
+    mascot_string = p.server.cache.get(f'mascot.{mascot_id}')
+    mascot_string = await get_mascot_string(p, mascot_id) if mascot_string is None else mascot_string
+    p.server.cache.set(f'mascot.{mascot_id}', mascot_string)
+    await p.send_xt('gmo', mascot_string)
 
 
 @handlers.handler(XTPacket('u', 'pbi'), client=ClientType.Vanilla)
