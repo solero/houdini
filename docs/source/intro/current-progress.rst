@@ -242,7 +242,7 @@ Dance competitions\* Yes      Yes
 -------------------- ------------------
 Ninja Progress       Yes      Yes
 -------------------- -------- ---------
-Purchase cards       N/A      No
+Purchase cards       N/A      Yes
 -------------------- -------- ---------
 **CardJistu**
 -------------------- ------------------
