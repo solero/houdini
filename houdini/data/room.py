@@ -282,12 +282,13 @@ class RoomWaddle(db.Model):
 
         if self.penguins.count(None) == 0:
             game_instance = self.logic(self)
+
             await game_instance.start()
 
             await self.reset()
 
             if self.temporary:
-                del p.server.rooms[self.room_id].waddles[self.id]
+                del self.room.waddles[self.id]
 
     async def remove_penguin(self, p):
         seat_id = self.get_seat_id(p)
@@ -297,7 +298,7 @@ class RoomWaddle(db.Model):
         p.waddle = None
 
         if self.temporary and self.penguins.count(None) == self.seats:
-            del p.server.rooms[self.room_id].waddles[self.id]
+            del self.room.waddles[self.id]
 
     async def reset(self):
         for seat_id, penguin in enumerate(self.penguins):
