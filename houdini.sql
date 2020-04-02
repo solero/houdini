@@ -932,6 +932,7 @@ CREATE TABLE penguin_igloo_room (
   music SMALLINT NOT NULL DEFAULT 0,
   location INT NOT NULL,
   locked BOOLEAN NOT NULL DEFAULT TRUE,
+  competition BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (id),
   CONSTRAINT igloo_room_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT igloo_room_ibfk_2 FOREIGN KEY (type) REFERENCES igloo (id) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -949,6 +950,7 @@ COMMENT ON COLUMN penguin_igloo_room.type IS 'Igloo type ID';
 COMMENT ON COLUMN penguin_igloo_room.flooring IS 'Igloo flooring ID';
 COMMENT ON COLUMN penguin_igloo_room.music IS 'Igloo music ID';
 COMMENT ON COLUMN penguin_igloo_room.locked IS 'Is igloo locked?';
+COMMENT ON COLUMN penguin_igloo_room.competition IS 'Is entered in competition?';
 
 DROP TABLE IF EXISTS igloo_like;
 CREATE TABLE igloo_like (
@@ -1120,6 +1122,25 @@ COMMENT ON COLUMN login.penguin_id IS 'Login penguin ID';
 COMMENT ON COLUMN login.date IS 'Login date';
 COMMENT ON COLUMN login.ip_hash IS 'Connection IP address';
 COMMENT ON COLUMN login.minutes_played IS 'Minutes played for session';
+
+DROP TABLE IF EXISTS cfc_donation;
+CREATE TABLE cfc_donation (
+  penguin_id INT NOT NULL,
+  coins INT NOT NULL,
+  charity SMALLINT NOT NULL,
+  date TIMESTAMP NOT NULL,
+  PRIMARY KEY (penguin_id, charity, date),
+  CONSTRAINT cfc_donation_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+ALTER TABLE cfc_donation ALTER COLUMN date SET DEFAULT now();
+
+COMMENT ON TABLE cfc_donation IS 'CFC charity donations';
+
+COMMENT ON COLUMN cfc_donation.penguin_id IS 'Donator penguin ID';
+COMMENT ON COLUMN cfc_donation.coins IS 'Donation coin amount';
+COMMENT ON COLUMN cfc_donation.charity IS 'Donation charity or cause';
+COMMENT ON COLUMN cfc_donation.date IS 'Date of donation';
 
 DROP TABLE IF EXISTS penguin_postcard;
 CREATE TABLE penguin_postcard (

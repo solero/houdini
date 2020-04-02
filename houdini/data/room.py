@@ -150,7 +150,8 @@ class PenguinIglooRoom(db.Model, RoomMixin):
     flooring = db.Column(db.ForeignKey('flooring.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
     music = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
     location = db.Column(db.ForeignKey('location.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
-    locked = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    locked = db.Column(db.Boolean, nullable=False, server_default=db.text("true"))
+    competition = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
 
     internal_id = 2000
     name = 'Igloo'

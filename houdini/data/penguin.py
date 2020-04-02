@@ -165,3 +165,12 @@ class EpfComMessage(db.Model):
     message = db.Column(db.Text, nullable=False)
     character_id = db.Column(db.ForeignKey('character.id', ondelete='RESTRICT', onupdate='CASCADE'), nullable=False)
     date = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
+
+
+class CfcDonation(db.Model):
+    __tablename__ = 'cfc_donation'
+
+    penguin_id = db.Column(db.ForeignKey('penguin.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    coins = db.Column(db.Integer, nullable=False)
+    charity = db.Column(db.Integer, nullable=False)
+    date = db.Column(db.DateTime, nullable=False, server_default=db.text("now()"))
