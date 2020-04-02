@@ -29,5 +29,5 @@ async def handle_get_snow_level(p):
 
 @handlers.handler(XTPacket('ni', 'gcd'))
 async def handle_get_card_data(p):
-    await p.send_xt('gcd', '|'.join(f'{card.card_id},{card.quantity},{card.member_quantity}'
+    await p.send_xt('gcd', '|'.join(f'{card.card_id},{card.quantity+card.member_quantity}'
                                     for card in p.cards.values()))
