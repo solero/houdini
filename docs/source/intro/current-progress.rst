@@ -28,7 +28,7 @@ Membership           Yes      Yes
 -------------------- -------- ---------
 Egg-timer            Yes      Yes
 -------------------- -------- ---------
-Donate (cfc)         No       No
+Donate (cfc)         Yes      Yes
 -------------------- -------- ---------
 **Clothing**
 -------------------- ------------------
@@ -92,7 +92,7 @@ Character stamps     Yes      Yes
 -------------------- -------- ---------
 Puffle dig stamps    N/A      Yes
 -------------------- -------- ---------
-CardJitsu stamps     No       No
+CardJitsu stamps     Yes      Yes
 -------------------- -------- ---------
 End-game stamps      Yes      Yes
 -------------------- -------- ---------
@@ -146,7 +146,7 @@ Soundstudio tracks   N/A      Yes
 -------------------- -------- ---------
 DJ3K tracks          N/A      Yes
 -------------------- -------- ---------
-CardJitsu mats       N/A      No
+CardJitsu mats       N/A      Yes
 -------------------- -------- ---------
 **Puffles**
 -------------------- ------------------
@@ -246,13 +246,13 @@ Purchase cards       N/A      Yes
 -------------------- -------- ---------
 **CardJistu**
 -------------------- ------------------
-Gameplay             No       No
+Gameplay             Yes      Yes
 -------------------- -------- ---------
-Regular Match        No       No
+Regular Match        Yes      Yes
 -------------------- -------- ---------
-Sensei Match         No       No
+Sensei Match         Yes      Yes
 -------------------- -------- ---------
-Ranking              No       No
+Ranking              Yes      Yes
 -------------------- -------- ---------
 **CardJistu Fire**
 -------------------- ------------------
