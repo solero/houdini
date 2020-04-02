@@ -78,8 +78,8 @@ class IWaddle(ABC):
         self.penguins.remove(p)
         p.waddle = None
 
-    async def send_xt(self, *data):
-        for penguin in self.penguins:
+    async def send_xt(self, *data, f=None):
+        for penguin in filter(f, self.penguins):
             await penguin.send_xt(*data)
 
     def get_seat_id(self, p):

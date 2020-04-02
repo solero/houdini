@@ -13,6 +13,9 @@ class Card(db.Model):
     value = db.Column(db.SmallInteger, nullable=False, server_default=db.text("2"))
     description = db.Column(db.String(255), nullable=False, server_default=db.text("''::character varying"))
 
+    def get_string(self):
+        return f'{self.id}|{self.element}|{self.value}|{self.color}|{self.power_id}'
+
 
 class CardStarterDeck(db.Model):
     __tablename__ = 'card_starter_deck'

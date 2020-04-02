@@ -9835,7 +9835,7 @@ INSERT INTO room (id, name, member, max_users, required_item, game, blackhole, s
  (994, 'igloo_card', FALSE, 80, NULL, TRUE, FALSE, FALSE, NULL),
  (995, 'Water', FALSE, 80, NULL, TRUE, FALSE, FALSE, 34),
  (997, 'Fire', FALSE, 80, NULL, TRUE, FALSE, FALSE, 32),
- (998, 'Card Jitsu', FALSE, 0, NULL, TRUE, FALSE, FALSE, 38),
+ (998, 'Card Jitsu', FALSE, 80, NULL, TRUE, FALSE, FALSE, 38),
  (999, 'Sled Race', TRUE, 80, NULL, TRUE, FALSE, FALSE, NULL),
  (324, 'Dojo Exterior Solo', FALSE, 80, NULL, FALSE, FALSE, FALSE, NULL),
  (326, 'Dojo Snow', FALSE, 80, NULL, FALSE, FALSE, FALSE, NULL),
