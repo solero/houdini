@@ -136,11 +136,6 @@ async def igloos_load(server):
     server.logger.info(f'Loaded {len(server.flooring)} igloo flooring')
 
 
-DefaultFurnitureItems = [787, 788, 790, 792, 793]
-DefaultIglooId = 1
-DefaultLocationId = 1
-
-
 @handlers.handler(XMLPacket('login'), priority=Priority.Low)
 @handlers.allow_once
 async def load_igloo_inventory(p):
@@ -150,15 +145,29 @@ async def load_igloo_inventory(p):
     p.flooring = await PenguinFlooringCollection.get_collection(p.id)
     p.locations = await PenguinLocationCollection.get_collection(p.id)
 
-    if DefaultIglooId not in p.igloos:
-        await p.igloos.insert(igloo_id=DefaultIglooId)
+    default_igloos = p.server.igloos.legacy_inventory if p.is_legacy_client else \
+        p.server.igloos.vanilla_inventory
+    for default_item in default_igloos:
+        if default_item.id not in p.igloos:
+            await p.igloos.insert(igloo_id=default_item.id)
 
-    if DefaultLocationId not in p.locations:
-        await p.locations.insert(location_id=DefaultLocationId)
+    default_locations = p.server.locations.legacy_inventory if p.is_legacy_client else \
+        p.server.locations.vanilla_inventory
+    for default_item in default_locations:
+        if default_item.id not in p.locations:
+            await p.locations.insert(location_id=default_item.id)
 
-    for default_item_id in DefaultFurnitureItems:
-        if default_item_id not in p.furniture:
-            await p.furniture.insert(furniture_id=default_item_id)
+    default_flooring = p.server.flooring.legacy_inventory if p.is_legacy_client else \
+        p.server.flooring.vanilla_inventory
+    for default_item in default_flooring:
+        if default_item.id not in p.flooring:
+            await p.flooring.insert(flooring_id=default_item.id)
+
+    default_furniture = p.server.furniture.legacy_inventory if p.is_legacy_client else \
+        p.server.furniture.vanilla_inventory
+    for default_item in default_furniture:
+        if default_item.id not in p.furniture:
+            await p.furniture.insert(furniture_id=default_item.id)
 
 
 @handlers.handler(XTPacket('g', 'gm'))
@@ -253,9 +262,6 @@ async def handle_buy_igloo_type(p, igloo: Igloo):
 async def handle_buy_furniture(p, furniture: Furniture):
     if furniture is None:
         return await p.send_error(402)
-
-    if furniture.id in p.furniture:
-        return await p.send_error(400)
 
     if p.coins < furniture.cost:
         return await p.send_error(401)

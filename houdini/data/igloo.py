@@ -1,6 +1,7 @@
 from houdini.data import AbstractDataCollection, db
 from functools import cached_property
 
+
 class Flooring(db.Model):
     __tablename__ = 'flooring'
 
@@ -27,7 +28,6 @@ class Furniture(db.Model):
     bait = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     max_quantity = db.Column(db.SmallInteger, nullable=False, server_default=db.text("100"))
     innocent = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
-
 
 
 class Igloo(db.Model):
@@ -118,6 +118,14 @@ class IglooCollection(AbstractDataCollection):
     __indexby__ = 'id'
     __filterby__ = 'id'
 
+    @cached_property
+    def legacy_inventory(self):
+        return [item for item in self.values() if item.legacy_inventory]
+
+    @cached_property
+    def vanilla_inventory(self):
+        return [item for item in self.values() if item.vanilla_inventory]
+
 
 class PenguinIglooCollection(AbstractDataCollection):
     __model__ = PenguinIgloo
@@ -129,6 +137,14 @@ class LocationCollection(AbstractDataCollection):
     __model__ = Location
     __indexby__ = 'id'
     __filterby__ = 'id'
+
+    @cached_property
+    def legacy_inventory(self):
+        return [item for item in self.values() if item.legacy_inventory]
+
+    @cached_property
+    def vanilla_inventory(self):
+        return [item for item in self.values() if item.vanilla_inventory]
 
 
 class PenguinLocationCollection(AbstractDataCollection):
@@ -146,6 +162,14 @@ class FurnitureCollection(AbstractDataCollection):
     def innocent(self):
         return [item for item in self.values() if item.innocent]
 
+    @cached_property
+    def legacy_inventory(self):
+        return [item for item in self.values() if item.legacy_inventory]
+
+    @cached_property
+    def vanilla_inventory(self):
+        return [item for item in self.values() if item.vanilla_inventory]
+
 
 class PenguinFurnitureCollection(AbstractDataCollection):
     __model__ = PenguinFurniture
@@ -157,6 +181,14 @@ class FlooringCollection(AbstractDataCollection):
     __model__ = Flooring
     __indexby__ = 'id'
     __filterby__ = 'id'
+
+    @cached_property
+    def legacy_inventory(self):
+        return [item for item in self.values() if item.legacy_inventory]
+
+    @cached_property
+    def vanilla_inventory(self):
+        return [item for item in self.values() if item.vanilla_inventory]
 
 
 class PenguinFlooringCollection(AbstractDataCollection):

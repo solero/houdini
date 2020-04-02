@@ -73,6 +73,14 @@ class ItemCollection(AbstractDataCollection):
     def innocent(self):
         return [item for item in self.values() if item.innocent]
 
+    @cached_property
+    def legacy_inventory(self):
+        return [item for item in self.values() if item.legacy_inventory]
+
+    @cached_property
+    def vanilla_inventory(self):
+        return [item for item in self.values() if item.vanilla_inventory]
+
 
 class PenguinItemCollection(AbstractDataCollection):
     __model__ = PenguinItem

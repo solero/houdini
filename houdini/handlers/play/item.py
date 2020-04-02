@@ -40,21 +40,20 @@ async def items_load(server):
     server.logger.info(f'Loaded {len(server.items)} clothing items')
 
 
-DefaultInventory = [1285, 9106]
-
-
 @handlers.handler(XMLPacket('login'), priority=Priority.Low)
 @handlers.allow_once
 async def load_inventory(p):
     p.inventory = await PenguinItemCollection.get_collection(p.id)
     p.permissions = await PenguinPermissionCollection.get_collection(p.id)
 
-    if p.color not in p.inventory:
+    if p.color is not None and p.color not in p.inventory:
         await p.inventory.insert(item_id=p.color)
 
-    for default_item_id in DefaultInventory:
-        if default_item_id not in p.inventory:
-            await p.inventory.insert(item_id=default_item_id)
+    default_items = p.server.items.legacy_inventory if p.is_legacy_client else \
+        p.server.items.vanilla_inventory
+    for default_item in default_items:
+        if default_item.id not in p.inventory:
+            await p.inventory.insert(item_id=default_item.id)
 
 
 @handlers.handler(XTPacket('i', 'gi'))
