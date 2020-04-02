@@ -66,12 +66,13 @@ class _Listener(_ArgumentDeserializer):
 
 class _XTListener(_Listener):
 
-    __slots__ = ['pre_login']
+    __slots__ = ['pre_login', 'match']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.pre_login = kwargs.get('pre_login')
+        self.match = kwargs.get('match')
 
     async def __call__(self, p, packet_data):
         try:
@@ -79,10 +80,11 @@ class _XTListener(_Listener):
                 await p.close()
                 raise AuthorityError(f'{p} tried sending XT packet before authentication!')
 
-            await super()._check_cooldown(p)
-            super()._check_list(p)
+            if self.match is None or packet_data[:len(self.match)] == self.match:
+                await super()._check_cooldown(p)
+                super()._check_list(p)
 
-            await super().__call__(p, packet_data)
+                await super().__call__(p, packet_data)
         except CooldownError:
             p.logger.debug(f'{p} tried to send a packet during a cooldown')
         except ChecklistError:
