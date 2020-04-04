@@ -128,7 +128,7 @@ async def handle_buddy_request(p, buddy_id: int):
             buddy = p.server.penguins_by_id[buddy_id]
 
             if buddy.client_type == ClientType.Vanilla and p.id not in buddy.buddy_requests:
-                await buddy.buddy_requests.insert(buddy_id=p.id)
+                await buddy.buddy_requests.insert(requester_id=p.id)
             elif p.id not in buddy.legacy_buddy_requests:
                 buddy.legacy_buddy_requests.add(p.id)
             else:
