@@ -896,7 +896,7 @@ COMMENT ON COLUMN penguin_card.member_quantity IS 'Quantity owned as member';
 DROP TABLE IF EXISTS penguin_furniture;
 CREATE TABLE penguin_furniture (
   penguin_id INT NOT NULL,
-  furniture_id SMALLINT NOT NULL,
+  furniture_id INT NOT NULL,
   quantity SMALLINT NOT NULL DEFAULT 1,
   PRIMARY KEY (penguin_id, furniture_id),
   CONSTRAINT penguin_furniture_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -1091,7 +1091,7 @@ COMMENT ON TABLE ignore_list IS 'Penguin ignore relationships';
 DROP TABLE IF EXISTS penguin_item;
 CREATE TABLE penguin_item (
   penguin_id INT NOT NULL,
-  item_id SMALLINT NOT NULL,
+  item_id INT NOT NULL,
   PRIMARY KEY (penguin_id, item_id),
   CONSTRAINT penguin_item_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT penguin_item_ibfk_2 FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE
