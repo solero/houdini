@@ -41,7 +41,7 @@ async def handle_send_job_mail(p):
     while last_paycheck < first_day_of_month:
         last_paycheck = last_paycheck + datetime.timedelta(days=32)
         last_paycheck = last_paycheck.replace(day=1)
-        send_date = last_paycheck + datetime.timedelta(days=1)
+        send_date = last_paycheck
         if 428 in p.inventory:
             postcards.append({
                 'penguin_id': p.id,
