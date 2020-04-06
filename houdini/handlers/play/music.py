@@ -150,6 +150,8 @@ def encode_music_track(track_pattern):
 
 
 def determine_song_length(track_pattern):
+    if track_pattern == '0':
+        return 0
     track_length = track_pattern.split(',')[-1]
     track_length = track_length.split('|')[1]
     return int(track_length, 16) // 1000
@@ -200,7 +202,7 @@ async def handle_save_my_music_track(p, track_name, track_pattern, track_hash):
     if encoded_track_pattern != track_hash or song_length > 180:
         return
 
-    pattern_regex = r'^([0-9a-fA-F]+,\d+\|){0,1000}[0-9a-fA-F]+,FFFF\|[0-9a-fA-F]+$'
+    pattern_regex = r'^([0-9a-fA-F]+,[0-9a-fA-F]+\|){0,1000}[0-9a-fA-F]+,FFFF\|[0-9a-fA-F]+$'
     if not re.match(pattern_regex, track_pattern):
         return
 

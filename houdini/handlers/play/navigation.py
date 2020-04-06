@@ -55,6 +55,7 @@ async def setup_waddles(room_collection):
             room_collection[waddle.room_id].waddles[waddle.id] = waddle
             waddle.room = room_collection[waddle.room_id]
             waddle.logic = WaddleLogicMapping[waddle.game]
+            waddle.penguins = [None] * waddle.seats
 
 
 @handlers.boot

@@ -271,9 +271,6 @@ class RoomWaddle(db.Model):
         super().__init__(*args, **kwargs)
 
     async def add_penguin(self, p):
-        if not self.penguins:
-            self.penguins = [None] * self.seats
-
         seat_id = self.penguins.index(None)
         self.penguins[seat_id] = p
         await p.send_xt('jw', seat_id)
