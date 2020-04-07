@@ -204,7 +204,7 @@ Mass-delete          Yes      Yes
 -------------------- ------------------
 Recording            N/A      Yes
 -------------------- -------- ---------
-Playback             N/A      Yes
+Playback             N/A      Yeshttps://github.com/Solero/Houdini-asyncio/edit/master/docs/source/intro/current-progress.rst
 -------------------- -------- ---------
 Public playback      N/A      Yes
 -------------------- -------- ---------
@@ -218,11 +218,11 @@ Transformations      N/A      Yes
 -------------------- -------- ---------
 **Redemption**
 -------------------- ------------------
-Code redemption      No       No
+Code redemption      Yes       Yes
 -------------------- -------- ---------
-Book code redemption No       No
+Book code redemption Yes       Yes
 -------------------- -------- ---------
-Treasure Book!       No       No
+Treasure Book!       Yes       Yes
 -------------------- -------- ---------
 **Table Games**
 -------------------- ------------------
