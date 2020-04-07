@@ -218,11 +218,11 @@ Transformations      N/A      Yes
 -------------------- -------- ---------
 **Redemption**
 -------------------- ------------------
-Code redemption      No       No
+Code redemption      Yes       Yes
 -------------------- -------- ---------
-Book code redemption No       No
+Book code redemption Yes       Yes
 -------------------- -------- ---------
-Treasure Book!       No       No
+Treasure Book!       Yes       Yes
 -------------------- -------- ---------
 **Table Games**
 -------------------- ------------------
