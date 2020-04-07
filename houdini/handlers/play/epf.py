@@ -74,7 +74,8 @@ async def handle_set_agent_status(p):
     await p.send_xt('epfsa', int(p.agent_status))
 
 
-@handlers.handler(XTPacket('f', 'epfgf'))
+@handlers.handler(XTPacket('f', 'epfgf'), pre_login=True)
+@handlers.player_attribute(joined_world=True)
 async def handle_get_field_op_status(p):
     today = datetime.date.today()
     monday = today - datetime.timedelta(days=today.weekday())
