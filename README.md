@@ -29,11 +29,18 @@
       src="https://img.shields.io/github/license/solero/houdini-asyncio"
     />
   </a>
+  <a href="https://houdini.readthedocs.io/">
+    <img
+      alt="Documentation"
+      src="https://readthedocs.org/projects/houdini/badge/?version=latest&style=flat"
+    />
+  </a>
 </p>
 
 <p align="center">A lightning-fast Club Penguin Private Server written in Python 3.</p>
 
-> NOTE: Currently in early-stages development and things are missing!
+- [Join our community](https://solero.me)
+- [Documentation](https://houdini.readthedocs.io)
 
 ## Features :space_invader:
 
