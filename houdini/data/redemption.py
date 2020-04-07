@@ -106,6 +106,7 @@ class RedemptionBook(db.Model):
 class RedemptionBookWord(db.Model):
     __tablename__ = 'redemption_book_word'
 
+    question_id = db.Column(db.Integer, primary_key=True, server_default=db.text("nextval('\"redemption_book_word_question_id_seq\"'::regclass)"))
     book_id = db.Column(db.ForeignKey('redemption_book.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
                         nullable=False)
     page = db.Column(db.SmallInteger, primary_key=True, nullable=False, server_default=db.text("1"))
