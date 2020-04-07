@@ -1263,6 +1263,7 @@ COMMENT ON COLUMN redemption_book.name IS 'Book name';
 
 DROP TABLE IF EXISTS redemption_book_word;
 CREATE TABLE redemption_book_word (
+  question_id SERIAL,
   book_id INT NOT NULL,
   page SMALLINT NOT NULL DEFAULT 1,
   line SMALLINT NOT NULL DEFAULT 1,
@@ -1271,6 +1272,7 @@ CREATE TABLE redemption_book_word (
   PRIMARY KEY(book_id, page, line, word_number),
   CONSTRAINT redemption_book_word_ibfk_1 FOREIGN KEY (book_id) REFERENCES redemption_book (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+ALTER SEQUENCE redemption_book_word_question_id_seq RESTART WITH 1;
 
 COMMENT ON TABLE redemption_book_word IS 'Redemption book answers';
 
