@@ -204,7 +204,7 @@ Mass-delete          Yes      Yes
 -------------------- ------------------
 Recording            N/A      Yes
 -------------------- -------- ---------
-Playback             N/A      Yeshttps://github.com/Solero/Houdini-asyncio/edit/master/docs/source/intro/current-progress.rst
+Playback             N/A      Yes
 -------------------- -------- ---------
 Public playback      N/A      Yes
 -------------------- -------- ---------
