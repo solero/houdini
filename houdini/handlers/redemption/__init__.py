@@ -3,7 +3,7 @@ from houdini.constants import ClientType
 from houdini.data.item import Item
 from houdini.data.igloo import Furniture, Igloo
 from houdini.data import db
-from houdini.data.redemption import PenguinRedemptionBook, PenguinRedemptionCode, RedemptionAwardCard, \
+from houdini.data.redemption import RedemptionBook, RedemptionBookWord,PenguinRedemptionBook, PenguinRedemptionCode, RedemptionAwardCard, \
     RedemptionAwardFlooring, RedemptionAwardFurniture, RedemptionAwardIgloo, RedemptionAwardItem, \
     RedemptionAwardLocation, RedemptionAwardPuffle, RedemptionAwardPuffleItem, RedemptionCode
 from houdini.handlers import XTPacket
@@ -41,7 +41,8 @@ async def handle_join_redemption_server_legacy(p, penguin_id: int, login_key: st
     tr.setex(f'{p.username}.lkey', p.server.config.auth_ttl, login_key)
     await tr.execute()
 
-    await p.send_xt('rjs', '', 1)
+    redeemed_books = await PenguinRedemptionBook.query.where(PenguinRedemptionBook.penguin_id == p.id).gino.all()
+    await p.send_xt('rjs', ','.join(str(redeemed_book.book_id) for redeemed_book in redeemed_books), 'houdini', int(p.is_member))
 
 
 @handlers.handler(XTPacket('rsc', ext='red'), pre_login=True, client=ClientType.Legacy)
@@ -275,28 +276,25 @@ async def handle_send_cart(p, redemption_code: str, choice: str, super_exclusive
               ) \
         .query.where(RedemptionCode.code == redemption_code)
     codes = await query.gino.all()
+
+    if len(codes) == 0:
+        return await p.close()
+
     code = codes[0]
     coins = 0
     if choice is None:
         return await p.close()
 
     choices = choice.split(',')
-    print(choices)
     for choice in choices:
         if choice[:2] == 'c0':
             coins += 500
 
         elif choice[:1] != 'p':
-            if int(choice) not in p.server.items:
+            if p.server.items[int(choice)] not in p.server.items.treasure:
                 return await p.close()
             else:
-                print('Adding', int(choice))
                 await p.add_inventory(p.server.items[int(choice)], notify=False)
-
-            # if int(choice) not in p.server.items.treasure:
-            #     return await p.close()
-            # else:
-            #     await p.add_inventory(p.server.items[choice], notify=False)
 
     while 'c0' in choices:
         choices.remove('c0')
