@@ -194,6 +194,7 @@ class Penguin(Spheniscidae, penguin.Penguin):
         return True
 
     async def add_card(self, card, quantity=0, member_quantity=0):
+        quantity = max(1, quantity + member_quantity)
         if card.id in self.cards:
             penguin_card = self.cards[card.id]
 
