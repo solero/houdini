@@ -51,7 +51,8 @@ async def handle_rainbow_quest_cookie(p):
 
     if task_completion:
         quest_wait = RainbowQuestWaitMember if p.is_member else RainbowQuestWait
-        task_availability = datetime.utcfromtimestamp(int(task_completion)) + quest_wait
+        task_availability = datetime.fromtimestamp(int(task_completion)) + quest_wait
+
         minutes_remaining = int((task_availability - current_datetime).total_seconds() // 60)
         task_availability_unix = task_availability.timestamp()
     else:
