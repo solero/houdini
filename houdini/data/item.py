@@ -67,19 +67,19 @@ class ItemCollection(AbstractDataCollection):
 
     @cached_property
     def treasure(self):
-        return [item for item in self.values() if item.treasure]
+        return { item for item in self.values() if item.treasure }
 
     @cached_property
     def innocent(self):
-        return [item for item in self.values() if item.innocent]
+        return { item for item in self.values() if item.innocent }
 
     @cached_property
     def legacy_inventory(self):
-        return [item for item in self.values() if item.legacy_inventory]
+        return { item for item in self.values() if item.legacy_inventory }
 
     @cached_property
     def vanilla_inventory(self):
-        return [item for item in self.values() if item.vanilla_inventory]
+        return { item for item in self.values() if item.vanilla_inventory }
 
 
 class PenguinItemCollection(AbstractDataCollection):
