@@ -149,6 +149,7 @@ async def handle_get_card_jitsu_mat(p, waddle_id: int):
     waddle_id = max(200, min(300, waddle_id))
     if p.room.igloo and waddle_id not in p.room.waddles:
         rw = RoomWaddle(id=waddle_id, room_id=p.room.id, seats=2, game='card', temporary=True)
+        rw.penguins = [None]*2
         rw.room = p.room
         rw.logic = CardJitsuMatLogic
         p.room.waddles[rw.id] = rw
@@ -159,6 +160,7 @@ async def handle_get_card_jitsu_mat(p, waddle_id: int):
 async def handle_join_sensei_match(p):
     waddle_room = p.server.rooms[SenseiLogic.room_id]
     rw = RoomWaddle(id=p.id, room_id=waddle_room.id, seats=1, game='sensei', temporary=True)
+    rw.penguins = [None]
     rw.room = waddle_room
     rw.logic = SenseiLogic
     waddle_room.waddles[rw.id] = rw
@@ -171,6 +173,7 @@ async def handle_join_sensei_match(p):
 async def handle_join_fire_sensei_match(p):
     waddle_room = p.server.rooms[FireSenseiLogic.room_id]
     rw = RoomWaddle(id=p.id, room_id=waddle_room.id, seats=1, game='firesensei', temporary=True)
+    rw.penguins = [None]
     rw.room = waddle_room
     rw.logic = FireSenseiLogic
     waddle_room.waddles[rw.id] = rw
@@ -183,6 +186,7 @@ async def handle_join_fire_sensei_match(p):
 async def handle_join_water_sensei_match(p):
     waddle_room = p.server.rooms[WaterSenseiLogic.room_id]
     rw = RoomWaddle(id=p.id, room_id=waddle_room.id, seats=1, game='watersensei', temporary=True)
+    rw.penguins = [None]
     rw.room = waddle_room
     rw.logic = WaterSenseiLogic
     waddle_room.waddles[rw.id] = rw
