@@ -163,11 +163,11 @@ class _ListenerManager(_AbstractManager):
                         self[listener_object.packet].append(listener_object)
 
             for listener_name, listener_object in listener_objects:
-                if listener_object.before is not None:
+                if listener_object.before in self[listener_object.packet]:
                     index_of_before = self[listener_object.packet].index(listener_object.before)
                     old_index = self[listener_object.packet].index(listener_object)
                     self[listener_object.packet].insert(index_of_before - 1, self[listener_object.packet].pop(old_index))
-                if listener_object.after is not None:
+                if listener_object.after in self[listener_object.packet]:
                     index_of_after = self[listener_object.packet].index(listener_object.after)
                     old_index = self[listener_object.packet].index(listener_object)
                     self[listener_object.packet].insert(index_of_after + 1, self[listener_object.packet].pop(old_index))
