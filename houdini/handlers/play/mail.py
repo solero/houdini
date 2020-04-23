@@ -1,5 +1,6 @@
 import time
 import pytz
+import datetime
 
 from houdini import handlers
 from houdini.data import db
@@ -39,10 +40,13 @@ async def handle_get_mail(p):
         async for postcard in mail_query.gino.iterate():
             sender_name, sender_id = ('sys', 0) if postcard.sender_id is None else (
                 postcard.parent.safe_nickname(p.server.config.lang), postcard.sender_id)
-            sent_pst = postcard.send_date.astimezone(pst)
-            sent_timestamp = int(time.mktime(postcard.send_date.timetuple()))
-            sent_pst_timestamp = int(time.mktime(sent_pst.timetuple()))
-            sent_timestamp += sent_timestamp - sent_pst_timestamp
+
+            pst_send_date = postcard.send_date.astimezone(pst)
+            pst_send_date = pst_send_date.replace(tzinfo=None)
+
+            offset = datetime.timedelta(seconds=(postcard.send_date - pst_send_date).total_seconds())
+            sent_timestamp = int((postcard.send_date + offset).timestamp())
+
             postcards.append(f'{sender_name}|{sender_id}|{postcard.postcard_id}|'
                              f'{postcard.details}|{sent_timestamp+1}|{postcard.id}|{int(postcard.has_read)}')
     await p.send_xt('mg', *postcards)
