@@ -75,7 +75,7 @@ async def handle_get_game_over(p, score: int):
     if p.room.game and not p.waddle and not p.table:
         coins_earned = determine_coins_earned(p, score)
         if await determine_coins_overdose(p, coins_earned):
-            await cheat_ban(p, p.id, comment='Coins overdose')
+            return await cheat_ban(p, p.id, comment='Coins overdose')
 
         collected_stamps_string, total_collected_stamps, total_game_stamps, total_stamps = '', 0, 0, 0
         if p.room.stamp_group:
