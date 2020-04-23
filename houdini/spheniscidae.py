@@ -99,7 +99,8 @@ class Spheniscidae:
             packet_data = parsed_data[4:]
 
             for listener in xt_listeners:
-                if listener.client_type is None or listener.client_type == self.client_type:
+                if not self.__writer.is_closing() and listener.client_type is None \
+                        or listener.client_type == self.client_type:
                     await listener(self, packet_data)
             self.received_packets.add(packet)
         else:
@@ -125,7 +126,8 @@ class Spheniscidae:
                     xml_listeners = self.server.xml_listeners[packet]
 
                     for listener in xml_listeners:
-                        if listener.client_type is None or listener.client_type == self.client_type:
+                        if not self.__writer.is_closing() and listener.client_type is None \
+                                or listener.client_type == self.client_type:
                             await listener(self, body_tag)
 
                     self.received_packets.add(packet)
