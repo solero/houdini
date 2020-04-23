@@ -134,7 +134,7 @@ async def handle_get_com_messages(p):
 
 @handlers.handler(XTPacket('f', 'epfgrantreward'))
 @handlers.cooldown(60)
-@handlers.player_attribute(agent_status=False)
+@handlers.player_attribute(agent_status=True)
 async def handle_epf_grant_reward(p, medals: int):
     medals = min(45, medals)
     await p.update(career_medals=p.career_medals + medals,
