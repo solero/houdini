@@ -262,6 +262,6 @@ async def handle_redeem_puffle(p, name: str, puffle_type: int):
     puffle = await p.puffles.insert(puffle_id=puffle_type, name=name)
     await p.add_puffle_item(p.server.puffle_items[3], quantity=5, cost=0)
     await p.add_puffle_item(p.server.puffle_items[79], cost=0)
-    await p.add_puffle_item(p.server.puffle_items[p.server.puffles[puffle.id].favourite_toy])
+    await p.add_puffle_item(p.server.puffle_items[p.server.puffles[puffle.puffle_id].favourite_toy])
     await p.add_inbox(p.server.postcards[111], details=puffle.name)
     await p.send_xt('rsp', 1)
