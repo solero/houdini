@@ -210,8 +210,7 @@ async def handle_golden_choice(p, redemption_code: str, choice: int):
     for card in cards:
         await p.add_card(p.server.cards[card.card_id])
 
-    if code.uses is None:
-        await PenguinRedemptionCode.create(penguin_id=p.id, code_id=code.id)
+    await PenguinRedemptionCode.create(penguin_id=p.id, code_id=code.id)
 
 
 @handlers.handler(XTPacket('rscrt', ext='red'), pre_login=True)
@@ -240,7 +239,7 @@ async def handle_send_cart(p, redemption_code: str, choice: str):
             awards.append(choice)
             await p.add_inventory(p.server.items[int(choice)], notify=False)
 
-    if code.uses is None:
+    if code.uses is not None:
         await PenguinRedemptionCode.create(penguin_id=p.id, code_id=code.id)
 
     await p.update(coins=p.coins + coins).apply()
