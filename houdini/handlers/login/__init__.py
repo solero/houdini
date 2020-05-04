@@ -14,7 +14,7 @@ async def handle_version_check(p, version: VersionChkConverter):
         elif p.server.config.vanilla_version == version:
             p.client_type = ClientType.Vanilla
     elif p.server.config.default_version == version:
-        p.client_type = p.server.config.default_version
+        p.client_type = p.server.config.default_client
 
     if p.client_type is None:
         await p.send_xml({'body': {'action': 'apiKO', 'r': '0'}})
