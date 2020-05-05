@@ -13,7 +13,7 @@ async def handle_version_check(p, version: VersionChkConverter):
             p.client_type = ClientType.Legacy
         elif p.server.config.vanilla_version == version:
             p.client_type = ClientType.Vanilla
-    elif p.server.config.default_version == version:
+    else:
         p.client_type = p.server.config.default_client
 
     if p.client_type is None:
