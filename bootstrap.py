@@ -93,7 +93,7 @@ if __name__ == '__main__':
     games_group.add_argument('--max-coins', action='store',
                              default=1000000, type=int, help='Max coins earnable')
     games_group.add_argument('--max-coins-per-min', action='store',
-                             default=250, type=int, help='Max coins per min')
+                             default=500, type=int, help='Max coins per min')
 
     client_group = parser.add_argument_group('client')
     client_mode = client_group.add_mutually_exclusive_group()
