@@ -314,6 +314,21 @@ async def handle_send_mascot_message(p, message_id: int):
         await p.room.send_xt('sma', p.id, message_id)
 
 
+@handlers.handler(XTPacket('u', 'sj'))
+async def handle_send_joke(p, message_id: int):
+    await p.room.send_xt('sj', p.id, message_id)
+
+
+@handlers.handler(XTPacket('u', 'sl'))
+async def handle_send_stage_line_message(p, message_id: int):
+    await p.room.send_xt('sl', p.id, message_id)
+
+
+@handlers.handler(XTPacket('u', 'sg'))
+async def handle_send_tour_guide_message(p, message_id: int):
+    await p.room.send_xt('sg', p.id, message_id)
+
+
 @handlers.handler(XTPacket('u', 'glr'))
 async def handle_get_last_revision(p):
     await p.send_xt('glr', 'houdini')
