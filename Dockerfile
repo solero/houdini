@@ -1,6 +1,12 @@
 FROM python:3-alpine
 
-RUN apk add openssl build-base openssl-dev libffi-dev redis postgresql-client
+RUN apk add \
+    openssl \
+    build-base \
+    openssl-dev \
+    libffi-dev \
+    redis \
+    postgresql-client
 
 WORKDIR /usr/src/houdini
 
@@ -12,8 +18,4 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
-
-ENV server "login"
-
-CMD ["sh", "-c", "python ./bootstrap.py ${server}"]
+ENTRYPOINT [ "python", "./bootstrap.py" ]
