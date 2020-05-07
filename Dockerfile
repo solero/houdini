@@ -16,6 +16,6 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+RUN python3.8 -m pip install --no-cache-dir -r requirements.txt
 
-ENTRYPOINT [ "python", "./bootstrap.py" ]
+ENTRYPOINT [ "python3.8", "./bootstrap.py" ]
