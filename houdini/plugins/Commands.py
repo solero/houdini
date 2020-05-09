@@ -6,15 +6,15 @@ from houdini import commands
 from houdini import permissions
 
 class Example(IPlugin):
-    author = "Ben"
-    description = "Example plugin for developers"
+    author = "Allinol"
+    description = "Commands Plugin"
     version = "1.0.0"
 
     def __init__(self, server):
         super().__init__(server)
 
     async def ready(self):
-        self.server.logger.info('Example.ready()')
+        self.server.logger.info('Commands.ready()')
         print(f'hello')
 
     async def message_cooling(self, p):
