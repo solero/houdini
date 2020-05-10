@@ -9,22 +9,22 @@ async def handle_get_ninja_ranks(p):
 
 @handlers.handler(XTPacket('ni', 'gnl'))
 async def handle_get_ninja_level(p):
-    await p.send_xt('gnl', p.ninja_rank, p.ninja_progress)
+    await p.send_xt('gnl', p.ninja_rank, p.ninja_progress, 10)
 
 
 @handlers.handler(XTPacket('ni', 'gfl'))
 async def handle_get_fire_level(p):
-    await p.send_xt('gfl', p.fire_ninja_rank, p.fire_ninja_progress)
+    await p.send_xt('gfl', p.fire_ninja_rank, p.fire_ninja_progress, 5)
 
 
 @handlers.handler(XTPacket('ni', 'gwl'))
 async def handle_get_water_level(p):
-    await p.send_xt('gwl', p.water_ninja_rank, p.water_ninja_progress)
+    await p.send_xt('gwl', p.water_ninja_rank, p.water_ninja_progress, 5)
 
 
 @handlers.handler(XTPacket('ni', 'gsl'))
 async def handle_get_snow_level(p):
-    await p.send_xt('gsl', 0, 0)
+    await p.send_xt('gsl', 0, 0, 24)
 
 
 @handlers.handler(XTPacket('ni', 'gcd'))
