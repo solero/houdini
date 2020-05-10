@@ -35,7 +35,7 @@ class RoomMixin:
         p.room = self
 
     async def remove_penguin(self, p):
-        if not (p.is_vanilla_client and p.stealth_moderator):
+        if not p.stealth_moderator:
             await self.send_xt('rp', p.id, f=lambda penguin: penguin.id != p.id)
 
         del self.penguins_by_id[p.id]
@@ -49,9 +49,7 @@ class RoomMixin:
         p.toy = None
 
     async def refresh(self, p):
-        if p.is_vanilla_client and p.stealth_moderator:
-            return await p.send_xt('grs', self.id, await self.get_string(f=stealth_mod_filter(p.id)))
-        await p.send_xt('grs', self.id, await self.get_string())
+        await p.send_xt('grs', self.id, await self.get_string(f=stealth_mod_filter(p.id)))
 
     async def get_string(self, f=None):
         return '%'.join([await p.string for p in filter(f, self.penguins_by_id.values())])
@@ -126,11 +124,10 @@ class Room(db.Model, RoomMixin):
 
         if self.game:
             await p.send_xt('jg', self.id)
-        elif p.is_vanilla_client and p.stealth_moderator:
-            await p.send_xt('jr', self.id, await self.get_string(f=stealth_mod_filter(p.id)))
         else:
-            await p.send_xt('jr', self.id, await self.get_string())
-            await self.send_xt('ap', await p.string)
+            await p.send_xt('jr', self.id, await self.get_string(f=stealth_mod_filter(p.id)))
+            if not p.stealth_moderator:
+                await self.send_xt('ap', await p.string)
 
     async def remove_penguin(self, p):
         await RoomMixin.remove_penguin(self, p)
@@ -174,10 +171,8 @@ class PenguinIglooRoom(db.Model, RoomMixin):
     async def add_penguin(self, p):
         await RoomMixin.add_penguin(self, p)
 
-        if p.is_vanilla_client and p.stealth_moderator:
-            await p.send_xt('jr', self.external_id, await self.get_string(f=stealth_mod_filter(p.id)))
-        else:
-            await p.send_xt('jr', self.external_id, await self.get_string())
+        await p.send_xt('jr', self.external_id, await self.get_string(f=stealth_mod_filter(p.id)))
+        if not p.stealth_moderator:
             await self.send_xt('ap', await p.string)
 
     async def remove_penguin(self, p):
