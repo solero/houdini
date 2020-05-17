@@ -40,3 +40,5 @@ async def handle_send_message(p, penguin_id: int, message: str):
         await invoke_command_string(p.server.commands, p, message)
     else:
         await p.room.send_xt('sm', p.id, message)
+
+    p.logger.info(f'{p.username} said \'{message}\' in room \'{p.room.name}\'')
