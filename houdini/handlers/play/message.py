@@ -36,6 +36,7 @@ async def handle_send_message(p, penguin_id: int, message: str):
                 return
 
     if has_command_prefix(p.server.config.command_prefix, message):
+        await p.room.send_xt('mm', message, p.id, f=lambda px: px.moderator)
         await invoke_command_string(p.server.commands, p, message)
     else:
         await p.room.send_xt('sm', p.id, message)
