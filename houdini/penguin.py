@@ -261,8 +261,25 @@ class Penguin(Spheniscidae, penguin.Penguin):
         await self.send_xt('mr', sender_name, 0, postcard.id, details, int(time.time()), penguin_postcard.id)
 
     async def add_permission(self, permission):
-        if permission not in self.permissions:
-            await self.permissions.insert(name=permission)
+        if permission.name not in self.permissions:
+            await self.permissions.insert(permission_name=permission.name)
+
+        self.logger.info(f'{self.username} was assigned permission \'{permission.name}\'')
+
+        return True
+
+    async def revoke_permission(self, permission_root):
+        for permission in list(self.permissions.values()):
+            server_permission = self.server.permissions[permission.permission_name]
+
+            if server_permission.name == permission_root.name or \
+                    server_permission.name.startswith(permission_root.name + '.'):
+                await self.permissions.delete(server_permission.name)
+
+        self.logger.info(f'{self.username} had permission \'{permission_root.name}\' revoked')
+
+        return True
+
     def get_custom_attribute(self, name, default=None):
         penguin_attribute = self.attributes.get(name, default)
         if penguin_attribute == default:
