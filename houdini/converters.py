@@ -348,6 +348,17 @@ class PenguinPuffleConverter(IConverter):
             return None
 
 
+class PermissionConverter(IConverter):
+
+    description = """Converts a permission identifier to a houdini.data.Permission instance"""
+
+    async def convert(self, ctx):
+        try:
+            return ctx.p.server.permissions[ctx.argument]
+        except KeyError:
+            return None
+
+
 class SeparatorConverter(IConverter):
 
     __slots__ = ['separator', 'mapper']
@@ -442,7 +453,9 @@ ConverterTypes = {
     Stamp: StampConverter,
     Puffle: PuffleConverter,
 
-    PenguinPuffle: PenguinPuffleConverter
+    PenguinPuffle: PenguinPuffleConverter,
+
+    Permission: PermissionConverter
 }
 
 
