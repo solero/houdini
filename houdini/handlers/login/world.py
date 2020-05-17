@@ -79,7 +79,7 @@ async def handle_legacy_login(p, credentials: Credentials):
 
     try:
         login_key = login_key.decode()
-    except:
+    except AttributeError:
         return await p.close()
 
     login_hash = Crypto.encrypt_password(login_key + p.server.config.auth_key) + login_key
