@@ -2,7 +2,8 @@ import inspect
 
 from houdini import _AbstractManager, handlers, plugins
 from houdini.constants import ConflictResolution
-from houdini.converters import _ArgumentDeserializer, _listener
+from houdini.converters import _ArgumentDeserializer, _listener, ChecklistError
+from houdini.cooldown import CooldownError
 
 
 class UnknownCommandException(Exception):
@@ -17,6 +18,17 @@ class _Command(_ArgumentDeserializer):
         self.alias = kwargs.get('alias', [])
         self.parent = kwargs.get('parent', None)
 
+    async def __call__(self, p, data):
+        try:
+            await super()._check_cooldown(p)
+            super()._check_list(p)
+
+            await super().__call__(p, data)
+        except CooldownError:
+            p.logger.debug(f'{p} tried to send a command during a cooldown')
+        except ChecklistError:
+            p.logger.debug(f'{p} sent a command without meeting checklist requirements')
+
 
 class _CommandGroup(_Command):
     __slots__ = ['commands']
@@ -28,9 +40,17 @@ class _CommandGroup(_Command):
 
     async def __call__(self, p, data):
         if not data:
-            if self.instance:
-                return await self.callback(self.instance, p)
-            return await self.callback(p)
+            try:
+                await super()._check_cooldown(p)
+                super()._check_list(p)
+
+                if self.instance:
+                    return await self.callback(self.instance, p)
+                return await self.callback(p)
+            except CooldownError:
+                p.logger.debug(f'{p} tried to send a command during a cooldown')
+            except ChecklistError:
+                p.logger.debug(f'{p} sent a command without meeting checklist requirements')
 
         await invoke_command_objects(self.commands, p, data)
 
