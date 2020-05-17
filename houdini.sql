@@ -696,32 +696,31 @@ COMMENT ON COLUMN activation_key.activation_key IS 'Penguin activation key';
 
 DROP TABLE IF EXISTS permission;
 CREATE TABLE permission (
-  id SERIAL NOT NULL,
   name VARCHAR(50) NOT NULL,
   enabled BOOLEAN NOT NULL DEFAULT TRUE,
-  PRIMARY KEY (id)
+  PRIMARY KEY (name)
 );
 
 CREATE UNIQUE INDEX permission_name ON permission(name);
 
 COMMENT ON TABLE permission IS 'Registered server permissions';
 
-COMMENT ON COLUMN permission.id IS 'Unique permission ID';
 COMMENT ON COLUMN permission.name IS 'Unique permission identifier';
 
 DROP TABLE IF EXISTS penguin_permission;
 CREATE TABLE penguin_permission (
   penguin_id INT NOT NULL,
-  permission_id INT NOT NULL,
-  PRIMARY KEY (penguin_id),
+  permission_name VARCHAR(50) NOT NULL,
+  PRIMARY KEY (penguin_id, permission_name),
   CONSTRAINT penguin_permission_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin(id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_permission_ibfk_2 FOREIGN KEY (permission_id) REFERENCES permission(id) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT penguin_permission_ibfk_2 FOREIGN KEY (permission_name) REFERENCES permission(name) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE penguin_permission IS 'Penguin permissions';
 
 COMMENT ON COLUMN penguin_permission.penguin_id IS 'Penguin ID';
-COMMENT ON COLUMN penguin_permission.permission_id IS 'Penguin permission ID';
+COMMENT ON COLUMN penguin_permission.permission_name IS 'Penguin permission name';
+
 DROP TABLE IF EXISTS penguin_attribute;
 CREATE TABLE penguin_attribute (
   name TEXT NOT NULL,
