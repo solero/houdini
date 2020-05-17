@@ -77,7 +77,11 @@ async def handle_legacy_login(p, credentials: Credentials):
     tr.delete(f'{credentials.username}.lkey', f'{credentials.username}.ckey')
     login_key, _ = await tr.execute()
 
-    login_key = login_key.decode()
+    try:
+        login_key = login_key.decode()
+    except:
+        return await p.close()
+
     login_hash = Crypto.encrypt_password(login_key + p.server.config.auth_key) + login_key
 
     if login_key is None or login_hash != credentials.password:
