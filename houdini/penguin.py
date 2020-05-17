@@ -263,8 +263,28 @@ class Penguin(Spheniscidae, penguin.Penguin):
     async def add_permission(self, permission):
         if permission not in self.permissions:
             await self.permissions.insert(name=permission)
+    def get_custom_attribute(self, name, default=None):
+        penguin_attribute = self.attributes.get(name, default)
+        if penguin_attribute == default:
+            return default
+        return penguin_attribute.value
 
-        self.logger.info(f'{self.username} was assigned permission \'{permission}\'')
+    async def set_custom_attribute(self, name, value):
+        if name not in self.attributes:
+            await self.attributes.insert(name=name, value=value)
+        else:
+            attribute = self.attributes[name]
+            await attribute.update(value=value).apply()
+
+        self.logger.info(f'{self.username} set custom attribute \'{name}\' to \'{value}\'')
+
+        return True
+
+    async def delete_custom_attribute(self, name):
+        if name in self.attributes:
+            await self.attributes.delete(name)
+
+        self.logger.info(f'{self.username} deleted attribute \'{name}\'')
 
         return True
 

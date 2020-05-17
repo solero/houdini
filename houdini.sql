@@ -722,6 +722,34 @@ COMMENT ON TABLE penguin_permission IS 'Penguin permissions';
 
 COMMENT ON COLUMN penguin_permission.penguin_id IS 'Penguin ID';
 COMMENT ON COLUMN penguin_permission.permission_id IS 'Penguin permission ID';
+DROP TABLE IF EXISTS penguin_attribute;
+CREATE TABLE penguin_attribute (
+  name TEXT NOT NULL,
+  penguin_id INT NOT NULL,
+  value TEXT NOT NULL,
+  PRIMARY KEY (name, penguin_id),
+  CONSTRAINT penguin_attribute_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+COMMENT ON TABLE penguin_attribute IS 'Custom penguin attributes';
+
+COMMENT ON COLUMN penguin_attribute.name IS 'Attribute unique identifier';
+COMMENT ON COLUMN penguin_attribute.penguin_id IS 'Penguin ID';
+COMMENT ON COLUMN penguin_attribute.value IS 'Value of attribute';
+
+DROP TABLE IF EXISTS plugin_attribute;
+CREATE TABLE plugin_attribute (
+  name TEXT NOT NULL,
+  plugin_name TEXT NOT NULL,
+  value TEXT NOT NULL,
+  PRIMARY KEY (name, plugin_name)
+);
+
+COMMENT ON TABLE plugin_attribute IS 'Custom plugin attributes';
+
+COMMENT ON COLUMN plugin_attribute.name IS 'Attribute unique identifier';
+COMMENT ON COLUMN plugin_attribute.plugin_name IS 'Name of plugin attribute belongs to';
+COMMENT ON COLUMN plugin_attribute.value IS 'Value of attribute';
 
 DROP TABLE IF EXISTS report;
 CREATE TABLE report (

@@ -115,6 +115,12 @@ class PenguinStringCompiler(OrderedDict):
         return attribute_method
 
     @classmethod
+    def custom_attribute_by_name(cls, attribute_name):
+        async def attribute_method(p):
+            return p.get_custom_attribute(attribute_name, 0)
+        return attribute_method
+
+    @classmethod
     def setup_default_builder(cls, string_builder):
         string_builder.update({
             'ID': PenguinStringCompiler.attribute_by_name('id'),

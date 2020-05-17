@@ -4,6 +4,7 @@ import time
 from houdini import handlers
 from houdini.data.item import Item, ItemCollection, PenguinItemCollection
 from houdini.data.permission import PenguinPermissionCollection
+from houdini.data.plugin import PenguinAttributeCollection
 from houdini.handlers import Priority, XMLPacket, XTPacket
 
 
@@ -45,6 +46,7 @@ async def items_load(server):
 async def load_inventory(p):
     p.inventory = await PenguinItemCollection.get_collection(p.id)
     p.permissions = await PenguinPermissionCollection.get_collection(p.id)
+    p.attributes = await PenguinAttributeCollection.get_collection(p.id)
 
     if p.color is not None and p.color not in p.inventory:
         await p.inventory.insert(item_id=p.color)

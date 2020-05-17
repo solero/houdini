@@ -2,6 +2,7 @@ import inspect
 from abc import ABC, abstractmethod
 
 from houdini import _AbstractManager, get_package_modules
+from houdini.data.plugin import PluginAttributeCollection
 
 
 class IPlugin(ABC):
@@ -28,9 +29,27 @@ class IPlugin(ABC):
     async def ready(self):
         """Called when the plugin is ready to function."""
 
+    def get_attribute(self, name, default=None):
+        plugin_attribute = self.attributes.get(name, default)
+        if plugin_attribute == default:
+            return default
+        return plugin_attribute.value
+
+    async def set_attribute(self, name, value):
+        if name not in self.attributes:
+            await self.attributes.insert(name=name, value=value)
+        else:
+            plugin_attribute = self.attributes.get(name)
+            await plugin_attribute.update(value=value).apply()
+
+    async def delete_attribute(self, name):
+        if name in self.attributes:
+            await self.attributes.delete(name)
+
     @abstractmethod
     def __init__(self, server):
         self.server = server
+        self.attributes = None
 
 
 class PluginManager(_AbstractManager):
@@ -58,6 +77,7 @@ class PluginManager(_AbstractManager):
         await self.server.xml_listeners.load(plugin_object)
         await self.server.dummy_event_listeners.load(plugin_object)
 
+        plugin_object.attributes = await PluginAttributeCollection.get_collection(plugin_index)
         await plugin_object.ready()
 
 

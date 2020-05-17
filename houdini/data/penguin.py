@@ -84,6 +84,7 @@ class Penguin(db.Model):
     def __init__(self, *args, **kwargs):
         self.inventory = None
         self.permissions = None
+        self.attributes = None
         self.igloos = None
         self.igloo_rooms = None
         self.furniture = None
