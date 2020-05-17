@@ -10,6 +10,7 @@ from houdini.data.item import Item
 from houdini.data.pet import PenguinPuffle, Puffle
 from houdini.data.room import Room
 from houdini.data.stamp import Stamp
+from houdini.data.permission import Permission
 
 
 class ChecklistError(Exception):
@@ -229,10 +230,13 @@ class ConnectedPenguinConverter(IConverter):
                      or none if the player is offline"""
 
     async def convert(self, ctx):
-        penguin_id = int(ctx.argument)
-        if penguin_id in ctx.p.server.penguins_by_id:
-            return ctx.p.server.penguins_by_id[penguin_id]
-        return None
+        try:
+            try:
+                return ctx.p.server.penguins_by_id[int(ctx.argument)]
+            except ValueError:
+                return ctx.p.server.penguins_by_username[ctx.argument.lower()]
+        except KeyError:
+            return None
 
 
 class ConnectedIglooConverter(IConverter):
