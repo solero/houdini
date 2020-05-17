@@ -21,6 +21,18 @@ class PermissionCollection(AbstractDataCollection):
     __indexby__ = 'name'
     __filterby__ = 'name'
 
+    async def register(self, permission_name):
+        permission_parts = permission_name.split('.')
+        for permission_index in range(1, len(permission_parts) + 1):
+            permission_name = '.'.join(permission_parts[:permission_index])
+            if permission_name not in self:
+                await self.insert(name=permission_name)
+
+    async def unregister(self, permission_name):
+        for permission in self.values():
+            if permission.name == permission_name or permission.name.startswith(permission_name):
+                await self.delete(permission.name)
+
 
 class PenguinPermissionCollection(AbstractDataCollection):
     __model__ = PenguinPermission
