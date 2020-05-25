@@ -175,6 +175,8 @@ class PenguinIglooRoom(db.Model, RoomMixin):
         if not p.stealth_moderator:
             await self.send_xt('ap', await p.string)
 
+        p.server.igloos_by_penguin_id[self.penguin_id] = self
+
     async def remove_penguin(self, p):
         await RoomMixin.remove_penguin(self, p)
 
