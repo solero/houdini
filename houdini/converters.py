@@ -472,11 +472,10 @@ def get_converter(component):
 
 
 async def do_conversion(converter, ctx):
-    if inspect.isclass(converter):
-        if not isinstance(converter, IConverter) and issubclass(converter, IConverter):
-            converter = converter()
-        if isinstance(converter, IConverter):
-            if asyncio.iscoroutinefunction(converter.convert):
-                return await converter.convert(ctx)
-            return converter.convert(ctx)
+    if inspect.isclass(converter) and issubclass(converter, IConverter):
+        converter = converter()
+    if isinstance(converter, IConverter):
+        if asyncio.iscoroutinefunction(converter.convert):
+            return await converter.convert(ctx)
+        return converter.convert(ctx)
     return converter(ctx.argument)
