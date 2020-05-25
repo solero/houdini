@@ -79,8 +79,9 @@ class Spheniscidae:
         await self.send_line(xml_data.decode('utf-8'))
 
     async def send_line(self, data):
-        self.logger.debug(f'Outgoing data: {data}')
-        self.__writer.write(data.encode('utf-8') + Spheniscidae.Delimiter)
+        if not self.__writer.is_closing():
+            self.logger.debug(f'Outgoing data: {data}')
+            self.__writer.write(data.encode('utf-8') + Spheniscidae.Delimiter)
 
     async def close(self):
         self.__writer.close()
