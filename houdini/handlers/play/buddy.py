@@ -148,6 +148,9 @@ async def handle_buddy_accept(p, buddy_id: int):
     else:
         return
 
+    if buddy_id in p.buddies:
+        return
+
     await p.buddies.insert(buddy_id=buddy_id)
 
     if buddy_id in p.server.penguins_by_id:
