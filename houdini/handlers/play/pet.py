@@ -65,7 +65,7 @@ async def dig(p, on_command=False):
         treasure_quantity, item_id = 1, 0
 
         if p.can_dig_gold:
-            treasure_types = {4: 'golden', None: None}
+            treasure_types = {0: 'coins', 4: 'golden', None: None}
 
         puffle_age = (datetime.now() - walking_puffle.adoption_date).days
         puffle_health = walking_puffle.food + walking_puffle.play + walking_puffle.rest + walking_puffle.clean
