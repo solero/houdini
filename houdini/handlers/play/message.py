@@ -1,5 +1,5 @@
 from houdini import handlers
-from houdini.commands import has_command_prefix, invoke_command_string
+from houdini.commands import has_command_prefix, invoke_command_string, UnknownCommandException
 from houdini.data.moderator import ChatFilterRuleCollection
 from houdini.handlers import XTPacket
 from houdini.handlers.play.moderation import moderator_ban
@@ -35,10 +35,14 @@ async def handle_send_message(p, penguin_id: int, message: str):
             if consequence.filter:
                 return
 
-    if has_command_prefix(p.server.config.command_prefix, message):
-        await p.room.send_xt('mm', message, p.id, f=lambda px: px.moderator)
-        await invoke_command_string(p.server.commands, p, message)
-    else:
-        await p.room.send_xt('sm', p.id, message)
+    try:
+        if has_command_prefix(p.server.config.command_prefix, message):
+            await p.room.send_xt('mm', message, p.id, f=lambda px: px.moderator)
+            await invoke_command_string(p.server.commands, p, message)
+        else:
+            await p.room.send_xt('sm', p.id, message)
 
-    p.logger.info(f'{p.username} said \'{message}\' in room \'{p.room.name}\'')
+        p.logger.info(f'{p.username} said \'{message}\' in room \'{p.room.name}\'')
+    except UnknownCommandException:
+        await p.room.send_xt('sm', p.id, message)
+        p.logger.warn(f'{p.username} tried to use a command that does not exist \'{message}\'')
