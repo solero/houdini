@@ -11607,7 +11607,7 @@ INSERT INTO character (id, name, gift_id, stamp_id) VALUES
  (25, 'G', 9190, NULL),
  (26, 'Happy77', NULL, NULL),
  (27, 'Billybob', NULL, NULL),
- (28, 'PH', 9193, 488),
+ (28, 'PH', 9193, 448),
  (31, 'Brady', 9211, NULL),
  (32, 'McKenzie', 9211, NULL),
  (33, 'Kermit The Frog', 9252, NULL),
