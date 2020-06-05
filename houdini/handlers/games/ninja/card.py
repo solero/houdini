@@ -413,7 +413,7 @@ async def handle_update_sensei_game(p):
 @handlers.handler(XTPacket('zm', ext='z'), match=['deal'])
 @handlers.waddle(SenseiLogic)
 async def handle_send_sensei_deal(p, action: str):
-    can_beat_sensei = p.ninja_rank > len(CardJitsuLogic.ItemAwards) - 1
+    can_beat_sensei = p.ninja_rank >= len(CardJitsuLogic.ItemAwards) - 1
     sensei, me = p.waddle.ninjas
     deck = Counter((card.card_id for card in p.cards.values() if
                     can_beat_sensei or p.server.cards[card.card_id].power_id == 0
