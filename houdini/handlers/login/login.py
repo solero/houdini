@@ -3,6 +3,7 @@ import os
 from datetime import datetime, timedelta
 
 import bcrypt
+from sqlalchemy import func
 
 from houdini import handlers
 from houdini.constants import ClientType
@@ -24,7 +25,7 @@ async def handle_login(p, credentials: Credentials):
     username, password = credentials.username, credentials.password
     p.logger.info(f'{username} is logging in!')
 
-    data = await Penguin.query.where(Penguin.username == username).gino.first()
+    data = await Penguin.query.where(func.lower(Penguin.username) == username).gino.first()
 
     if data is None:
         p.logger.info(f'{username} failed to login: penguin does not exist')
