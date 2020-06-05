@@ -708,7 +708,7 @@ async def handle_care_station_menu_choice(p, item_id: int):
 
 
 @handlers.handler(XTPacket('p', 'puffledig'), client=ClientType.Vanilla)
-@handlers.cooldown(119)
+@handlers.cooldown(60)
 async def handle_puffle_dig(p):
     await dig(p)
 
