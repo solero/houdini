@@ -15,7 +15,7 @@ async def get_pin_string(p, player_id):
         inventory = await PenguinItemCollection.get_collection(player_id)
 
     def is_free_pin(pin):
-        p.server.items[pin].is_flag() and p.server.items[pin].cost == 0
+        return p.server.items[pin].is_flag() and p.server.items[pin].cost == 0
     free_pins = (p.server.items[pin] for pin in inventory.keys() if is_free_pin(pin))
     pins = sorted(free_pins, key=operator.attrgetter('release_date'))
 
