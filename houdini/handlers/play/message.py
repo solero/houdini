@@ -1,5 +1,5 @@
 from houdini import handlers
-from houdini.commands import has_command_prefix, invoke_command_string, UnknownCommandException
+from houdini.commands import UnknownCommandException, has_command_prefix, invoke_command_string
 from houdini.data.moderator import ChatFilterRuleCollection
 from houdini.handlers import XTPacket
 from houdini.handlers.play.moderation import moderator_ban

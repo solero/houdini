@@ -7,10 +7,10 @@ from abc import ABC, abstractmethod
 from houdini.cooldown import CooldownError
 from houdini.data.igloo import Flooring, Furniture, Igloo, Location
 from houdini.data.item import Item
+from houdini.data.permission import Permission
 from houdini.data.pet import PenguinPuffle, Puffle
 from houdini.data.room import Room
 from houdini.data.stamp import Stamp
-from houdini.data.permission import Permission
 
 
 class ChecklistError(Exception):

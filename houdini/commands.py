@@ -2,7 +2,7 @@ import inspect
 
 from houdini import _AbstractManager, handlers, plugins
 from houdini.constants import ConflictResolution
-from houdini.converters import _ArgumentDeserializer, _listener, ChecklistError
+from houdini.converters import ChecklistError, _ArgumentDeserializer, _listener
 from houdini.cooldown import CooldownError
 
 

@@ -1,5 +1,6 @@
-from houdini.data import AbstractDataCollection, db
 from functools import cached_property
+
+from houdini.data import AbstractDataCollection, db
 
 
 class Flooring(db.Model):

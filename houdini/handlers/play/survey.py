@@ -1,6 +1,6 @@
 from houdini import handlers
-from houdini.handlers import XTPacket
 from houdini.data.penguin import CfcDonation
+from houdini.handlers import XTPacket
 
 
 @handlers.handler(XTPacket('e', 'dc'))

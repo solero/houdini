@@ -1,5 +1,6 @@
-from houdini.data import db, AbstractDataCollection
 from functools import cached_property
+
+from houdini.data import AbstractDataCollection, db
 
 
 class Item(db.Model):
