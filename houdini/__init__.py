@@ -117,7 +117,7 @@ class PenguinStringCompiler(OrderedDict):
     @classmethod
     def custom_attribute_by_name(cls, attribute_name):
         async def attribute_method(p):
-            return p.get_custom_attribute(attribute_name, 0)
+            return p.get_custom_attribute(attribute_name, '')
         return attribute_method
 
     @classmethod
