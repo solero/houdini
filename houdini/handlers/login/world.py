@@ -22,9 +22,6 @@ async def world_login(p, data):
     if data is None:
         return await p.send_error_and_disconnect(100)
 
-    if not data.active:
-        return await p.close()
-
     if data.permaban:
         return await p.close()
 
