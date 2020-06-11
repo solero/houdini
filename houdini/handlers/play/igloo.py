@@ -106,9 +106,6 @@ async def save_igloo_furniture(p, furniture_list=None):
             if furniture_tracker[furniture_id] > p.furniture[furniture_id].quantity:
                 return False
 
-            if not (1 <= rotation <= 8 and 1 <= frame <= 10):
-                return False
-
             furniture.append({
                 'igloo_id': p.igloo,
                 'furniture_id': furniture_id,
