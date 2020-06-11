@@ -146,10 +146,11 @@ class Spheniscidae:
         await self.server.dummy_event_listeners.fire('connected', self)
 
     async def _client_disconnected(self):
-        del self.server.peers_by_ip[self.peer_name]
-        self.logger.info(f'Client {self.peer_name} disconnected')
+        if self.peer_name in self.server.peers_by_ip:
+            del self.server.peers_by_ip[self.peer_name]
+            self.logger.info(f'Client {self.peer_name} disconnected')
 
-        await self.server.dummy_event_listeners.fire('disconnected', self)
+            await self.server.dummy_event_listeners.fire('disconnected', self)
 
     async def __data_received(self, data):
         data = data.decode()[:-1]
@@ -183,8 +184,7 @@ class Spheniscidae:
             except BaseException as e:
                 self.logger.exception(e.__traceback__)
 
-        if self.peer_name in self.server.peers_by_ip:
-            await self._client_disconnected()
+        await self._client_disconnected()
 
     def __repr__(self):
         return f'<Spheniscidae {self.peer_name}>'
