@@ -1,4 +1,4 @@
-from asyncio import CancelledError, IncompleteReadError
+from asyncio import CancelledError, IncompleteReadError, LimitOverrunError
 from xml.etree.cElementTree import Element, SubElement, tostring
 
 import defusedxml.cElementTree as Et
@@ -177,6 +177,8 @@ class Spheniscidae:
             except CancelledError:
                 self.__writer.close()
             except ConnectionResetError:
+                self.__writer.close()
+            except LimitOverrunError:
                 self.__writer.close()
             except BaseException as e:
                 self.logger.exception(e.__traceback__)
