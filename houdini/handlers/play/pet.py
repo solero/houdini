@@ -231,6 +231,8 @@ async def puffles_load(server):
     server.puffle_furniture_treasure = await PuffleTreasureFurniture.query.gino.all()
     server.puffle_clothing_treasure = await PuffleTreasureItem.query.gino.all()
 
+    server.puffle_killer = asyncio.create_task(decrease_stats(server))
+
 
 @handlers.handler(XMLPacket('login'), priority=Priority.Low)
 @handlers.allow_once

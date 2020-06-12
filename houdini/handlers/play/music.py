@@ -157,6 +157,11 @@ def determine_song_length(track_pattern):
     return int(track_length, 16) // 1000
 
 
+@handlers.boot
+async def music_service_start(server):
+    server.music = SoundStudio(server)
+
+
 @handlers.handler(XTPacket('musictrack', 'broadcastingmusictracks'), client=ClientType.Vanilla)
 @handlers.player_in_room(SoundStudio.StudioRoomId)
 async def handle_broadcasting_tracks(p):

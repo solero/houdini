@@ -26,11 +26,6 @@ from houdini.handlers import XTListenerManager, XMLListenerManager, DummyEventLi
 from houdini.plugins import PluginManager
 from houdini.commands import CommandManager
 
-from houdini.handlers.play.player import server_heartbeat, server_egg_timer
-from houdini.handlers.play.pet import decrease_stats
-
-from houdini.handlers.play.music import SoundStudio
-
 
 class Houdini:
 
@@ -177,12 +172,6 @@ class Houdini:
                                 'this may cause authentication issues!')
 
         await self.plugins.setup(houdini.plugins)
-
-        self.heartbeat = asyncio.create_task(server_heartbeat(self))
-        self.egg_timer = asyncio.create_task(server_egg_timer(self))
-        self.puffle_killer = asyncio.create_task(decrease_stats(self))
-
-        self.music = SoundStudio(self)
 
         async with self.server:
             await self.server.serve_forever()

@@ -68,6 +68,12 @@ async def server_egg_timer(server):
                         await p.send_error_and_disconnect(910)
 
 
+@handlers.boot
+async def heartbeat_service_start(server):
+    server.heartbeat = asyncio.create_task(server_heartbeat(server))
+    server.egg_timer = asyncio.create_task(server_egg_timer(server))
+
+
 MemberWarningDaysToExpiry = 14
 MemberWarningPostcardsVanilla = [122, 123]
 MemberWarningPostcardsLegacy = [163]
