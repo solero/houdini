@@ -33,14 +33,13 @@ class SoundStudio:
             await self.send_broadcasted_tracks()
             await self.stop_broadcasting()
         else:
-            next_track = self.playlist[0]
             if self.current_track is not None:
-                while next_track.id != self.current_track.id:
-                    self.playlist.append(self.playlist.pop(0))
-                    if next_track.id == self.playlist[0].id:
-                        break
-                    next_track = self.playlist[0]
-                self.playlist.append(self.playlist.pop(0))
+                current_track_position = next((i for i, track in enumerate(self.playlist)
+                                               if track.id == self.current_track.id), None)
+                if current_track_position is not None:
+                    playlist_front = self.playlist[current_track_position+1:]
+                    playlist_end = self.playlist[:current_track_position+1]
+                    self.playlist = playlist_front+playlist_end
 
             self.current_track = self.playlist[0]
             await self.send_broadcasted_tracks()
