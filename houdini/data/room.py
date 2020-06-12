@@ -90,7 +90,8 @@ class PenguinBackyardRoom(RoomMixin):
         p.toy = None
 
     async def send_xt(self, *data, f=None):
-        await self.penguin.send_xt(*data)
+        if f is None or f(self.penguin):
+            await self.penguin.send_xt(*data)
 
 
 class Room(db.Model, RoomMixin):
