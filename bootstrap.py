@@ -33,6 +33,8 @@ if __name__ == '__main__':
                              type=int)
     login_group.add_argument('--login-failure-timer', action='store', default=3600, help='Timeout after flood limit',
                              type=int)
+    login_group.add_argument('--preactivation-days', action='store', default=7, help='Preactivation trial days',
+                             type=int)
     login_group.add_argument('-S', '--staff', action='store_true', help='Staff-only server mode')
 
     logging_group = parser.add_argument_group('logging')
