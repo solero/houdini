@@ -24,11 +24,12 @@ class SoundStudio:
         self.playlist = []
         self.current_track = None
 
-        self.room = server.rooms[SoundStudio.StudioRoomId]
+        self.penguins_by_track_id = {}
 
     async def broadcast_next_track(self):
         await self.get_tracks()
-        if not self.room.penguins_by_id or not self.playlist:
+        room = self.server.rooms[SoundStudio.StudioRoomId]
+        if not room.penguins_by_id or not self.playlist:
             await self.send_broadcasted_tracks()
             await self.stop_broadcasting()
         else:
@@ -64,26 +65,30 @@ class SoundStudio:
 
     async def get_tracks(self):
         self.playlist = []
+        self.penguins_by_track_id = {}
+        room = self.server.rooms[SoundStudio.StudioRoomId]
+        room_penguins = room.penguins_by_id.copy()
         likes = db.func.count(TrackLike.track_id)
         tracks_query = db.select([PenguinTrack, likes]) \
             .select_from(PenguinTrack.outerjoin(TrackLike)) \
-            .where((PenguinTrack.owner_id.in_(tuple(self.room.penguins_by_id.keys())))
+            .where((PenguinTrack.owner_id.in_(tuple(room_penguins.keys())))
                    & (PenguinTrack.sharing == True)) \
             .group_by(PenguinTrack.id).gino.load(PenguinTrack.load(likes=ColumnLoader(likes)))
         async with db.transaction():
             async for track in tracks_query.iterate():
                 self.playlist.append(track)
+                self.penguins_by_track_id[track.id] = room_penguins[track.owner_id]
 
     async def send_broadcasted_tracks(self):
         broadcasted_tracks = await self.get_broadcasted_tracks()
-        for penguin in self.room.penguins_by_id.values():
+        room = self.server.rooms[SoundStudio.StudioRoomId]
+        for penguin in room.penguins_by_id.values():
             playlist_position = get_playlist_position(penguin)
             await penguin.send_xt('broadcastingmusictracks', len(self.playlist),
                                   playlist_position, broadcasted_tracks)
 
     async def get_broadcasted_tracks(self):
-        penguins = self.server.penguins_by_id
-        broadcasted_tracks = ','.join(f'{track.owner_id}|{penguins[track.owner_id].safe_name}|'
+        broadcasted_tracks = ','.join(f'{track.owner_id}|{self.penguins_by_track_id[track.id].safe_name}|'
                                       f'{track.owner_id}|{track.id}|{track.likes}'
                                       for track in self.playlist)
         return broadcasted_tracks
