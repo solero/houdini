@@ -44,12 +44,13 @@ class SoundStudio:
             self.current_track = self.playlist[0]
             await self.send_broadcasted_tracks()
 
-            song_length = determine_song_length(self.current_track.pattern)
-            await asyncio.sleep(song_length)
-
     async def broadcast_tracks(self):
         while self.broadcasting:
             await self.broadcast_next_track()
+
+            if self.broadcasting:
+                song_length = determine_song_length(self.current_track.pattern)
+                await asyncio.sleep(song_length)
 
     async def start_broadcasting(self):
         if not self.broadcasting:
@@ -241,6 +242,10 @@ async def handle_share_my_music_track(p, track_id: int, sharing: int):
     await PenguinTrack.update.values(sharing=bool(sharing))\
         .where((PenguinTrack.id == track_id)
                & (PenguinTrack.owner_id == p.id)).gino.status()
+    if p.server.music.current_track is not None and \
+            p.server.music.current_track.id == track_id and \
+            p.server.music.current_track.owner_id == p.id:
+        await p.server.music.broadcast_next_track()
     await p.send_xt('sharemymusictrack', 1)
 
 
