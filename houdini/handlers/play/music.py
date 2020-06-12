@@ -207,13 +207,13 @@ async def handle_load_music_track(p, owner_id: int, track_id: int):
 @handlers.player_in_room(SoundStudio.DeckRoomId)
 @handlers.cooldown()
 async def handle_save_my_music_track(p, track_name, track_pattern, track_hash):
+    pattern_regex = r'^([0-9a-fA-F]+,[0-9a-fA-F]+\|){0,1000}[0-9a-fA-F]+,FFFF\|[0-9a-fA-F]+$'
+    if not re.match(pattern_regex, track_pattern):
+        return
+
     encoded_track_pattern = encode_music_track(track_pattern)
     song_length = determine_song_length(track_pattern)
     if encoded_track_pattern != track_hash or song_length > 180:
-        return
-
-    pattern_regex = r'^([0-9a-fA-F]+,[0-9a-fA-F]+\|){0,1000}[0-9a-fA-F]+,FFFF\|[0-9a-fA-F]+$'
-    if not re.match(pattern_regex, track_pattern):
         return
 
     track_count = await db.select([db.func.count(PenguinTrack.id)])\
