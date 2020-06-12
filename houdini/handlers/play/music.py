@@ -197,9 +197,10 @@ async def handle_get_shared_music_tracks(p):
 @handlers.player_in_room(SoundStudio.StudioRoomId, SoundStudio.DeckRoomId)
 async def handle_load_music_track(p, owner_id: int, track_id: int):
     track = await get_track(owner_id, track_id)
-    encoded_track_pattern = encode_music_track(track.pattern)
-    await p.send_xt('loadmusictrack', track.id, track.name, int(track.sharing), track.pattern,
-                    encoded_track_pattern, track.likes)
+    if track is not None:
+        encoded_track_pattern = encode_music_track(track.pattern)
+        await p.send_xt('loadmusictrack', track.id, track.name, int(track.sharing), track.pattern,
+                        encoded_track_pattern, track.likes)
 
 
 @handlers.handler(XTPacket('musictrack', 'savemymusictrack'), client=ClientType.Vanilla)
