@@ -11,13 +11,15 @@ async def update_player_presence(p):
     for buddy_id in p.buddies.keys():
         if buddy_id in p.server.penguins_by_id:
             buddy = p.server.penguins_by_id[buddy_id]
-            await p.send_xt('bon', buddy.id, p.server.config.id, buddy.room.id)
-            await buddy.send_xt('bon', p.id, p.server.config.id, p.room.id)
+            if buddy.joined_world:
+                await p.send_xt('bon', buddy.id, p.server.config.id, buddy.room.id)
+                await buddy.send_xt('bon', p.id, p.server.config.id, p.room.id)
 
     for character_id in p.character_buddies.keys():
         if character_id in p.server.penguins_by_character_id:
             character = p.server.penguins_by_character_id[character_id]
-            await p.send_xt('caon', character_id, p.server.config.id, character.room.id)
+            if character.joined_world:
+                await p.send_xt('caon', character_id, p.server.config.id, character.room.id)
 
     if p.character is not None:
         for penguin in p.server.penguins_by_id.values():
