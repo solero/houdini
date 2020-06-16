@@ -17,7 +17,7 @@
       src="https://img.shields.io/discourse/https/solero.me/topics?color=73afb6"
     />
   </a>
-  <a href="https://github.com/Solero/Houdini-asyncio/issues">
+  <a href="https://github.com/Solero/houdini/issues">
     <img
       alt="Issue Tracker"
       src="https://img.shields.io/github/issues/solero/houdini-asyncio"
@@ -55,8 +55,8 @@
 Houdini can be run as a normal Python program under any operating system.
 
 ```shell
-$ git clone https://github.com/solero/houdini-asyncio
-$ cd houdini-asyncio
+$ git clone https://github.com/solero/houdini
+$ cd houdini
 $ pip install -r requirements.txt
 $ python bootstrap.py login
 ```
