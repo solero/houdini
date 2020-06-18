@@ -11,7 +11,7 @@ assignees: ''
 A clear and concise description of what the bug is.
 
 **Client Type:**
-(vanilla or/and legacy)
+Vanilla and/or Legacy
 
 **To Reproduce**
 Steps to reproduce the behavior:
