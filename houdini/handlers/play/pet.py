@@ -12,7 +12,7 @@ from houdini.data.pet import PenguinPuffle, PenguinPuffleCollection, PenguinPuff
 from houdini.data.room import PenguinBackyardRoom, PenguinIglooRoom
 from houdini.handlers import Priority, XMLPacket, XTPacket
 
-PuffleKillerInterval = 600
+PuffleKillerInterval = 1800
 LegacyPuffleIds = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 BrushCareItemId = 1
@@ -651,8 +651,8 @@ async def handle_set_puffle_handler(p):
 
 @handlers.handler(XTPacket('p', 'puphi'), client=ClientType.Vanilla)
 async def handle_puffle_visitor_hat_update(p, puffle: PenguinPuffle, hat_id: int):
-    if hat_id in p.puffle_items:
-        await puffle.update(hat=hat_id).apply()
+    if hat_id in p.puffle_items or hat_id == 0:
+        await puffle.update(hat=hat_id if hat_id > 0 else None).apply()
         await p.room.send_xt('puphi', puffle.id, hat_id)
 
 

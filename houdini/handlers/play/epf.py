@@ -140,3 +140,14 @@ async def handle_epf_grant_reward(p, medals: int):
     await p.update(career_medals=p.career_medals + medals,
                    agent_medals=p.agent_medals + medals).apply()
     await p.send_xt('epfgr', p.career_medals, p.agent_medals)
+
+
+@handlers.handler(XTPacket('epfsf', ext='z'))
+async def handle_epf_medal_check(p, stamp_id: int):
+    if not p.agent_status:
+        await p.send_xt('epfsf', 'naa')
+
+    if stamp_id not in p.stamps:
+        await p.send_xt('epfsf', 'nem', stamp_id)
+    else:
+        await p.send_xt('epfsf', 'ahm')
