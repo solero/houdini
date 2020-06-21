@@ -12,7 +12,7 @@ from houdini.data.pet import PenguinPuffle, PenguinPuffleCollection, PenguinPuff
 from houdini.data.room import PenguinBackyardRoom, PenguinIglooRoom
 from houdini.handlers import Priority, XMLPacket, XTPacket
 
-PuffleKillerInterval = 600
+PuffleKillerInterval = 1800
 LegacyPuffleIds = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 BrushCareItemId = 1
