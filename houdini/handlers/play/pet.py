@@ -651,8 +651,8 @@ async def handle_set_puffle_handler(p):
 
 @handlers.handler(XTPacket('p', 'puphi'), client=ClientType.Vanilla)
 async def handle_puffle_visitor_hat_update(p, puffle: PenguinPuffle, hat_id: int):
-    if hat_id in p.puffle_items:
-        await puffle.update(hat=hat_id).apply()
+    if hat_id in p.puffle_items or hat_id == 0:
+        await puffle.update(hat=hat_id if hat_id > 0 else None).apply()
         await p.room.send_xt('puphi', puffle.id, hat_id)
 
 
