@@ -88,7 +88,7 @@ class SoundStudio:
 
     async def get_broadcasted_tracks(self):
         broadcasted_tracks = ','.join(f'{track.owner_id}|{self.penguins_by_track_id[track.id].safe_name}|'
-                                      f'{track.owner_id}|{track.id}|{track.likes}'
+                                      f'{track.owner_id}|10000{track.id}|{track.likes}'
                                       for track in self.playlist)
         return broadcasted_tracks
 
@@ -102,7 +102,7 @@ async def get_player_tracks(p):
         .group_by(PenguinTrack.id).gino.load(PenguinTrack.load(likes=ColumnLoader(likes)))
     async with db.transaction():
         async for track in tracks_query.iterate():
-            player_tracks.append(f'{track.id}|{track.name}|{int(track.sharing)}|{track.likes}')
+            player_tracks.append(f'10000{track.id}|{track.name}|{int(track.sharing)}|{track.likes}')
     return player_tracks
 
 
@@ -116,7 +116,7 @@ async def get_shared_tracks(p):
     async with db.transaction():
         async for track in tracks_query.iterate():
             penguin = p.server.penguins_by_id[track.owner_id]
-            shared_tracks.append(f'{penguin.id}|{penguin.safe_name}|{track.id}|{track.likes}')
+            shared_tracks.append(f'{penguin.id}|{penguin.safe_name}|10000{track.id}|{track.likes}')
     return shared_tracks
 
 
@@ -194,8 +194,8 @@ async def handle_get_shared_music_tracks(p):
 
 
 @handlers.handler(XTPacket('musictrack', 'loadmusictrack'), client=ClientType.Vanilla)
-@handlers.player_in_room(SoundStudio.StudioRoomId, SoundStudio.DeckRoomId)
-async def handle_load_music_track(p, owner_id: int, track_id: int):
+async def handle_load_music_track(p, owner_id: int, track_idx: str):
+    track_id = int(track_idx[5:])
     track = await get_track(owner_id, track_id)
     if track is not None:
         encoded_track_pattern = encode_music_track(track.pattern)
@@ -234,13 +234,14 @@ async def handle_refresh_my_track_likes(p):
         .group_by(PenguinTrack.id).gino.load(PenguinTrack.load(likes=ColumnLoader(likes)))
     async with db.transaction():
         async for track in track_likes_query.iterate():
-            await p.send_xt('getlikecountfortrack', p.id, track.id, track.likes)
+            await p.send_xt('getlikecountfortrack', p.id, f'10000{track.id}', track.likes)
 
 
 @handlers.handler(XTPacket('musictrack', 'sharemymusictrack'), client=ClientType.Vanilla)
 @handlers.player_in_room(SoundStudio.StudioRoomId, SoundStudio.DeckRoomId)
 @handlers.cooldown()
-async def handle_share_my_music_track(p, track_id: int, sharing: int):
+async def handle_share_my_music_track(p, track_idx: str, sharing: int):
+    track_id = int(track_idx[5:])
     if sharing:
         await PenguinTrack.update.values(sharing=False)\
             .where(PenguinTrack.owner_id == p.id).gino.status()
@@ -256,7 +257,8 @@ async def handle_share_my_music_track(p, track_id: int, sharing: int):
 
 @handlers.handler(XTPacket('musictrack', 'deletetrack'), client=ClientType.Vanilla)
 @handlers.player_in_room(SoundStudio.StudioRoomId, SoundStudio.DeckRoomId)
-async def handle_delete_track(p, track_id: int):
+async def handle_delete_track(p, track_idx: str):
+    track_id = int(track_idx[5:])
     await PenguinTrack.delete.where((PenguinTrack.id == track_id)
                                     & (PenguinTrack.owner_id == p.id)).gino.status()
     await p.send_xt('deletetrack', 1)
@@ -264,7 +266,8 @@ async def handle_delete_track(p, track_id: int):
 
 @handlers.handler(XTPacket('musictrack', 'canliketrack'), client=ClientType.Vanilla)
 @handlers.player_in_room(SoundStudio.StudioRoomId, SoundStudio.DeckRoomId)
-async def handle_can_like_track(p, owner_id: int, track_id: int):
+async def handle_can_like_track(p, owner_id: int, track_idx: str):
+    track_id = int(track_idx[5:])
     can_like = await can_like_track(p, owner_id, track_id)
     await p.send_xt('canliketrack', track_id, int(can_like))
 
@@ -272,7 +275,8 @@ async def handle_can_like_track(p, owner_id: int, track_id: int):
 @handlers.handler(XTPacket('musictrack', 'liketrack'), client=ClientType.Vanilla)
 @handlers.player_in_room(SoundStudio.StudioRoomId, SoundStudio.DeckRoomId)
 @handlers.cooldown()
-async def handle_like_track(p, owner_id: int, track_id: int):
+async def handle_like_track(p, owner_id: int, track_idx: str):
+    track_id = int(track_idx[5:])
     can_like = await can_like_track(p, owner_id, track_id)
     if can_like:
         await TrackLike.create(penguin_id=p.id, track_id=track_id)
