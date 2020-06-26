@@ -208,7 +208,14 @@ class SenseiLogic(CardJitsuLogic):
 
     def get_win_card(self, card):
         self.colors = [] if len(self.colors) >= 6 else self.colors
-        for card_check in self.penguins[0].server.cards.values():
+
+        cards_to_pick = self.penguins[0].server.cards
+        cards_iter = cards_to_pick.values()
+        cards_end_to_end = itertools.chain(cards_iter, cards_iter)
+        start_position = random.randint(0, len(cards_to_pick))
+        cards_random_start = itertools.islice(cards_end_to_end, start_position, start_position+len(cards_to_pick))
+
+        for card_check in cards_random_start:
             if card_check.color not in self.colors and self.beats_card(card_check, card):
                 self.colors.append(card_check.color)
                 return card_check
