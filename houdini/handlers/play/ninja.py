@@ -1,10 +1,19 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
+from houdini.data.penguin import Penguin
 
 
 @handlers.handler(XTPacket('ni', 'gnr'))
-async def handle_get_ninja_ranks(p):
-    await p.send_xt('gnr', p.id, p.ninja_rank, p.fire_ninja_rank, p.water_ninja_rank, 0)
+async def handle_get_ninja_ranks(p, penguin_id: int):
+    if penguin_id in p.server.penguins_by_id:
+        penguin = p.server.penguins_by_id[penguin_id]
+        ninja_rank, fire_ninja_rank, water_ninja_rank = \
+            penguin.ninja_rank, penguin.fire_ninja_rank, penguin.water_ninja_rank
+    else:
+        ninja_rank, fire_ninja_rank, water_ninja_rank = await Penguin.select(
+            'ninja_rank', 'fire_ninja_rank', 'water_ninja_rank'
+        ).where(Penguin.id == penguin_id).gino.first()
+    await p.send_xt('gnr', p.id, ninja_rank, fire_ninja_rank, water_ninja_rank, 0)
 
 
 @handlers.handler(XTPacket('ni', 'gnl'))
