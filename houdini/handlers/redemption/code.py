@@ -11,6 +11,7 @@ from houdini.data.redemption import PenguinRedemptionCode, RedemptionAwardCard, 
     RedemptionAwardLocation, RedemptionAwardPuffle, RedemptionAwardPuffleItem, RedemptionCode
 from houdini.handlers import XTPacket
 from houdini.handlers.games.ninja.card import ninja_rank_up
+from houdini.handlers.games.ninja.fire import fire_ninja_rank_up
 
 
 TreasureUnlockCount = 3
@@ -203,6 +204,10 @@ async def handle_golden_choice(p, redemption_code: str, choice: int):
         await ninja_rank_up(p)
         cards = cards[:4]
         await p.send_xt('rsgc', ','.join(card_ids[:4]) + '|' + str(p.ninja_rank))
+    elif choice == FireNinjaRankUpChoice:
+        await fire_ninja_rank_up(p)
+        cards = cards[:4]
+        await p.send_xt('rsgc', ','.join(card_ids[:4]) + '|' + str(p.fire_ninja_rank))
     else:
         cards = cards[:4] + cards[-2:]
         await p.send_xt('rsgc', ','.join(card_ids[:4]) + '|' + ','.join(card_ids[-2:]))
