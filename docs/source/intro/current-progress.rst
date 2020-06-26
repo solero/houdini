@@ -256,13 +256,13 @@ Ranking              Yes      Yes
 -------------------- -------- ---------
 **CardJistu Fire**
 -------------------- ------------------
-Gameplay             No       No
+Gameplay             Yes      Yes
 -------------------- -------- ---------
-Regular Match        No       No
+Regular Match        Yes      Yes
 -------------------- -------- ---------
-Sensei Match         No       No
+Sensei Match         Yes      Yes
 -------------------- -------- ---------
-Ranking              No       No
+Ranking              Yes      Yes
 -------------------- -------- ---------
 **CardJistu Water**
 -------------------- ------------------
