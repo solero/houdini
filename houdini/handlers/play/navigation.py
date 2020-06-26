@@ -14,7 +14,7 @@ from houdini.handlers import XTPacket
 from houdini.handlers.games.four import ConnectFourLogic
 from houdini.handlers.games.mancala import MancalaLogic
 from houdini.handlers.games.ninja.card import CardJitsuLogic, CardJitsuMatLogic, SenseiLogic
-from houdini.handlers.games.ninja.fire import CardJitsuFireLogic, FireSenseiLogic
+from houdini.handlers.games.ninja.fire import CardJitsuFireLogic, FireMatLogic, FireSenseiLogic
 from houdini.handlers.games.ninja.water import CardJitsuWaterLogic, WaterSenseiLogic
 from houdini.handlers.games.sled import SledRacingLogic
 from houdini.handlers.games.treasure import TreasureHuntLogic
@@ -36,7 +36,8 @@ WaddleLogicMapping = {
     'water': CardJitsuWaterLogic,
     'watersensei': WaterSenseiLogic,
 
-    'fire': CardJitsuFireLogic,
+    'fire': FireMatLogic,
+    'firematch': CardJitsuFireLogic,
     'firesensei': FireSenseiLogic
 }
 
