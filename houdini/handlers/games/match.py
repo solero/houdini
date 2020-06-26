@@ -96,6 +96,7 @@ def card_match(waddle_game):
 
         waddle_room = host.server.rooms[waddle_game.room_id]
         rw = RoomWaddle(id=host.id, room_id=waddle_room.id, seats=len(matched), game=waddle_game, temporary=True)
+        rw.penguins = [None] * rw.seats
         rw.room = waddle_room
         rw.logic = waddle_game
         waddle_room.waddles[rw.id] = rw
