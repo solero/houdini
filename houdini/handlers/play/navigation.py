@@ -127,7 +127,7 @@ async def room_cooling(p):
 
 
 @handlers.handler(XTPacket('j', 'jr'))
-@handlers.cooldown(1, callback=room_cooling)
+@handlers.cooldown(0.5, callback=room_cooling)
 async def handle_join_room(p, room: Room, x: int, y: int):
     if p.is_legacy_client and room.tables:
         await p.send_xt('jr', room.id)
