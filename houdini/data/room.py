@@ -1,3 +1,5 @@
+import random
+
 from houdini.data import AbstractDataCollection, db
 
 
@@ -32,6 +34,12 @@ class RoomMixin:
         if p.character:
             self.penguins_by_character_id[p.character] = p
 
+        player_positions = {(penguin.x, penguin.y) for penguin in self.penguins_by_id.values()}
+        free_positions = [(tx, ty) for tx in range(p.x - self.max_users // 4, p.x + self.max_users // 4)
+                          for ty in range(p.y - self.max_users // 4, p.y + self.max_users // 4)
+                          if (tx, ty) not in player_positions]
+
+        p.x, p.y = random.choice(free_positions)
         p.room = self
 
     async def remove_penguin(self, p):
