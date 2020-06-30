@@ -13,6 +13,10 @@ class AuthorityError(Exception):
     """Raised when a packet is received but user has not yet authenticated"""
 
 
+class AbortHandlerChain(Exception):
+    """Exception raised when handler wants to abort the rest of the handler chain"""
+
+
 class _Packet:
     __slots__ = ['id']
 

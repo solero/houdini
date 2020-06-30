@@ -4,7 +4,7 @@ from xml.etree.cElementTree import Element, SubElement, tostring
 import defusedxml.cElementTree as Et
 
 from houdini.constants import ClientType
-from houdini.handlers import AuthorityError, XMLPacket, XTPacket
+from houdini.handlers import AuthorityError, AbortHandlerChain, XMLPacket, XTPacket
 
 
 class Spheniscidae:
@@ -161,6 +161,8 @@ class Spheniscidae:
                 await self.__handle_xt_data(data)
         except AuthorityError:
             self.logger.debug(f'{self} tried to send game packet before authentication')
+        except AbortHandlerChain as e:
+            self.logger.info(f'Handler chain aborted: {str(e)}')
 
     async def run(self):
         await self._client_connected()
