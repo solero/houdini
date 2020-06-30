@@ -170,7 +170,7 @@ class _ListenerManager(_AbstractManager):
                 if listener_object.before in self[listener_object.packet]:
                     index_of_before = self[listener_object.packet].index(listener_object.before)
                     old_index = self[listener_object.packet].index(listener_object)
-                    self[listener_object.packet].insert(index_of_before - 1, self[listener_object.packet].pop(old_index))
+                    self[listener_object.packet].insert(index_of_before, self[listener_object.packet].pop(old_index))
                 if listener_object.after in self[listener_object.packet]:
                     index_of_after = self[listener_object.packet].index(listener_object.after)
                     old_index = self[listener_object.packet].index(listener_object)
