@@ -22,6 +22,9 @@ class RoomMixin:
         self.tables = {}
         self.waddles = {}
 
+        self.id = None
+        self.max_users = None
+
     async def add_penguin(self, p):
         if len(self.penguins_by_id) >= self.max_users and not p.moderator:
             return await p.send_error(210)
@@ -118,8 +121,8 @@ class Room(db.Model, RoomMixin):
     stamp_group = db.Column(db.ForeignKey('stamp_group.id', ondelete='CASCADE', onupdate='CASCADE'))
 
     def __init__(self, *args, **kwargs):
-        RoomMixin.__init__(self, *args, **kwargs)
         super().__init__(*args, **kwargs)
+        RoomMixin.__init__(self, *args, **kwargs)
 
         self.blackhole_penguins = {}
 
@@ -170,8 +173,10 @@ class PenguinIglooRoom(db.Model, RoomMixin):
     stamp_group = None
 
     def __init__(self, *args, **kwargs):
-        RoomMixin.__init__(self, *args, **kwargs)
         super().__init__(*args, **kwargs)
+        RoomMixin.__init__(self, *args, **kwargs)
+
+        self.max_users = 80
 
     @property
     def external_id(self):
