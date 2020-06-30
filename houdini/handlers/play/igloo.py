@@ -542,7 +542,7 @@ async def handle_like_igloo(p):
         like_insert = like_insert.on_conflict_do_update(
             constraint='igloo_like_pkey',
             set_=dict(count=IglooLike.count + 1, date=datetime.now()),
-            where=(IglooLike.date < datetime.today())
+            where=IglooLike.date < datetime.combine(datetime.today(), datetime.min.time())
         )
         like_count = await like_insert.gino.scalar()
 
