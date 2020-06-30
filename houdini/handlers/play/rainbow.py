@@ -23,7 +23,7 @@ async def handle_rainbow_puffle_task_complete(p, task_id: int):
 
         quest_wait = RainbowQuestWaitMember if p.is_member else RainbowQuestWait
 
-        if int(current_task) == 0 or current_datetime - datetime.utcfromtimestamp(int(task_completion)) > quest_wait:
+        if int(current_task) == 0 or current_datetime - datetime.fromtimestamp(int(task_completion)) > quest_wait:
             if int(task_id) == len(RainbowQuestRewards) - 1:
                 await p.update(rainbow_adoptability=True).apply()
 
