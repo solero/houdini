@@ -209,7 +209,7 @@ def get_my_player_walking_puffle(p):
         puffle = p.puffles[p.walking]
         parent_id, puffle_id = get_client_puffle_id(p, puffle.puffle_id)
         return f'{puffle.id}|{parent_id}|{puffle_id}|{puffle.hat or 0}|0'
-    return str()
+    return '||||'
 
 
 def check_name(p, puffle_name):
