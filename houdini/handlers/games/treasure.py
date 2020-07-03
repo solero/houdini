@@ -12,6 +12,7 @@ class TreasureHuntLogic(ITable):
         self.coins_hidden = 0
         self.gems_hidden = 0
         self.turns = 12
+        self.emerald_value = 100
         self.gem_value = 25
         self.coin_value = 1
         self.gem_locations = []
@@ -79,26 +80,36 @@ class TreasureHuntLogic(ITable):
             return 3
         if row + 1 == self.map_height or column + 1 == self.map_width:
             treasure_type = treasure_type[:2]
-        name, value = random.choices(treasure_type, weights=[60, 40, 1, 0.5][:len(treasure_type)])[0]
-        self.coins_hidden += 1 if value == 1 else self.coins_hidden
+        name, value = random.choices(treasure_type, weights=[80, 20, 1, 5][:len(treasure_type)])[0]
+        if value == 1:
+            self.coins_hidden += 1
         if value > 1:
             self.gems_hidden += 1
-            self.gem_locations.append(str(row) + ',' + str(column))
-        if self.emerald:
-            return 2
+            self.gem_locations.append(f'{row},{column}')
+            if self.emerald:
+                return 2
         if value == 4 and not self.emerald:
             self.emerald = 1
         return value
 
     def get_gem_by_piece(self, row, column):
-        for delta_row, delta_col in [(0, -1), (-1, -1), (-1, 0)]:
-            if row > 0 and column > 0:
-                treasure, digs = self.treasure_map[row + delta_row][column + delta_col]
-                if treasure == 2 or treasure == 4:
-                    return row + delta_row, column + delta_col
-        return False
+        if row > 0:
+            treasure, digs = self.treasure_map[row - 1][column]
+            if treasure == 2 or treasure == 4:
+                return row - 1, column
+        if column > 0:
+            treasure, digs = self.treasure_map[row][column - 1]
+            if treasure == 2 or treasure == 4:
+                return row, column - 1
+        if row > 0 and column > 0:
+            treasure, digs = self.treasure_map[row - 1][column - 1]
+            if treasure == 2 or treasure == 4:
+                return row - 1, column - 1
+        return None
 
     def is_gem_uncovered(self, row, column):
+        if row == self.map_width - 1 or column == self.map_height - 1:
+            return False
         for delta_row, delta_col in [(0, 1), (1, 1), (1, 0)]:
             treasure, digs = self.treasure_map[row + delta_row][column + delta_col]
             if digs != 2:
@@ -111,22 +122,25 @@ class TreasureHuntLogic(ITable):
         if digs == 2:
             if treasure == 1:
                 self.coins_found += 1
-            elif treasure == 2 or treasure == 4:
-                if not self.is_gem_uncovered(row, column):
-                    return
-                self.gems_found += 1
+            elif treasure == 2:
+                if self.is_gem_uncovered(row, column):
+                    self.gems_found += 1
+            elif treasure == 4:
+                if self.is_gem_uncovered(row, column):
+                    self.emerald_found = 1
             elif treasure == 3:
                 treasure_row, treasure_col = self.get_gem_by_piece(row, column)
-                if not self.is_gem_uncovered(treasure_row, treasure_col):
-                    return
-                self.gems_found += 1
-                if treasure == 4:
-                    self.emerald_found = 1
+                treasure, digs = self.treasure_map[treasure_row][treasure_col]
+                if self.is_gem_uncovered(treasure_row, treasure_col):
+                    if treasure == 2:
+                        self.gems_found += 1
+                    elif treasure == 4:
+                        self.emerald_found = 1
 
     def determine_winnings(self):
         total = self.coins_found * self.coin_value
         total += self.gems_found * self.gem_value
-        total += self.emerald_found * self.gem_value * 3
+        total += self.emerald_found * self.emerald_value
         return total
 
 
