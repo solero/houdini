@@ -11,6 +11,9 @@ def stealth_mod_filter(stealth_mod_id):
 
 class RoomMixin:
 
+    id = None
+    max_users = None
+
     def __init__(self, *args, **kwargs):
         self.penguins_by_id = {}
         self.penguins_by_username = {}
@@ -21,9 +24,6 @@ class RoomMixin:
 
         self.tables = {}
         self.waddles = {}
-
-        self.id = None
-        self.max_users = None
 
     async def add_penguin(self, p):
         if len(self.penguins_by_id) >= self.max_users and not p.moderator:
@@ -175,8 +175,6 @@ class PenguinIglooRoom(db.Model, RoomMixin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         RoomMixin.__init__(self, *args, **kwargs)
-
-        self.max_users = 80
 
     @property
     def external_id(self):
