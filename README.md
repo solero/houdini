@@ -68,6 +68,7 @@ $ python bootstrap.py login
 You can also use [Wand](https://github.com/solero/wand), a tool that installs Houdini, Dash and many other useful tools to compliment your experience.
 
 This is especially useful for those who want a straightforward installation, where everything is installed for you!
+Currently Wand only works on Linux servers.
 
 ## Game Screenshots
 
