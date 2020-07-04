@@ -61,6 +61,12 @@ $ pip install -r requirements.txt
 $ python bootstrap.py login
 ```
 
+## Installation with Docker
+
+You can also use [Wand](https://github.com/solero/wand), a tool that installs Houdini, Dash and many other useful tools to compliment your experience.
+
+This is especially useful for those who want a straightforward installation, where everything is installed for you!
+
 ## Game Screenshots
 
 <img alt="Screenshot" width="700px" src="https://user-images.githubusercontent.com/32749673/64743472-05745a00-d4f8-11e9-9eed-f3565dc2e821.png">
@@ -74,8 +80,6 @@ $ python bootstrap.py login
 :heartpulse: So glad to hear of your interest!
 
 If you have suggestions for how this project can be improved, or want to report a bug, please feel free to open an issue! We welcome any and all contributions. We listen to all your questions and are always active on the [Solero Discord server](https://solero.me/discord).
-
-Please note that in this early stage of development we cannot take requests for vanilla Club Penguin features!
 
 ## License
 
