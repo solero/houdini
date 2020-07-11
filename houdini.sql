@@ -956,7 +956,7 @@ CREATE TABLE penguin_igloo_room (
   penguin_id INT NOT NULL,
   type INT NOT NULL,
   flooring INT NOT NULL,
-  music SMALLINT NOT NULL DEFAULT 0,
+  music INT NOT NULL DEFAULT 0,
   location INT NOT NULL,
   locked BOOLEAN NOT NULL DEFAULT TRUE,
   competition BOOLEAN NOT NULL DEFAULT FALSE,
