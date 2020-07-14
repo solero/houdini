@@ -67,7 +67,7 @@ class _CooldownMapping:
 
     def _get_bucket_key(self, p):
         if self._cooldown.bucket_type == BucketType.Default:
-            return p
+            return p.id
         return p.server
 
     def _verify_cache_integrity(self):

@@ -96,6 +96,8 @@ class PenguinBackyardRoom(RoomMixin):
         await p.send_xt('jr', self.id, await p.string)
 
     async def remove_penguin(self, p):
+        self.penguin = None
+
         p.room = None
         p.frame = 1
         p.toy = None
