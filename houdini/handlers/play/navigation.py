@@ -119,7 +119,7 @@ async def handle_join_server(p, penguin_id: int, login_key: str):
 
     server_key = f'houdini.players.{p.server.config.id}'
     await p.server.redis.sadd(server_key, p.id)
-    await p.server.redis.hincrby('houdini.population', p.server.config.id, 1)
+    await p.server.redis.hset('houdini.population', p.server.config.id, len(p.server.penguins_by_id))
 
 
 async def room_cooling(p):
@@ -207,4 +207,4 @@ async def handle_disconnect_room(p):
 
     server_key = f'houdini.players.{p.server.config.id}'
     await p.server.redis.srem(server_key, p.id)
-    await p.server.redis.hincrby('houdini.population', p.server.config.id, -1)
+    await p.server.redis.hset('houdini.population', p.server.config.id, len(p.server.penguins_by_id))
