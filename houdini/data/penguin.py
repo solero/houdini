@@ -1,5 +1,5 @@
 from datetime import datetime
-from functools import lru_cache
+from functools import cached_property
 
 from houdini.data import db
 
@@ -101,7 +101,6 @@ class Penguin(db.Model):
 
         super().__init__(*args, **kwargs)
 
-    @lru_cache()
     def safe_nickname(self, language_bitmask):
         return self.nickname if self.approval & language_bitmask else "P" + str(self.id)
 
@@ -112,19 +111,16 @@ class Penguin(db.Model):
     def status_field_get(self, field_bitmask):
         return (self.status_field & field_bitmask) != 0
 
-    @property
-    @lru_cache()
+    @cached_property
     def age(self):
         return (datetime.now() - self.registration_date).days
 
-    @property
-    @lru_cache()
+    @cached_property
     def approval(self):
         return int(f'{self.approval_ru * 1}{self.approval_de * 1}0{self.approval_es * 1}'
                    f'{self.approval_fr * 1}{self.approval_pt * 1}{self.approval_en * 1}', 2)
 
-    @property
-    @lru_cache()
+    @cached_property
     def rejection(self):
         return int(f'{self.rejection_ru * 1}{self.rejection_de * 1}0{self.rejection_es * 1}'
                    f'{self.rejection_fr * 1}{self.rejection_pt * 1}{self.rejection_en * 1}', 2)
