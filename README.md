@@ -52,7 +52,7 @@
 
 ## Installation
 
-Houdini can be run as a normal Python program under any operating system.\n
+Houdini can be run as a normal Python program under any operating system.
 
 ***NOTE**: Houdini requires Python 3.8.x to be installed*
 
