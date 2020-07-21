@@ -55,7 +55,7 @@ class SoundStudio:
     async def start_broadcasting(self):
         if not self.broadcasting:
             self.broadcasting = True
-            asyncio.create_task(self.broadcast_tracks())
+            self.server.loop.create_task(self.broadcast_tracks())
 
     async def stop_broadcasting(self):
         if self.broadcasting:

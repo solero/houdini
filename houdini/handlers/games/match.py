@@ -119,9 +119,9 @@ async def match_load(server):
     server.water_match_making = MatchMaking(server, card_color_tick, card_water_matched,
                                             match_by='water_ninja_rank', max_players=4)
 
-    asyncio.create_task(server.match_making.start())
-    asyncio.create_task(server.fire_match_making.start())
-    asyncio.create_task(server.water_match_making.start())
+    server.loop.create_task(server.match_making.start())
+    server.loop.create_task(server.fire_match_making.start())
+    server.loop.create_task(server.water_match_making.start())
 
 
 @handlers.handler(XTPacket('jmm', ext='z'))

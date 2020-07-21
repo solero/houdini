@@ -148,7 +148,7 @@ async def songs_load(server):
     server.logger.info(f'Loaded {len(server.dance_songs)} dance tracks')
 
     server.dance_floor = DanceFloor(server)
-    asyncio.create_task(server.dance_floor.start())
+    server.loop.create_task(server.dance_floor.start())
 
 
 @handlers.handler(XTPacket('gz', ext='z'))
