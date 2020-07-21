@@ -1,5 +1,4 @@
 import argparse
-import asyncio
 import logging
 
 from houdini.constants import ClientType, ConflictResolution, Language
@@ -137,7 +136,4 @@ if __name__ == '__main__':
     args.default_client = dict(legacy=ClientType.Legacy, vanilla=ClientType.Vanilla).get(args.default_client)
 
     factory_instance = Houdini(args)
-    try:
-        asyncio.run(factory_instance.start())
-    except KeyboardInterrupt:
-        logger.info('Shutting down...')
+    factory_instance.run()

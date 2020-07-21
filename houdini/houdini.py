@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+import signal
 import sys
 from logging.handlers import RotatingFileHandler
 
@@ -26,6 +27,39 @@ from houdini.handlers import XTListenerManager, XMLListenerManager, DummyEventLi
 from houdini.plugins import PluginManager
 from houdini.commands import CommandManager
 
+def _cancel_tasks(loop):
+    try:
+        task_retriever = asyncio.Task.all_tasks
+    except AttributeError:
+        task_retriever = asyncio.all_tasks
+
+    tasks = {t for t in task_retriever(loop=loop) if not t.done()}
+
+    if not tasks:
+        return
+
+    for task in tasks:
+        task.cancel()
+
+    loop.run_until_complete(asyncio.gather(*tasks, return_exceptions=True))
+
+    for task in tasks:
+        if task.cancelled():
+            continue
+        if task.exception() is not None:
+            loop.call_exception_handler({
+                'message': 'Unhandled exception during Houdini.run shutdown.',
+                'exception': task.exception(),
+                'task': task
+            })
+
+def _cleanup_loop(loop):
+    try:
+        _cancel_tasks(loop)
+        if sys.version_info >= (3, 6):
+            loop.run_until_complete(loop.shutdown_asyncgens())
+    finally:
+        loop.close()
 
 class Houdini:
 
@@ -37,6 +71,7 @@ class Houdini:
         self.db = db
         self.peers_by_ip = {}
 
+        self.loop = asyncio.get_event_loop()
         self.logger = None
 
         self.client_class = Spheniscidae
@@ -173,9 +208,42 @@ class Houdini:
 
         await self.plugins.setup(houdini.plugins)
 
-        async with self.server:
-            await self.server.serve_forever()
+        if sys.version_info >= (3, 7):
+            async with self.server:
+                await self.server.serve_forever()
 
     async def client_connected(self, reader, writer):
         client_object = self.client_class(self, reader, writer)
         await client_object.run()
+
+    def run(self):
+        loop = self.loop
+
+        try:
+            loop.add_signal_handler(signal.SIGINT, lambda: loop.stop())
+            loop.add_signal_handler(signal.SIGTERM, lambda: loop.stop())
+        except NotImplementedError:
+            pass
+
+        def stop_loop_on_completion(f):
+            loop.stop()
+
+        future = asyncio.ensure_future(self.start(), loop=loop)
+        if sys.version_info >= (3, 7):
+            # Versions below 3.7 do not have serve_forever thus
+            # we use run_forever to keep serving.
+            future.add_done_callback(stop_loop_on_completion)
+        try:
+            loop.run_forever()
+        except KeyboardInterrupt:
+            self.logger.info('Shutting down...')
+        finally:
+            future.remove_done_callback(stop_loop_on_completion)
+            _cleanup_loop(loop)
+
+        if not future.cancelled():
+            try:
+                return future.result()
+            except KeyboardInterrupt:
+                # I am unsure why this gets raised here but suppress it anyway
+                return None
