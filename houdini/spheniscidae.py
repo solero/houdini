@@ -79,7 +79,7 @@ class Spheniscidae:
         await self.send_line(xml_data.decode('utf-8'))
 
     async def send_line(self, data):
-        if not self.__writer.is_closing():
+        if not self.is_writer_closing():
             self.logger.debug(f'Outgoing data: {data}')
             self.__writer.write(data.encode('utf-8') + Spheniscidae.Delimiter)
 
@@ -100,7 +100,7 @@ class Spheniscidae:
             packet_data = parsed_data[4:]
 
             for listener in xt_listeners:
-                if not self.__writer.is_closing() and listener.client_type is None \
+                if not self.is_writer_closing() and listener.client_type is None \
                         or listener.client_type == self.client_type:
                     await listener(self, packet_data)
             self.received_packets.add(packet)
@@ -127,7 +127,7 @@ class Spheniscidae:
                     xml_listeners = self.server.xml_listeners[packet]
 
                     for listener in xml_listeners:
-                        if not self.__writer.is_closing() and listener.client_type is None \
+                        if not self.is_writer_closing() and listener.client_type is None \
                                 or listener.client_type == self.client_type:
                             await listener(self, body_tag)
 
@@ -166,7 +166,7 @@ class Spheniscidae:
 
     async def run(self):
         await self._client_connected()
-        while not self.__writer.is_closing():
+        while not self.is_writer_closing():
             try:
                 data = await self.__reader.readuntil(
                     separator=Spheniscidae.Delimiter)
@@ -190,3 +190,7 @@ class Spheniscidae:
 
     def __repr__(self):
         return f'<Spheniscidae {self.peer_name}>'
+
+    def is_writer_closing(self):
+        transport = self.__writer._transport
+        return transport and transport.is_closing()
