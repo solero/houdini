@@ -1,5 +1,4 @@
-from functools import cached_property
-
+from houdini.utils import cached_property
 from houdini.data import AbstractDataCollection, db
 
 
