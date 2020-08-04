@@ -26,9 +26,6 @@ class RoomMixin:
         self.waddles = {}
 
     async def add_penguin(self, p):
-        if len(self.penguins_by_id) >= self.max_users and not p.moderator:
-            return await p.send_error(210)
-
         if p.room:
             await p.room.remove_penguin(p)
         self.penguins_by_id[p.id] = p
@@ -129,6 +126,9 @@ class Room(db.Model, RoomMixin):
         self.blackhole_penguins = {}
 
     async def add_penguin(self, p):
+        if len(self.penguins_by_id) >= self.max_users and not p.moderator:
+            return await p.send_error(210)
+
         if self.blackhole and p.is_vanilla_client:
             self.blackhole_penguins[p.id] = p.room
             p.room = self
@@ -183,6 +183,9 @@ class PenguinIglooRoom(db.Model, RoomMixin):
         return self.penguin_id + PenguinIglooRoom.internal_id
 
     async def add_penguin(self, p):
+        if len(self.penguins_by_id) >= self.max_users and not p.moderator:
+            return await p.send_error(210)
+
         await RoomMixin.add_penguin(self, p)
 
         await p.send_xt('jr', self.external_id, await self.get_string(f=stealth_mod_filter(p.id)))
