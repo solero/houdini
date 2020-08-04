@@ -654,6 +654,10 @@ async def handle_puffle_visitor_hat_update(p, puffle: PenguinPuffle, hat_id: int
     if hat_id in p.puffle_items or hat_id == 0:
         await puffle.update(hat=hat_id if hat_id > 0 else None).apply()
         await p.room.send_xt('puphi', puffle.id, hat_id)
+        if puffle.id == p.walking:
+            parent_id, puffle_id = get_client_puffle_id(p, puffle.puffle_id)
+            await p.room.send_xt('pw', p.id, puffle.id, 0, 0, 0, 0)
+            await p.room.send_xt('pw', p.id, puffle.id, parent_id, puffle_id, 1, puffle.hat or 0)
 
 
 @handlers.handler(XTPacket('p', 'pufflewalkswap'), client=ClientType.Vanilla)
