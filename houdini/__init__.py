@@ -75,12 +75,13 @@ class IWaddle(ABC):
             await penguin.join_room(penguin.server.rooms[room_id])
 
     async def remove_penguin(self, p):
-        self.penguins.remove(p)
+        self.penguins[self.penguins.index(p)] = None
         p.waddle = None
 
     async def send_xt(self, *data, f=None):
         for penguin in filter(f, self.penguins):
-            await penguin.send_xt(*data)
+            if penguin is not None:
+                await penguin.send_xt(*data)
 
     def get_seat_id(self, p):
         return self.penguins.index(p)
