@@ -57,9 +57,10 @@ class MatchMaking:
                     mm.tick -= 1
 
     def add_penguin(self, p):
-        mm = MatchMaker(penguin=p, tick=self._match_every)
-        self._penguins.append(mm)
-        self._penguins.sort(key=operator.attrgetter('penguin.' + self._match_by))
+        if p not in self._penguins:
+            mm = MatchMaker(penguin=p, tick=self._match_every)
+            self._penguins.append(mm)
+            self._penguins.sort(key=operator.attrgetter('penguin.' + self._match_by))
 
     def remove_penguin(self, p):
         self._penguins = [mm for mm in self._penguins if mm.penguin != p]
