@@ -42,13 +42,14 @@ class MatchMaking:
     async def tick(self):
         for i in range(0, len(self._penguins) - len(self._penguins) % 2, self._max_players):
             matched = self._penguins[i:i+self._max_players]
-            if any(mm.tick == 0 for mm in matched):
+            if any(mm.tick == -1 for mm in matched):
                 matched_penguins = [mm.penguin for mm in matched]
                 self._matched_penguins.update({
                     mm.penguin.id: matched_penguins
                     for mm in matched})
                 self._penguins = [mm for mm in self._penguins if mm not in matched]
 
+                await self._on_tick(matched)
                 await self._on_matched(matched)
             else:
                 await self._on_tick(matched)
