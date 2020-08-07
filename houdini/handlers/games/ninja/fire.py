@@ -540,7 +540,7 @@ async def fire_ninja_progress(p, finish_position=1):
         speed = type(p.waddle).RankSpeed
         points = math.floor((25 / (p.fire_ninja_rank+1) / finish_position) * speed)
         await p.update(fire_ninja_progress=p.fire_ninja_progress+points).apply()
-    elif p.fire_ninja_rank == 4 and finish_position == 1:
+    elif type(p.waddle) == FireSenseiLogic and p.fire_ninja_rank == 4 and finish_position == 1:
         await p.update(fire_ninja_progress=100).apply()
     if p.fire_ninja_progress >= 100:
         await fire_ninja_rank_up(p)
