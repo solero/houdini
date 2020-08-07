@@ -556,6 +556,8 @@ async def end_game_stamps(ninja, finish_position):
             await ninja.penguin.add_stamp(ninja.penguin.server.stamps[268])
         if ninja.energy >= 6:
             await ninja.penguin.add_stamp(ninja.penguin.server.stamps[260])
+        if type(ninja.penguin.waddle) == FireSenseiLogic:
+            await ninja.penguin.add_stamp(ninja.penguin.server.stamps[264])
 
     if ninja.energy_won >= 1:
         await ninja.penguin.add_stamp(ninja.penguin.server.stamps[254])
