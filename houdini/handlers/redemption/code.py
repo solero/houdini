@@ -133,13 +133,13 @@ async def handle_code_vanilla(p, redemption_code: str):
         for item in choices:
             if type(item) is Item:
                 awards.append(str(item.id))
-                await p.add_inventory(item, notify=False)
+                await p.add_inventory(item, notify=False, cost=0)
             elif type(item) is Igloo:
                 awards.append(f'g{item.id}')
-                await p.add_igloo(item, notify=False)
+                await p.add_igloo(item, notify=False, cost=0)
             elif type(item) is Furniture:
                 awards.append(f'f{item.id}')
-                await p.add_furniture(item, notify=False)
+                await p.add_furniture(item, notify=False, cost=0)
 
         await PenguinRedemptionCode.create(penguin_id=p.id, code_id=code[0].id)
 
@@ -155,30 +155,30 @@ async def handle_code_vanilla(p, redemption_code: str):
         if code.items:
             for award in code.items:
                 awards.append(str(award.item_id))
-                await p.add_inventory(p.server.items[award.item_id], notify=False)
+                await p.add_inventory(p.server.items[award.item_id], notify=False, cost=0)
         if code.furniture:
             for award in code.furniture:
                 awards.append(f'f{award.furniture_id}')
-                await p.add_furniture(p.server.furniture[award.furniture_id], notify=False)
+                await p.add_furniture(p.server.furniture[award.furniture_id], notify=False, cost=0)
         if code.igloos:
             for award in code.igloos:
                 awards.append(f'g{award.igloo_id}')
-                await p.add_igloo(p.server.igloos[award.igloo_id], notify=False)
+                await p.add_igloo(p.server.igloos[award.igloo_id], notify=False, cost=0)
         if code.locations:
             for award in code.locations:
                 awards.append(f'loc{award.location_id}')
-                await p.add_location(p.server.locations[award.location_id], notify=False)
+                await p.add_location(p.server.locations[award.location_id], notify=False, cost=0)
         if code.flooring:
             for award in code.flooring:
                 awards.append(f'flr{award.flooring_id}')
-                await p.add_flooring(p.server.flooring[award.flooring_id], notify=False)
+                await p.add_flooring(p.server.flooring[award.flooring_id], notify=False, cost=0)
         if code.puffles:
             for award in code.puffles:
                 awards.append(f'p{award.puffle_id}')
         if code.puffle_items:
             for award in code.puffle_items:
                 awards.append(f'pi{award.puffle_item_id}')
-                await p.add_puffle_item(p.server.puffle_items[award.puffle_item_id], notify=False)
+                await p.add_puffle_item(p.server.puffle_items[award.puffle_item_id], notify=False, cost=0)
 
     await PenguinRedemptionCode.create(penguin_id=p.id, code_id=code.id)
     await p.update(coins=p.coins + code.coins).apply()
@@ -242,7 +242,7 @@ async def handle_send_cart(p, redemption_code: str, choice: str):
             awards.append(choice)
         elif choice.isdigit():
             awards.append(choice)
-            await p.add_inventory(p.server.items[int(choice)], notify=False)
+            await p.add_inventory(p.server.items[int(choice)], notify=False, cost=0)
 
     if code.uses is not None:
         await PenguinRedemptionCode.create(penguin_id=p.id, code_id=code.id)
