@@ -28,7 +28,7 @@ class FireNinja:
 class CardJitsuFireLogic(IWaddle):
 
     room_id = 997
-
+    cards = [*range(1, 113), *range(201, 260), *range(301,360), *range(401,427), *range(501, 595), *range(601, 700), *range(701,750), *range(801, 804)]
     Board = ['b', 's', 'w', 'f', 'c',
              's', 'f', 'w', 'b', 's',
              'w', 'f', 'c', 'w', 's', 'f']
@@ -85,7 +85,7 @@ class CardJitsuFireLogic(IWaddle):
             penguin = ninja.penguin
             deck = Counter(penguin.server.cards[card.card_id]
                            for card in penguin.cards.values()
-                           for _ in range(card.quantity + card.member_quantity))
+                           for _ in range(card.quantity + card.member_quantity) if card.card_id in self.cards)
             dealt = Counter(ninja.deck)
             can_deal = list((deck - dealt).elements())
 
