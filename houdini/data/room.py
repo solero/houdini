@@ -288,7 +288,7 @@ class RoomWaddle(db.Model):
         seat_id = self.penguins.index(None)
         self.penguins[seat_id] = p
         await p.send_xt('jw', seat_id)
-        await p.room.send_xt('uw', self.id, seat_id, p.safe_name)
+        await p.room.send_xt('uw', self.id, seat_id, p.safe_name, p.id)
 
         p.waddle = self
 
