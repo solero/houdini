@@ -14,6 +14,10 @@ async def handle_get_waddle_population(p):
 async def handle_join_waddle(p, waddle_id: int):
     try:
         waddle = p.room.waddles[waddle_id]
+
+        if waddle.game in ['card', 'water', 'fire'] and waddle.penguins.count(None) < waddle.seats:
+            await p.send_xt('gwcj', *(penguin.id for penguin in waddle.penguins if penguin is not None))
+
         await waddle.add_penguin(p)
     except KeyError:
         p.logger.warn(f'{p.username} tried to join a waddle that doesn\'t exist')
