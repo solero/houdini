@@ -176,7 +176,8 @@ class _ListenerManager(_AbstractManager):
                     old_index = self[listener_object.packet].index(listener_object)
                     self[listener_object.packet].insert(index_of_after + 1, self[listener_object.packet].pop(old_index))
                 for override in listener_object.overrides:
-                    self[override.packet].remove(override)
+                    if override in self[override.packet]:
+                        self[override.packet].remove(override)
 
     @classmethod
     def is_listener(cls, listener):
