@@ -17,6 +17,7 @@ from houdini.penguin import Penguin
 class FireNinja:
     penguin: Penguin
     seat_id: int
+    card: List[Card] = field(default_factory=list)
     deck: List[Card] = field(default_factory=list)
     chosen: Union[int, None] = None
     energy: int = 6
@@ -54,7 +55,7 @@ class CardJitsuFireLogic(IWaddle):
         self.finish_position = self.seats
 
         self.tile_ids = CardJitsuFireLogic.DefaultTiles[:self.seats].copy()
-
+        self.cards = penguin.cards.values()
         self.current_player = None
         self.ninja_circle = itertools.cycle(self.ninjas)
 
@@ -69,7 +70,7 @@ class CardJitsuFireLogic(IWaddle):
 
         self.choose_card_timeout = None
         self.choose_board_timeout = None
-
+        self.init_cards()
         self.next()
         self.deal()
         self.spin()
@@ -80,11 +81,15 @@ class CardJitsuFireLogic(IWaddle):
         while self.current_player not in self.ninjas:
             self.current_player = next(self.ninja_circle)
 
+    def init_cards(self):
+        for ninja in self.ninjas:
+            ninja.card = list(filter(lambda x: x.card_id in self.cards, list(ninja.penguin.cards.values())))
+            
     def deal(self):
         for ninja in self.ninjas:
             penguin = ninja.penguin
             deck = Counter(penguin.server.cards[card.card_id]
-                           for card in penguin.cards.values()
+                           for card in 
                            for _ in range(card.quantity + card.member_quantity) if card.card_id in self.cards)
             dealt = Counter(ninja.deck)
             can_deal = list((deck - dealt).elements())
