@@ -89,7 +89,7 @@ class CardJitsuFireLogic(IWaddle):
         for ninja in self.ninjas:
             penguin = ninja.penguin
             deck = Counter(penguin.server.cards[card.card_id]
-                           for card in 
+                           for card in ninja.card
                            for _ in range(card.quantity + card.member_quantity) if card.card_id in self.cards)
             dealt = Counter(ninja.deck)
             can_deal = list((deck - dealt).elements())
@@ -450,7 +450,7 @@ class FireSenseiLogic(CardJitsuFireLogic):
             card = ninja.deck[ninja.chosen]
 
             can_beat_sensei = ninja.penguin.fire_ninja_rank >= 4
-            sensei_card = random.choice(list(ninja.penguin.server.cards.values())) \
+            sensei_card = random.choice(list(filter(lambda x: x.card_id in self.cards, list(ninja.penguin.server.cards.values())))) \
                 if can_beat_sensei else self.get_win_card(card)
             sensei.chosen = 0
             sensei.deck = [sensei_card]
@@ -494,7 +494,7 @@ class FireSenseiLogic(CardJitsuFireLogic):
             self.current_battle_state = 0
 
     def get_win_card(self, card):
-        cards_to_pick = self.penguins[0].server.cards
+        cards_to_pick = list(filter(lambda x: x.card_id in self.cards, list(self.penguins[0].cards.values())))
         cards_iter = cards_to_pick.values()
         cards_end_to_end = itertools.chain(cards_iter, cards_iter)
         start_position = random.randint(0, len(cards_to_pick))
