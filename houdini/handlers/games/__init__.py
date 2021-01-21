@@ -72,6 +72,10 @@ async def handle_get_puck(p):
 @handlers.handler(XTPacket('zo', ext='z'))
 @handlers.cooldown(10, callback=game_over_cooling)
 async def handle_get_game_over(p, score: int):
+	# If the room is Card Jitsu Snow, it this should do nothing
+    if p.room.id == 996:
+	    return
+
     if p.room.game and not p.waddle and not p.table:
         coins_earned = determine_coins_earned(p, score)
         if await determine_coins_overdose(p, coins_earned):
