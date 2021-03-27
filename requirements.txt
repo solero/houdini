@@ -7,3 +7,4 @@ defusedxml
 bcrypt
 uvloop; sys_platform != 'win32'
 pytz
+numpy
