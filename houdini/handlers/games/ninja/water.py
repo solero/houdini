@@ -284,11 +284,9 @@ class CardJitsuWaterLogic(IWaddle):
         await self.send_zm("pi", *pi_data)
 
     async def remove_penguin(self, p, isQuit=True):
-        if p.waddle is None or p.waddle.room_id != self.room_id:
-            return
-        seat_id = self.get_seat_id(p)  
-        self.ninjas.remove(p)
         await super().remove_penguin(p)
+        ninja = self.get_ninja_by_penguin(p)
+        self.ninjas.remove(ninja)
         await self.ninja_stamps_earned(p)
 
     def row_generator(self, empty = False):
