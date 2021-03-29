@@ -284,10 +284,11 @@ class CardJitsuWaterLogic(IWaddle):
         await self.send_zm("pi", *pi_data)
 
     async def remove_penguin(self, p, isQuit=True):
-        await super().remove_penguin(p)
         ninja = self.get_ninja_by_penguin(p)
         self.ninjas.remove(ninja)
-        await self.ninja_stamps_earned(p)
+        p.waddle.timer_task.cancel()
+        await super().remove_penguin(p)
+        await ninja_stamps_earned(p)
 
     def row_generator(self, empty = False):
         self.rows += 1
@@ -339,8 +340,8 @@ class CardJitsuWaterLogic(IWaddle):
                     await self.cycle_card()
                     self.card_position = 0
 
-                self.board_position += updateFreq * 100
-                self.card_position += updateCardFreq * 100
+                self.board_position += updateFreq * 80
+                self.card_position += updateCardFreq * 75
                 await self.send_zm("bv", *velocity_vector)
                 await self.send_zm("cv", *self.card_velocity)
                 await asyncio.sleep(1)
@@ -495,7 +496,7 @@ class WaterSenseiLogic(CardJitsuWaterLogic):
                     self.started = False
                     await self.game_over()
                 if ninja.penguin.water_ninja_rank < 4:  
-                    await asyncio.sleep(0.01)
+                    await asyncio.sleep(0.5)
                 else:   
                     await asyncio.sleep(3)
         except asyncio.CancelledError:
@@ -623,30 +624,29 @@ async def handle_player_move(p, action: str, cell_id: int):
     available_cells_by_id = {i.id: i for i in available_cells}
 
     if cell_id not in available_cells_by_id:
-        #print(cell_id, available_cells_by_id.keys(), ninja.cell.id)
+        print(cell_id, available_cells_by_id.keys(), ninja.cell.id)
         return await p.waddle.send_zm_client(ninja, 'pf', '{}-{}'.format(ninja.seat_id, cell_id), 'lmao')
 
     cell = available_cells_by_id[cell_id]
-    # move player
+    
     if cell.type != 3 or cell.penguin is not None:
         return await p.waddle.send_zm_client(ninja, 'pf', '{}-{}'.format(ninja.seat_id, cell_id), 'not empty?')
-    print('moved from ', ninja.cell.id//10, 'to ', cell.id//10)
+
     ninja.cell.penguin = None
     ninja.cell = None
     cell.penguin_jump(ninja)
-    
+
     await p.waddle.send_zm('pm', '{}-{}'.format(ninja.seat_id, cell.id))
 
     last_row = p.waddle.board_array[-1]
     row = cell.id // 10
-    print("ROWS:",last_row.index -2, row)
     if last_row.index - 2 == row:
-        # he won the game
-        #print("ROWS:",last_row.index, row)
+       
+        print("ROWS:",last_row.index, row)
         ninja.position = 1
         progress, rank = await water_ninja_progress(ninja.penguin, ninja.position)
-        #print("Penguin Progress", progress, rank)
-        await p.waddle.send_zm("gw", ninja.seat_id, 1,  '{}{}'.format(progress, rank), type(p.waddle) == WaterSenseiLogic)
+        print("Penguin Progress", progress, rank)
+        await p.waddle.send_zm("gw", ninja.seat_id, 1,  '{}{}'.format(int(progress), rank), 'false')
         ninja.winner = True
         p.waddle.started = False
         return await p.waddle.game_over()
@@ -666,19 +666,19 @@ async def handle_throw_card(p, *, cell_id: int):
     available_cells_by_id = {i.id: i for i in available_cells}
 
     if cell_id not in available_cells_by_id:
-        #print(cell_id, available_cells_by_id.keys(), ninja.cell.id)
+        print(cell_id, available_cells_by_id.keys(), ninja.cell.id)
         
         return await p.waddle.send_zm_client(ninja, 'pf', '{}-{}'.format(ninja.seat_id, cell_id))
 
     cell = available_cells_by_id[cell_id]
     if (ninja.chosen is None) or not cell.can_jump():
-        #print(ninja.chosen, cell.can_jump())
+        print(ninja.chosen, cell.can_jump())
         return await p.waddle.send_zm_client(ninja, 'pf', '{}-{}'.format(ninja.seat_id, cell_id))
             
     card = ninja.chosen
     won = ((3 + p.waddle.rule_set[card.element] - (cell.type+1)) % 3 - 1) if cell.type != 3 else -1
 
-    #print("CJ WIN:", card.element, cell.type, won)
+    print("CJ WIN:", card.element, cell.type, won)
 
     if won > 0:
         return await p.waddle.send_zm_client(ninja, 'pf', '{}-{}'.format(ninja.seat_id, cell_id))
@@ -689,11 +689,9 @@ async def handle_throw_card(p, *, cell_id: int):
     cell.update_value(value_del)
     if cell.type == 3 and cell.value > 0:
         cell.type = p.waddle.rule_set[card.element]-1
-        
-    if cell.type == 3:
         ninja.jumps += 1
 
-    #print("ValDel:", value_del, cell.value)
+    print("ValDel:", value_del, cell.value)
 
     row, col = cell.id//10, cell.id%10
     cells = [i for i in p.waddle.get_nearby_cells(row, col)[:6] if i.can_jump() and i.id != ninja.cell.id]
@@ -701,7 +699,8 @@ async def handle_throw_card(p, *, cell_id: int):
         cell_win = ((3 + p.waddle.rule_set[card.element] - (i.type+1)) % 3 - 1) if i.type != 3 else -1
         if cell_win < 1 and card.value >= 9:
             i.type = cell.type if i.type == 3 else i.type
-            i.update_value(card.value * (-1 if cell_win == -1 else 1)) 
+            i.update_value(card.value * (-1 if cell_win == -1 else 1) if cell.type == p.waddle.rule_set[card.element] else 0) 
 
     cells.insert(0, cell)
         
+    await p.waddle.send_zm('pt', ninja.seat_id, '{}-{}'.format(p.waddle.rule_set[card.element]-1, cell.id), '|'.join(map(str, cells)))
