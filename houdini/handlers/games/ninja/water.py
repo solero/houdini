@@ -1,3 +1,5 @@
+#CREDITS: Allinol, Dote, Adamson
+
 from houdini import IWaddle, handlers
 from houdini.data.ninja import Card
 from houdini.handlers import XTPacket
