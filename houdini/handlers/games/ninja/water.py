@@ -1,4 +1,5 @@
 #CREDITS: Allinol, Dote, Adamson
+#NOTE: Floogal did nothing but put the code on GitHub (with permission) and make a pull request
 
 from houdini import IWaddle, handlers
 from houdini.data.ninja import Card
