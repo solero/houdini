@@ -30,6 +30,9 @@ async def handle_join_game(p):
 @handlers.handler(XTPacket('zm', ext='z'))
 @handlers.waddle(SledRacingLogic)
 async def handle_send_move(p, player_id: int, x: float, y: float, time: float):
+    if p.id != player_id:
+        return
+    
     await p.waddle.send_xt('zm', player_id, x, y, time)
 
 
