@@ -133,10 +133,8 @@ class Houdini:
             self.config.database_name))
 
         self.logger.info('Booting Houdini')
-
-        self.redis = await aioredis.create_redis_pool('redis://{}:{}'.format(
-            self.config.redis_address, self.config.redis_port),
-            minsize=5, maxsize=10)
+        pool = aioredis.ConnectionPool.from_url(f'redis://{self.config.redis_address}:{self.config.redis_port}')
+        self.redis = aioredis.Redis(connection_pool=pool)
 
         if self.config.type == 'world':
             await self.redis.delete(f'houdini.players.{self.config.id}')
