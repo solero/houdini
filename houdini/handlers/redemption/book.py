@@ -37,10 +37,10 @@ async def handle_send_book_answer(p, book: int, question_id: int, answer: str):
     redemption_attempts_key = f'{p.id}.redemption_attempts'
 
     if await p.server.redis.exists(redemption_attempts_key):
-        tr = p.server.redis.multi_exec()
-        tr.incr(redemption_attempts_key)
-        tr.expire(redemption_attempts_key, p.server.config.login_failure_timer)
-        failure_count, _ = await tr.execute()
+        async with p.server.redis.pipeline(transaction=True) as tr:
+            tr.incr(redemption_attempts_key)
+            tr.expire(redemption_attempts_key, p.server.config.login_failure_timer)
+            failure_count, _ = await tr.execute()
 
         if failure_count >= 5:
             return await p.send_error(713)
