@@ -41,10 +41,10 @@ async def handle_login(p, credentials: Credentials):
         p.logger.info(f'{username} failed to login: incorrect password')
 
         if await p.server.redis.exists(flood_key):
-            tr = p.server.redis.multi_exec()
-            tr.incr(flood_key)
-            tr.expire(flood_key, p.server.config.login_failure_timer)
-            failure_count, _ = await tr.execute()
+            async with p.server.redis.pipeline(transaction=True) as tr:
+                tr.incr(flood_key)
+                tr.expire(flood_key, p.server.config.login_failure_timer)
+                failure_count, _ = await tr.execute()
 
             if failure_count >= p.server.config.login_failure_limit:
                 return await p.send_error_and_disconnect(150)
@@ -100,10 +100,11 @@ async def handle_login(p, credentials: Credentials):
     login_key = Crypto.hash(random_key[::-1])
     confirmation_hash = Crypto.hash(os.urandom(24))
 
-    tr = p.server.redis.multi_exec()
-    tr.setex(f'{data.username}.lkey', p.server.config.auth_ttl, login_key)
-    tr.setex(f'{data.username}.ckey', p.server.config.auth_ttl, confirmation_hash)
-    await tr.execute()
+
+    async with p.server.redis.pipeline(transaction=True) as tr:
+        tr.setex(f'{data.username}.lkey', p.server.config.auth_ttl, login_key)
+        tr.setex(f'{data.username}.ckey', p.server.config.auth_ttl, confirmation_hash)
+        await tr.execute()
 
     world_populations, buddy_presence = await get_server_presence(p, data)
 

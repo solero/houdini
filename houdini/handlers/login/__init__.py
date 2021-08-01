@@ -45,10 +45,12 @@ async def get_server_presence(p, pdata):
         if await p.server.redis.scard(server_key):
             async with p.server.db.transaction():
                 buddies = BuddyList.select('buddy_id').where(BuddyList.penguin_id == pdata.id).gino.iterate()
-                tr = p.server.redis.multi_exec()
-                async for buddy_id, in buddies:
-                    tr.sismember(server_key, buddy_id)
-                online_buddies = await tr.execute()
+                
+                async with p.server.redis.pipeline(transaction=True) as tr:
+                    async for buddy_id, in buddies:
+                        tr.sismember(server_key, buddy_id)
+                    online_buddies = await tr.execute()
+                    
                 if any(online_buddies):
                     buddy_worlds.append(str(int(server_id)))
 

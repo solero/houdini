@@ -12,10 +12,10 @@ async def handle_join_redemption_server_vanilla(p, credentials: str, confirmatio
     if login_key != p.login_key:
         return await p.close()
 
-    tr = p.server.redis.multi_exec()
-    tr.setex(f'{username}.lkey', p.server.config.auth_ttl, login_key)
-    tr.setex(f'{username}.ckey', p.server.config.auth_ttl, confirmation_hash)
-    await tr.execute()
+    async with p.server.redis.pipeline(transaction=True) as tr:
+        tr.setex(f'{username}.lkey', p.server.config.auth_ttl, login_key)
+        tr.setex(f'{username}.ckey', p.server.config.auth_ttl, confirmation_hash)
+        await tr.execute()
 
     redeemed_books = await PenguinRedemptionBook.query.where(PenguinRedemptionBook.penguin_id == p.id).gino.all()
     await p.send_xt('rjs', ','.join(str(redeemed_book.book_id) for redeemed_book in redeemed_books), 'houdini',
@@ -28,9 +28,9 @@ async def handle_join_redemption_server_legacy(p, _, login_key: str):
     if login_key != p.login_key:
         return await p.close()
 
-    tr = p.server.redis.multi_exec()
-    tr.setex(f'{p.username}.lkey', p.server.config.auth_ttl, login_key)
-    await tr.execute()
+    async with p.server.redis.pipeline(transaction=True) as tr:
+        tr.setex(f'{p.username}.lkey', p.server.config.auth_ttl, login_key)
+        await tr.execute()
 
     redeemed_books = await PenguinRedemptionBook.query.where(PenguinRedemptionBook.penguin_id == p.id).gino.all()
     await p.send_xt('rjs', ','.join(str(redeemed_book.book_id) for redeemed_book in redeemed_books), 'houdini',
