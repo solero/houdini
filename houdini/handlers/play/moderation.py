@@ -111,7 +111,8 @@ async def cheat_ban(p, penguin_id, hours=24, comment=''):
 
         if penguin_id in p.server.penguins_by_id:
             await player.send_error_and_disconnect(611, comment)
-
+            await player.close()
+            
 
 async def moderator_kick(p, penguin_id):
     if penguin_id in p.server.penguins_by_id:
@@ -148,3 +149,5 @@ async def moderator_ban(p, penguin_id, hours=24, comment='', message=''):
                 await player.send_xt('ban', 612, 2, hours, comment)
             else:
                 await player.send_error_and_disconnect(610, comment)
+                
+            await player.close()
