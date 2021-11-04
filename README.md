@@ -75,7 +75,6 @@ $ python bootstrap.py login
 
 If you have suggestions for how this project can be improved, or want to report a bug, please feel free to open an issue! We welcome any and all contributions. We listen to all your questions and are always active on the [Solero Discord server](https://solero.me/discord).
 
-Please note that in this early stage of development we cannot take requests for vanilla Club Penguin features!
 
 ## License
 

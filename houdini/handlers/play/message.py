@@ -2,12 +2,12 @@ from houdini import handlers
 from houdini.commands import UnknownCommandException, has_command_prefix, invoke_command_string
 from houdini.data.moderator import ChatFilterRuleCollection
 from houdini.handlers import XTPacket
-from houdini.handlers.play.moderation import moderator_ban
+from houdini.handlers.play.moderation import moderator_ban, moderator_kick
 
 
 @handlers.boot
 async def filter_load(server):
-    server.chat_filter_words = await ChatFilterRuleCollection.get_collection()
+    server.chat_filter_words = {w.lower(): c for w, c in await ChatFilterRuleCollection.get_collection().items()}
     server.logger.info(f'Loaded {len(server.chat_filter_words)} filter words')
 
 
@@ -32,7 +32,10 @@ async def handle_send_message(p, penguin_id: int, message: str):
             if consequence.ban:
                 await moderator_ban(p, p.id, comment='Inappropriate language', message=message)
                 return
-            if consequence.filter:
+            if consequence.warn:
+                await moderator_kick(p, p.id)
+                return
+            else:
                 return
 
     try:

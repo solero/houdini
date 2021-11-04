@@ -41,11 +41,11 @@ async def world_login(p, data):
 @handlers.allow_once
 @handlers.depends_on_packet(XMLPacket('verChk'), XMLPacket('rndK'))
 async def handle_login(p, credentials: WorldCredentials):
-    tr = p.server.redis.multi_exec()
-    tr.get(f'{credentials.username}.lkey')
-    tr.get(f'{credentials.username}.ckey')
-    tr.delete(f'{credentials.username}.lkey', f'{credentials.username}.ckey')
-    login_key, confirmation_hash, _ = await tr.execute()
+    async with p.server.redis.pipeline(transaction=True) as tr:
+        tr.get(f'{credentials.username}.lkey')
+        tr.get(f'{credentials.username}.ckey')
+        tr.delete(f'{credentials.username}.lkey', f'{credentials.username}.ckey')
+        login_key, confirmation_hash, _ = await tr.execute()
 
     if login_key is None or confirmation_hash is None:
         return await p.close()
@@ -69,10 +69,10 @@ async def handle_login(p, credentials: WorldCredentials):
 @handlers.allow_once
 @handlers.depends_on_packet(XMLPacket('verChk'), XMLPacket('rndK'))
 async def handle_legacy_login(p, credentials: Credentials):
-    tr = p.server.redis.multi_exec()
-    tr.get(f'{credentials.username}.lkey')
-    tr.delete(f'{credentials.username}.lkey', f'{credentials.username}.ckey')
-    login_key, _ = await tr.execute()
+    async with p.server.redis.pipeline(transaction=True) as tr:
+        tr.get(f'{credentials.username}.lkey')
+        tr.delete(f'{credentials.username}.lkey', f'{credentials.username}.ckey')
+        login_key, _ = await tr.execute()
 
     try:
         login_key = login_key.decode()
