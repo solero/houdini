@@ -583,7 +583,7 @@ async def handle_puffle_feed_interation_legacy(p, puffle: PenguinPuffle, x: int,
 
 
 @handlers.handler(XTPacket('p', 'ip'), client=ClientType.Vanilla)
-async def handle_puffle_play_interation_legacy(p, puffle: PenguinPuffle, x: int, y: int):
+async def handle_puffle_play_interation_vanilla(p, puffle: PenguinPuffle, x: int, y: int):
     favourite_toy = p.server.puffle_items[p.server.puffles[puffle.puffle_id].favourite_toy]
     await deliver(p, favourite_toy, puffle)
 
