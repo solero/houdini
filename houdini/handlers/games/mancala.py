@@ -24,7 +24,7 @@ class MancalaLogic(ITable):
                 continue
             opposite_hollow = 12 - hollow
 
-            if hand == 1 and self.board[hollow] == 0:
+            if hand == 1 and self.board[hollow] == 0 and self.board[opposite_hollow] > 0:
                 if (self.current_player == 1 and hollow in range(0, 6)) or (self.current_player == 2 and hollow in range(7, 13)):
                     self.board[my_mancala] += self.board[opposite_hollow] + 1
                     self.board[opposite_hollow] = 0
