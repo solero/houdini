@@ -58,7 +58,7 @@ async def handle_get_mail(p):
 @handlers.cooldown(2)
 async def handle_send_mail(p, recipient_id: int, postcard_id: int):
     if p.coins < 10:
-        return await p.send_xt('ms', p.coins, 0)
+        return await p.send_xt('ms', p.coins, 2)
     mail_count = await db.select([db.func.count(PenguinPostcard.id)]).where(
         PenguinPostcard.penguin_id == recipient_id).gino.scalar()
     if recipient_id in p.server.penguins_by_id:
