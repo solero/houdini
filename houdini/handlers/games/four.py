@@ -13,7 +13,7 @@ class ConnectFourLogic(ITable):
 
     def is_valid_move(self, col, row):
         if 0 <= row <= 5 and 0 <= col <= 6:
-            if row == 5 or (self.board[col][row] == 0 and self.board[col][row + 1]):
+            if (row == 5 or self.board[col][row + 1]) and self.board[col][row] == 0:
                 return True
         return False
 
