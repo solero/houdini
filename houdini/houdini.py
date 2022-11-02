@@ -4,7 +4,7 @@ import os
 import sys
 from logging.handlers import RotatingFileHandler
 
-import aioredis
+from redis import asyncio as aioredis
 from cacheout import Cache
 
 from houdini import PenguinStringCompiler
