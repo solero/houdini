@@ -82,7 +82,7 @@ Currently Wand only works on Linux servers. Windows and Mac servers could work b
 
 :heartpulse: So glad to hear of your interest!
 
-If you have suggestions for how this project can be improved, or want to report a bug, please feel free to open an issue! We welcome any and all contributions. We listen to all your questions and are always active on the [Solero Discord server](https://discord.gg/UPnWKfh).
+If you have suggestions for how this project can be improved, or want to report a bug, please feel free to open an issue! We welcome any and all contributions. We listen to all your questions and are always active on the [Solero Discord server](https://solero.me/t/join-the-discord-server/17).
 
 ## License
 
