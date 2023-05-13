@@ -182,7 +182,7 @@ async def handle_send_move(p, movie: str, direction: str, spade: int):
             p.table.logic.make_move(movie, direction, spade)
             await p.table.send_xt('zm', movie, direction, spade)
             opponent = p.table.penguins[1 if p.table.logic.current_player == 1 else 0]
-            if p.table.logic.turns >= 9 and p.table.logic.gems_found > 0:
+            if p.table.logic.turns >= 6 and p.table.logic.gems_found > 0:
                 await p.add_stamp(p.server.stamps[420])
                 await opponent.add_stamp(p.server.stamps[420])
             if p.table.logic.turns >= 5 and p.table.logic.gems_found >= 2:
