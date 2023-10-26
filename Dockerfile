@@ -1,4 +1,4 @@
-FROM python:3-alpine
+FROM python:3.9-alpine
 ARG TARGETARCH
 
 RUN apk add \
