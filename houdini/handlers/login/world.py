@@ -62,6 +62,10 @@ async def handle_login(p, credentials: WorldCredentials):
     data = await Penguin.get(credentials.id)
 
     p.login_key = login_key
+
+    # Store login key in redis for use in other services
+    await p.server.redis.setex(f'{data.username}.loginkey', 60 * 60 * 12, login_key)
+
     await world_login(p, data)
 
 
