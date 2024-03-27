@@ -58,7 +58,10 @@ class PluginManager(_AbstractManager):
             await self.load(plugin_package)
 
     async def load(self, module):
-        plugin_class, plugin_type = inspect.getmembers(module, is_plugin).pop()
+        try:
+            plugin_class, plugin_type = inspect.getmembers(module, is_plugin).pop()
+        except IndexError:
+            return
         plugin_index = plugin_class.lower()
 
         if self.server.config.plugins != '*' and \
