@@ -31,6 +31,8 @@ async def determine_coins_overdose(p, coins):
 
     if coins > max_game_coins:
         return True
+
+    await p.server.redis.delete(overdose_key)
     return False
 
 
