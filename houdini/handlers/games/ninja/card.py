@@ -238,7 +238,7 @@ async def ninja_rank_up(p, ranks=1):
             await p.add_inbox(p.server.postcards[CardJitsuLogic.PostcardAwards[rank]])
         if rank in CardJitsuLogic.StampAwards:
             await p.add_stamp(p.server.stamps[CardJitsuLogic.StampAwards[rank]])
-    await p.update(ninja_rank=p.ninja_rank + ranks, ninja_progress=0).apply()
+    await p.update(ninja_rank=p.ninja_rank + ranks).apply()
     return True
 
 def get_exp_difference_to_next_rank(cur_rank: int) -> int:
