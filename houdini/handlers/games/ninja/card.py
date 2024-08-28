@@ -533,6 +533,8 @@ async def handle_send_sensei_pick(p, action: str, card_id: int):
                 can_rank_up = await ninja_rank_up(p)
                 if can_rank_up:
                     await p.send_xt('cza', p.ninja_rank)
+            else:
+                await ninja_progress(p, False)
         else:
             for seat_id, ninja in enumerate(p.waddle.ninjas):
                 if not p.waddle.has_cards_to_play(seat_id):
