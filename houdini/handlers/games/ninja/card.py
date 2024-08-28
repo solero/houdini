@@ -241,20 +241,27 @@ async def ninja_rank_up(p, ranks=1):
     await p.update(ninja_rank=p.ninja_rank + ranks, ninja_progress=0).apply()
     return True
 
+def get_exp_difference_to_next_rank(cur_rank: int) -> int:
+    return (cur_rank + 1) * 5
+
+def get_treshold_for_rank(rank: int) -> int:
+    # using arithmetic progression sum because the exp structure allows 
+    return (rank + 1) * rank // 2 * 5
+
+# rank doesn't need to be known, but requiring it since it is always known and is simpler/faster to compute
+def get_percentage_to_next_belt(xp: int, rank: int) -> int:
+    return int(((xp - get_treshold_for_rank(rank)) / get_exp_difference_to_next_rank(rank)) * 100)
 
 async def ninja_progress(p, won=False):
-    if p.ninja_rank == 0:
-        await p.update(ninja_progress=100).apply()
-    elif p.ninja_rank < 9:
-        speed = type(p.waddle).RankSpeed
-        if not won:
-            speed *= 0.5
-        points = math.floor((100 / p.ninja_rank) * speed)
-        await p.update(ninja_progress=p.ninja_progress+points).apply()
-    if p.ninja_progress >= 100:
+    # black belts don't need exp, otherwise it could overflow
+    if p.ninja_rank >= 9:
+        return
+    gained_exp = 5 if won else 1
+    new_progress = p.ninja_progress + gained_exp
+    await p.update(ninja_progress=new_progress).apply()
+    if new_progress >= get_treshold_for_rank(p.ninja_rank + 1):
         await ninja_rank_up(p)
         await p.send_xt('cza', p.ninja_rank)
-
 
 async def ninja_stamps_earned(p):
     game_stamps = [stamp for stamp in p.server.stamps.values() if stamp.group_id == p.room.stamp_group]

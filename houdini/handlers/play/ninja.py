@@ -1,7 +1,7 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
 from houdini.data.penguin import Penguin
-
+from houdini.handlers.games.ninja.card import get_percentage_to_next_belt
 
 @handlers.handler(XTPacket('ni', 'gnr'))
 @handlers.cooldown(2)
@@ -13,7 +13,7 @@ async def handle_get_ninja_ranks(p, penguin_id: int):
 
 @handlers.handler(XTPacket('ni', 'gnl'))
 async def handle_get_ninja_level(p):
-    await p.send_xt('gnl', p.ninja_rank, p.ninja_progress, 10)
+    await p.send_xt('gnl', p.ninja_rank, get_percentage_to_next_belt(p.ninja_progress, p.ninja_rank), 10)
 
 
 @handlers.handler(XTPacket('ni', 'gfl'))
