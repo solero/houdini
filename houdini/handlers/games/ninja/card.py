@@ -246,10 +246,6 @@ def get_treshold_for_rank(rank: int) -> int:
     # using arithmetic progression sum because the exp structure allows 
     return (rank + 1) * rank // 2 * 5
 
-# rank doesn't need to be known, but requiring it since it is always known and is simpler/faster to compute
-def get_percentage_to_next_belt(xp: int, rank: int) -> int:
-    return int(((xp - get_treshold_for_rank(rank)) / get_exp_difference_to_next_rank(rank)) * 100)
-
 async def ninja_progress(p, won=False):
     # black belts don't need exp, otherwise it could overflow
     if p.ninja_rank >= 9:
