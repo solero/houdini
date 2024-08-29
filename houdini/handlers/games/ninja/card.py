@@ -47,8 +47,6 @@ class CardJitsuLogic(IWaddle):
     StampAwards = {0: 230, 4: 232, 8: 234, 9: 236}
     StampGroupId = 38
 
-    RankSpeed = 1
-
     def __init__(self, waddle):
         super().__init__(waddle)
 
@@ -188,7 +186,7 @@ class CardJitsuLogic(IWaddle):
 
 
 class CardJitsuMatLogic(CardJitsuLogic):
-    RankSpeed = 0.5
+    pass
 
 
 class SenseiLogic(CardJitsuLogic):
