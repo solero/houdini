@@ -242,7 +242,7 @@ async def ninja_rank_up(p, ranks=1):
 def get_exp_difference_to_next_rank(cur_rank: int) -> int:
     return (cur_rank + 1) * 5
 
-def get_treshold_for_rank(rank: int) -> int:
+def get_threshold_for_rank(rank: int) -> int:
     # using arithmetic progression sum because the exp structure allows 
     return (rank + 1) * rank // 2 * 5
 
@@ -251,10 +251,10 @@ async def ninja_progress(p, won=False):
     if p.ninja_rank >= 9:
         return
     gained_exp = 5 if won else 1
-    next_rank_threshold = get_treshold_for_rank(p.ninja_rank + 1)
+    next_rank_threshold = get_threshold_for_rank(p.ninja_rank + 1)
 
     # this clamping is for compatibility with older versions
-    previous_progress = max(min(p.ninja_progress, next_rank_threshold), get_treshold_for_rank(p.ninja_rank))
+    previous_progress = max(min(p.ninja_progress, next_rank_threshold), get_threshold_for_rank(p.ninja_rank))
     new_progress = previous_progress + gained_exp
     await p.update(ninja_progress=new_progress).apply()
     if new_progress >= next_rank_threshold:
