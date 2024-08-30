@@ -1,7 +1,11 @@
 from houdini import handlers
 from houdini.handlers import XTPacket
 from houdini.data.penguin import Penguin
+from houdini.handlers.games.ninja.card import get_threshold_for_rank, get_exp_difference_to_next_rank
 
+# rank doesn't need to be known, but requiring it since it is always known and is simpler/faster to compute
+def get_percentage_to_next_belt(xp: int, rank: int) -> int:
+    return int(((xp - get_threshold_for_rank(rank)) / get_exp_difference_to_next_rank(rank)) * 100)
 
 @handlers.handler(XTPacket('ni', 'gnr'))
 @handlers.cooldown(2)
@@ -13,7 +17,7 @@ async def handle_get_ninja_ranks(p, penguin_id: int):
 
 @handlers.handler(XTPacket('ni', 'gnl'))
 async def handle_get_ninja_level(p):
-    await p.send_xt('gnl', p.ninja_rank, p.ninja_progress, 10)
+    await p.send_xt('gnl', p.ninja_rank, get_percentage_to_next_belt(p.ninja_progress, p.ninja_rank), 10)
 
 
 @handlers.handler(XTPacket('ni', 'gfl'))
