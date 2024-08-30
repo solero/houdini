@@ -251,10 +251,15 @@ async def ninja_progress(p, won=False):
     if p.ninja_rank >= 9:
         return
     gained_exp = 5 if won else 1
-    next_rank_threshold = get_threshold_for_rank(p.ninja_rank + 1)
 
-    # this clamping is for compatibility with older versions
-    previous_progress = max(min(p.ninja_progress, next_rank_threshold), get_threshold_for_rank(p.ninja_rank))
+    previous_progress = p.ninja_progress
+    cur_rank_threshold = get_threshold_for_rank(p.ninja_rank)
+    next_rank_threshold = get_threshold_for_rank(p.ninja_rank + 1)
+    # this is for correcting old versions, where the exp might not be in the proper threshold.
+    if previous_progress < cur_rank_threshold or previous_progress > next_rank_threshold:
+        # in this case, ninja_progress is the percentage to next belt
+        previous_progress = int(cur_rank_threshold + previous_progress * get_exp_difference_to_next_rank(p.ninja_rank) / 100)
+
     new_progress = previous_progress + gained_exp
     await p.update(ninja_progress=new_progress).apply()
     if new_progress >= next_rank_threshold:
