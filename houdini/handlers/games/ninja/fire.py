@@ -39,8 +39,6 @@ class CardJitsuFireLogic(IWaddle):
     ItemAwards = [6025, 4120, 2013, 1086, 3032]
     StampAwards = {2: 256, 4: 262}
 
-    RankSpeed = 1
-
     def __init__(self, waddle):
         super().__init__(waddle)
 
@@ -329,7 +327,7 @@ class CardJitsuFireLogic(IWaddle):
                         player_finish_position = self.podium[n.seat_id]
 
                         await end_game_stamps(n, player_finish_position)
-                        await fire_ninja_progress(n.penguin, self.podium[n.seat_id])
+                        await fire_ninja_progress(n.penguin, self.podium[n.seat_id], len(self.podium))
 
                         finish_positions = ','.join(str(max(position, 1)) for position in self.podium)
                         await n.penguin.send_xt('zm', 'zo', finish_positions)
@@ -397,8 +395,7 @@ class CardJitsuFireLogic(IWaddle):
 
 
 class FireMatLogic(CardJitsuFireLogic):
-
-    RankSpeed = 0.5
+    pass
 
 
 class FireSenseiLogic(CardJitsuFireLogic):
@@ -481,7 +478,7 @@ class FireSenseiLogic(CardJitsuFireLogic):
             player_finish_position = self.podium[ninja.seat_id]
             if player_finish_position > 0:
                 await end_game_stamps(ninja, player_finish_position)
-                await fire_ninja_progress(ninja.penguin, player_finish_position)
+                await fire_ninja_progress(ninja.penguin, player_finish_position, len(self.podium))
 
                 await ninja.penguin.send_xt('zm', 'zo', finish_positions)
                 await self.remove_penguin(ninja.penguin, quit_early=False)
@@ -534,15 +531,35 @@ async def fire_ninja_rank_up(p, ranks=1):
     ).apply()
     return True
 
+# exp required to reach this rank
+def get_fire_rank_threshold(rank):
+    try:
+        return [0, 25, 75, 175, 325][rank]
+    except:
+        return
 
-async def fire_ninja_progress(p, finish_position=1):
-    if p.fire_ninja_rank < 4:
-        speed = type(p.waddle).RankSpeed
-        points = math.floor((25 / (p.fire_ninja_rank+1) / finish_position) * speed)
-        await p.update(fire_ninja_progress=p.fire_ninja_progress+points).apply()
-    elif type(p.waddle) == FireSenseiLogic and p.fire_ninja_rank == 4 and finish_position == 1:
-        await p.update(fire_ninja_progress=100).apply()
-    if p.fire_ninja_progress >= 100:
+async def fire_ninja_progress(p, finish_position, players_number):
+    has_suit = p.fire_ninja_rank >= 4
+    is_sensei = type(p.waddle) == FireSenseiLogic
+    beat_sensei = is_sensei and p.fire_ninja_rank == 4 and finish_position == 1
+    
+    cur_rank_threshold = get_fire_rank_threshold(p.fire_ninja_rank)
+    next_rank_threshold = get_fire_rank_threshold(p.fire_ninja_rank + 1)
+    # scenarios you are allowed to earn XP
+    if not has_suit and not is_sensei:
+        previous_progress = p.fire_ninja_progress
+        # for older versions where the progress was the percentage
+        if previous_progress < cur_rank_threshold or previous_progress > next_rank_threshold:
+            previous_progress = int(cur_rank_threshold + previous_progress / 100 * (next_rank_threshold - cur_rank_threshold))
+        points = [
+            [9, 3],
+            [12, 6, 3],
+            [15, 9, 6, 3],
+        ][players_number - 2][finish_position - 1]
+        await p.update(fire_ninja_progress=previous_progress+points).apply()
+    
+    got_new_item = not has_suit and p.fire_ninja_progress >= next_rank_threshold
+    if beat_sensei or got_new_item:
         await fire_ninja_rank_up(p)
         await p.send_xt('zm', 'nr', 0, p.fire_ninja_rank)
 
