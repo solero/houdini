@@ -526,8 +526,7 @@ async def fire_ninja_rank_up(p, ranks=1):
         if rank in CardJitsuFireLogic.StampAwards:
             await p.add_stamp(p.server.stamps[CardJitsuFireLogic.StampAwards[rank]])
     await p.update(
-        fire_ninja_rank=p.fire_ninja_rank + ranks,
-        fire_ninja_progress=p.fire_ninja_progress % 100
+        fire_ninja_rank=p.fire_ninja_rank + ranks
     ).apply()
     return True
 
