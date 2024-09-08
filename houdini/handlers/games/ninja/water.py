@@ -50,7 +50,7 @@ class Cell:
         *([5] * 6),
         *([6] * 3),
         7,
-        8
+        8,
     ]
     """
     Distribution which corresponds to how the vanilla game
