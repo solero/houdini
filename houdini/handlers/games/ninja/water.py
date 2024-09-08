@@ -813,23 +813,37 @@ class WaterSenseiLogic(CardJitsuWaterLogic):
             if previous_move is not None and not previous_move.has_player:
                 move = previous_move
             else:
-                possible_moves = [i for i in filter(lambda cell: not cell.has_player, [
-                    self.board.rows_by_id[next_row_id][i] for i in range(max(0, col_index - 1), min(self.board.columns, col_index + 2))
-                ])]
-                empty_moves = [move for move in possible_moves if move.cell_type == CellType.EMPTY]
-                move = choice(possible_moves) if len(empty_moves) == 0 else choice(empty_moves)
+                possible_moves = [
+                    i for i in filter(
+                        lambda cell: not cell.has_player,
+                        [
+                            self.board.rows_by_id[next_row_id][i]
+                            for i in range(
+                                max(0, col_index - 1),
+                                min(self.board.columns, col_index + 2),
+                            )
+                        ],
+                    )
+                ]
+                empty_moves = [
+                    move for move in possible_moves if move.cell_type == CellType.EMPTY
+                ]
+                move = (
+                    choice(possible_moves)
+                    if len(empty_moves) == 0
+                    else choice(empty_moves)
+                )
                 previous_move = None
 
             use_card = move.cell_type != CellType.EMPTY
             affected_cells = []
-
-            opposite_element = ''
+            opposite_element = ""
 
             if use_card:
                 opposite_element = {
-                    CellType.FIRE: 'w',
-                    CellType.WATER: 's',
-                    CellType.SNOW: 'f'
+                    CellType.FIRE: "w",
+                    CellType.WATER: "s",
+                    CellType.SNOW: "f",
                 }[move.cell_type]
 
                 used_card = choice(element_decks[opposite_element])
