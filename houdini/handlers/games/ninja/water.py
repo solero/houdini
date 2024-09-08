@@ -889,8 +889,8 @@ async def handle_get_game(p: Penguin):
     player = p.waddle.get_player_by_penguin(p)
 
     # needs to send these or the client dies
-    await p.send_xt('gz')
-    await p.send_xt('jz')
+    await p.send_xt("gz")
+    await p.send_xt("jz")
 
     # CMD_PLAYER_INDEX
     await p.waddle.send_zm_client(player, "po", seat_id)
