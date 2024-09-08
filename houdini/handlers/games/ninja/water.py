@@ -930,7 +930,7 @@ async def handle_choose_card(p: Penguin, *, card_id: str):
     await p.waddle.select_card(player, int(card_id))
 
 
-@handlers.handler(XTPacket('zm', ext='z'), match=['120'])
+@handlers.handler(XTPacket("zm", ext="z"), match=["120"])
 @handlers.waddle(CardJitsuWaterLogic, WaterSenseiLogic)
 async def handle_player_move(p: Penguin, *, cell_id: str):
     """Handle a player moving to a different cell/stone"""
