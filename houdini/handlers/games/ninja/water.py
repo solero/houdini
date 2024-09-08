@@ -1,11 +1,11 @@
 """Module for all the logic of the Card-Jitsu Water game"""
 
+import enum
 import asyncio
 from dataclasses import dataclass, field
+from random import choice, randint, shuffle
 from typing import List, Generator
 from collections import deque
-from random import choice, randint, shuffle
-import enum
 
 from houdini import IWaddle, handlers
 from houdini.handlers import XTPacket
@@ -25,7 +25,7 @@ class WaterCard:
 
     def serialize(self) -> str:
         """Serialize data for the client"""
-        return f'{self.card.id}-{self.hand_id}'
+        return f"{self.card.id}-{self.hand_id}"
 
 
 class CellType(enum.IntEnum):
@@ -104,7 +104,7 @@ class Cell:
 
     def serialize(self) -> str:
         """Serialize data for the client"""
-        return f'{self.uid}-{self.cell_type}-{self.amount}'
+        return f"{self.uid}-{self.cell_type}-{self.amount}"
 
 
 @dataclass
@@ -135,11 +135,10 @@ class Row:
                 # specific format used by cell ids
                 int(f"{self.uid}{i}"),
                 # element chance is uniform
-                randint(
-                    CellType.FIRE,
-                    CellType.SNOW) if not empty else CellType.EMPTY,
-                start=start
-            ) for i in range(columns)
+                randint(CellType.FIRE, CellType.SNOW) if not empty else CellType.EMPTY,
+                start=start,
+            )
+            for i in range(columns)
         ]
 
     def serialize(self) -> str:
@@ -168,8 +167,7 @@ class Board:
     def __getitem__(self, i):
         return self.rows[i]
 
-    def generate_row(self, empty=False,
-                     start=False) -> tuple[bool, None | Row]:
+    def generate_row(self, empty=False, start=False) -> tuple[bool, None | Row]:
         """Generate a new row, remove extra rows"""
         self.row_cumulative += 1
         row = Row(uid=self.row_cumulative)
@@ -198,8 +196,7 @@ class Board:
             return []
 
         playable_cells = set()
-        for i in range(max(0, col_index - 1),
-                       min(self.columns, col_index + 2)):
+        for i in range(max(0, col_index - 1), min(self.columns, col_index + 2)):
             for j in [-1, 1]:
                 other_row_id = row_id + j
                 if other_row_id in self.rows_by_id:
@@ -257,9 +254,7 @@ class WaterPlayer:
 
     def get_card(self, hand_id: int) -> WaterCard:
         """Get the card given its hand ID"""
-        return next(
-            (card for card in self.hand.cards if card.hand_id == hand_id),
-            None)
+        return next((card for card in self.hand.cards if card.hand_id == hand_id), None)
 
     def jump(self, cell: Cell):
         """Jump to a given cell"""
@@ -315,8 +310,10 @@ class WaterCycleHandler:
         If one wishes to change the speed, they should not mess with this, and instead
         should use the change_period method
         """
-        return int((self.distance * self.TICKS_PER_SECOND ** 2) /
-                   (self.update_frequency * self.FRAME_RATE * self.period))
+        return int(
+            (self.distance * self.TICKS_PER_SECOND ** 2)
+            / (self.update_frequency * self.FRAME_RATE * self.period)
+        )
 
     def update(self, time_delta: float) -> bool:
         """
@@ -363,10 +360,7 @@ class CardJitsuWaterLogic(IWaddle):
     If 0.1 is too low for your server, 1 should be fine under normal settings
     """
 
-    CARD_ELEMENTS = {
-        'f': CellType.FIRE,
-        'w': CellType.WATER,
-        's': CellType.SNOW}
+    CARD_ELEMENTS = {"f": CellType.FIRE, "w": CellType.WATER, "s": CellType.SNOW}
     """Maps the card element from the Card class onto the element for the cell"""
 
     ITEM_AWARDS = [6026, 4121, 2025, 1087, 3032]
@@ -417,11 +411,10 @@ class CardJitsuWaterLogic(IWaddle):
     def __init__(self, waddle):
         super().__init__(waddle)
 
-        self.players = [WaterPlayer(
-            p,
-            seat_id,
-            WaterPlayerHand(self.get_card_generator(p))
-        ) for seat_id, p in enumerate(waddle.penguins)]
+        self.players = [
+            WaterPlayer(p, seat_id, WaterPlayerHand(self.get_card_generator(p)))
+            for seat_id, p in enumerate(waddle.penguins)
+        ]
 
         self.player_total = len(self.players)
 
@@ -445,17 +438,15 @@ class CardJitsuWaterLogic(IWaddle):
 
     def get_player_by_penguin(self, penguin: Penguin) -> WaterPlayer:
         """Get the player instance associated with a penguin"""
-        return next(
-            player for player in self.players if player.penguin == penguin)
+        return next(player for player in self.players if player.penguin == penguin)
 
     def get_card_generator(self, p: Penguin) -> Generator[WaterCard, None, None]:
         """Get a generator for a player's cards"""
         cards = list(
-            filter(
-                lambda x: x.card_id in self.AVAILABLE_CARDS,
-                list(
-                    p.cards.values())))
+            filter(lambda x: x.card_id in self.AVAILABLE_CARDS, list(p.cards.values()))
+        )
         current_queue = []
+
         while True:
             if len(current_queue) == 0:
                 current_queue = list(cards)
@@ -501,17 +492,20 @@ class CardJitsuWaterLogic(IWaddle):
         for player in self.players:
             if isinstance(player, WaterSensei):
                 continue
-            player.hand.cards = deque([WaterCard(
-                card=next(player.hand.card_generator),
-                hand_id=i)
-                for i in range(self.card_amount)])
+
+            player.hand.cards = deque(
+                [
+                    WaterCard(card=next(player.hand.card_generator), hand_id=i)
+                    for i in range(self.card_amount)
+                ]
+            )
 
             # CMD_CARD_INIT
             # cards parameter format is as defined in water.swf
             # GameCardCollection.build
-            await self.send_zm_client(player, "ci", '|'.join(
-                [card.serialize() for card in player.hand.cards]
-            ))
+            await self.send_zm_client(
+                player, "ci", "|".join([card.serialize() for card in player.hand.cards])
+            )
 
     async def initiate_player(self):
         """Send player data to the client at the start of the game"""
@@ -520,16 +514,16 @@ class CardJitsuWaterLogic(IWaddle):
             # players are in the "6th" row at the start
             # can do this modulus because of how the id is calculated
             row, col = 6, player.cell.uid % 10
-
             name, color = "", ""
+
             if isinstance(player, WaterSensei):
                 name, color = "Sensei", "14"  # Gray
             else:
-                name, color = player.penguin.safe_name, str(
-                    player.penguin.color)
+                name, color = player.penguin.safe_name, str(player.penguin.color)
 
             player_init_data.append(
-                "|".join([str(player.seat_id), name, color, f"{col},{row}"]))
+                "|".join([str(player.seat_id), name, color, f"{col},{row}"])
+            )
 
         # PLAYER_INIT
         await self.send_zm("pi", *player_init_data)
@@ -541,8 +535,12 @@ class CardJitsuWaterLogic(IWaddle):
         if self.countdown_task is not None:
             self.countdown_task.cancel()
 
-    async def update_player_progress(self, player: WaterPlayer, fell: bool = False,
-                               position: int | None = None) -> tuple[int, int]:
+    async def update_player_progress(
+        self,
+        player: WaterPlayer,
+        fell: bool = False,
+        position: int | None = None
+    ) -> tuple[int, int]:
         """
         Update the Card-Jitsu Water progress for a player after they reach the end
 
@@ -582,15 +580,27 @@ class CardJitsuWaterLogic(IWaddle):
         # game won needs to be sent first as to force the game to stop for the clients
         # CMD_GAME_WON
         ranked_up, rank = await self.update_player_progress(winner, position=1)
-        await self.send_zm("gw", winner.seat_id, 1, f'{ranked_up}{rank if ranked_up == 1 else 0}', 'false')
+
+        await self.send_zm(
+            "gw",
+            winner.seat_id,
+            1,
+            f"{ranked_up}{rank if ranked_up == 1 else 0}",
+            "false",
+        )
 
         if not isinstance(winner, WaterSensei):
-            await winner.penguin.update(water_matches_won=winner.penguin.water_matches_won + 1).apply()
+            await winner.penguin.update(
+                water_matches_won=winner.penguin.water_matches_won + 1
+            ).apply()
+
             if winner.penguin.water_matches_won >= 100:
                 # Water Expert stamp
                 await winner.penguin.add_stamp(winner.penguin.server.stamps[276])
+
             # Gong! stamp
             await winner.penguin.add_stamp(winner.penguin.server.stamps[270])
+
             if winner.two_close >= 2:
                 # Two Close stamp
                 await winner.penguin.add_stamp(winner.penguin.server.stamps[286])
@@ -603,12 +613,21 @@ class CardJitsuWaterLogic(IWaddle):
             for player in players_in_row:
                 if isinstance(player, WaterSensei):
                     continue
+
                 # because winner has already been removed
                 position = len(self.players) + 1
-                ranked_up, rank = await self.update_player_progress(player, position=position)
+                ranked_up, rank = await self.update_player_progress(
+                    player, position=position
+                )
 
                 # CMD_PLAYER_DROWNED (players who lose without falling)
-                await self.send_zm("pd", player.seat_id, position, f'{ranked_up}{rank if ranked_up == 1 else 0}', 'false')
+                await self.send_zm(
+                    "pd",
+                    player.seat_id,
+                    position,
+                    f"{ranked_up}{rank if ranked_up == 1 else 0}",
+                    "false",
+                )
 
         self.shutdown()
 
@@ -628,15 +647,12 @@ class CardJitsuWaterLogic(IWaddle):
             if rank in cls.STAMP_AWARDS:
                 await p.add_stamp(p.server.stamps[cls.STAMP_AWARDS[rank]])
 
-        await p.update(
-            water_ninja_rank=p.water_ninja_rank + ranks
-        ).apply()
+        await p.update(water_ninja_rank=p.water_ninja_rank + ranks).apply()
         return True
 
     def get_players_in_row(self, row: Row) -> List[WaterPlayer]:
         """Get list of all players in row"""
-        return [player for player in self.players if row.uid ==
-                player.cell.uid // 10]
+        return [player for player in self.players if row.uid == player.cell.uid // 10]
 
     async def cycle_row(self):
         """Adds a new row, removing any extra rows"""
@@ -648,8 +664,16 @@ class CardJitsuWaterLogic(IWaddle):
                 if player.penguin is not None:
                     # Watery Fall stamp
                     await player.penguin.add_stamp(player.penguin.server.stamps[274])
+
             # CMD_PLAYER_KILL, meant for players who lose from falling
-            await self.send_zm(":".join([f"pk&{player.seat_id}&{position}&00&false" for player in players_in_row]))
+            await self.send_zm(
+                ":".join(
+                    [
+                        f"pk&{player.seat_id}&{position}&00&false"
+                        for player in players_in_row
+                    ]
+                )
+            )
 
             for player in players_in_row:
                 await self.update_player_progress(player, fell=True, position=position)
@@ -676,19 +700,23 @@ class CardJitsuWaterLogic(IWaddle):
 
             card = WaterCard(
                 card=next(player.hand.card_generator),
-                hand_id=self.card_amount)
+                hand_id=self.card_amount
+            )
 
             # a bit of a magic number (9) but it's the correct one
             if len(player.hand.cards) > 9:
                 pop_card = player.hand.cards.popleft()
 
-                if player.hand.chosen_card is not None and\
-                        pop_card.hand_id == player.hand.chosen_card.hand_id:
+                if (
+                    player.hand.chosen_card is not None
+                    and pop_card.hand_id == player.hand.chosen_card.hand_id
+                ):
                     player.hand.chosen_card = None
 
             player.hand.cards.append(card)
+
             # CMD_CARD_ADD
-            await self.send_zm_client(player, 'ca', card.serialize())
+            await self.send_zm_client(player, "ca", card.serialize())
 
     async def game_loop_task(self):
         """Task that sends game information to the players"""
@@ -749,11 +777,9 @@ class CardJitsuWaterLogic(IWaddle):
         1 if card element beats cell element
         2 if card element can't beat cell element
         """
-        return \
-            (self.CARD_ELEMENTS[card.element] - (cell.cell_type) + 3) % 3
+        return (self.CARD_ELEMENTS[card.element] - (cell.cell_type) + 3) % 3
 
-    def affect_neighbor_cells(
-            self, cell: Cell, card: Card, affected: List[Cell]):
+    def affect_neighbor_cells(self, cell: Cell, card: Card, affected: List[Cell]):
         """
         Uses a card on a cell and add all neighbor cells that are affected
         to a given list
@@ -761,17 +787,24 @@ class CardJitsuWaterLogic(IWaddle):
         # power cards (which have value > 9) deal 4 value to neighbors
         # as it was in vanilla club penguin
         POWER_CARD_AMOUNT = 4
-        if card.value >= 9:
-            neighbor_cells = self.board.get_nearby_cells(cell)
-            for neighbor_cell in neighbor_cells:
-                if neighbor_cell.has_player or neighbor_cell.cell_type == CellType.EMPTY:
-                    continue
-                result = self.get_card_result_on_cell(neighbor_cell, card)
-                if result != 2:
-                    affected.append(neighbor_cell)
-                    neighbor_cell.update_amount(
-                        POWER_CARD_AMOUNT * (-1 if result == 1 else 1)
-                    )
+
+        if card.value < 9:
+            return
+
+        neighbor_cells = self.board.get_nearby_cells(cell)
+        for neighbor_cell in neighbor_cells:
+            if (
+                neighbor_cell.has_player
+                or neighbor_cell.cell_type == CellType.EMPTY
+            ):
+                continue
+
+            result = self.get_card_result_on_cell(neighbor_cell, card)
+            if result != 2:
+                affected.append(neighbor_cell)
+                neighbor_cell.update_amount(
+                    POWER_CARD_AMOUNT * (-1 if result == 1 else 1)
+                )
 
 
 class WaterSenseiLogic(CardJitsuWaterLogic):
@@ -783,26 +816,24 @@ class WaterSenseiLogic(CardJitsuWaterLogic):
     def __init__(self, waddle):
         super().__init__(waddle)
 
-        self.players.append(WaterSensei(
-            None,
-            1,
-            None,
-            joined=True,
-            ready=True
-        ))
+        self.players.append(WaterSensei(None, 1, None, joined=True, ready=True))
 
     async def sensei_ai(self):
         """Task that controls Sensei's moves"""
         penguin = self.players[0].penguin
         element_decks = {}
-        for element in ['f', 'w', 's']:
+
+        for element in ["f", "w", "s"]:
             element_decks[element] = [
-                card for card in penguin.server.cards.values() if card.element == element]
+                card for card in penguin.server.cards.values()
+                if card.element == element
+            ]
 
         sensei = self.players[1]
-        previous_move = None # for object permanence
+        previous_move = None  # for object permanence
+
         while self.started:
-            if penguin.water_ninja_rank < 4: # make sensei lock in
+            if penguin.water_ninja_rank < 4:  # make sensei lock in
                 await asyncio.sleep(0.5)
             else:
                 await asyncio.sleep(3)
@@ -862,9 +893,15 @@ class WaterSenseiLogic(CardJitsuWaterLogic):
                 previous_move = move
 
             if use_card:
-                await self.send_zm("pt", sensei.seat_id, f'{opposite_element}-{move.uid}', '|'.join([cell.serialize() for cell in affected_cells]))
+                await self.send_zm(
+                    "pt",
+                    sensei.seat_id,
+                    f"{opposite_element}-{move.uid}",
+                    "|".join([cell.serialize() for cell in affected_cells]),
+                )
+
             if do_move:
-                await self.send_zm("pm", f'{sensei.seat_id}-{move.uid}')
+                await self.send_zm("pm", f"{sensei.seat_id}-{move.uid}")
 
             # - 2 because two rows are off-screen
             if self.board.rows[-1].uid - 2 == next_row_id:
@@ -881,7 +918,11 @@ class WaterSenseiLogic(CardJitsuWaterLogic):
             self.sensei_loop.cancel()
 
     async def update_player_progress(
-            self, player: WaterPlayer, position=None, fell: bool = False) -> tuple[int, int]:
+        self,
+        player: WaterPlayer,
+        position=None,
+        fell: bool = False
+    ) -> tuple[int, int]:
         self.players.remove(player)
         if isinstance(player, WaterSensei):
             return 0, 0
@@ -901,7 +942,7 @@ def get_water_rank_threshold(rank):
         return
 
 
-@handlers.handler(XTPacket('gz', ext='z'))
+@handlers.handler(XTPacket("gz", ext="z"))
 @handlers.waddle(CardJitsuWaterLogic, WaterSenseiLogic)
 async def handle_get_game(p: Penguin):
     """Handle the client entering the game"""
@@ -936,13 +977,13 @@ async def handle_start_game(p: Penguin):
     player.ready = True
 
     if not p.waddle.countdown_task:
-        p.waddle.countdown_task = asyncio.create_task(
-            p.waddle.tick_count_down())
+        p.waddle.countdown_task = asyncio.create_task(p.waddle.tick_count_down())
+
     if all(map(lambda player: player.ready, p.waddle.players)):
         p.waddle.timer = 3
 
 
-@handlers.handler(XTPacket('zm', ext='z'), match=['110'])
+@handlers.handler(XTPacket("zm", ext="z"), match=["110"])
 @handlers.waddle(CardJitsuWaterLogic, WaterSenseiLogic)
 async def handle_choose_card(p: Penguin, *, card_id: str):
     """Handle a player clicking on a card (which leaves it on a state where it is ready to use)"""
@@ -960,7 +1001,7 @@ async def handle_player_move(p: Penguin, *, cell_id: str):
 
     async def send_fail():
         # CMD_PLAYER_INVALID_THROW
-        await p.waddle.send_zm_client(player, 'pf', f'{player.seat_id}-{cell_id}')
+        await p.waddle.send_zm_client(player, "pf", f"{player.seat_id}-{cell_id}")
 
     if cell_id not in available_cells_by_id:
         return await send_fail()
@@ -999,7 +1040,7 @@ async def handle_throw_card(p: Penguin, *, cell_id: str):
 
     async def send_fail():
         # CMD_PLAYER_INVALID_THROW
-        await p.waddle.send_zm_client(player, "pf", f'{player.seat_id}-{cell_id}')
+        await p.waddle.send_zm_client(player, "pf", f"{player.seat_id}-{cell_id}")
 
     if cell_id not in available_cells_by_id:
         return await send_fail()
@@ -1025,8 +1066,10 @@ async def handle_throw_card(p: Penguin, *, cell_id: str):
     p.waddle.affect_neighbor_cells(cell, card.card, affected_cells)
 
     # all cleared cells count for stamp (from og club penguin)
-    player.cleared += sum([1 if c.cell_type ==
-                          CellType.EMPTY else 0 for c in affected_cells])
+    player.cleared += sum(
+        [1 if c.cell_type == CellType.EMPTY else 0 for c in affected_cells]
+    )
+
     if player.cleared >= 28:
         # Skipping Stones stamp
         await player.penguin.add_stamp(player.penguin.server.stamps[288])
@@ -1035,7 +1078,7 @@ async def handle_throw_card(p: Penguin, *, cell_id: str):
     await p.waddle.send_zm(
         "pt",
         player.seat_id,
-        f'{p.waddle.CARD_ELEMENTS[card.card.element]}-{cell.uid}',
-        '|'.join([cell.serialize() for cell in affected_cells])
+        f"{p.waddle.CARD_ELEMENTS[card.card.element]}-{cell.uid}",
+        "|".join([cell.serialize() for cell in affected_cells]),
     )
 
