@@ -928,7 +928,7 @@ async def handle_get_game(p: Penguin):
         await p.waddle.initiate_player_cards()
 
 
-@handlers.handler(XTPacket('zm', ext='z'), match=['103'])
+@handlers.handler(XTPacket("zm", ext="z"), match=["103"])
 @handlers.waddle(CardJitsuWaterLogic, WaterSenseiLogic)
 async def handle_start_game(p: Penguin):
     """Handle the client being ready to play"""
