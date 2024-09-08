@@ -953,22 +953,23 @@ async def handle_player_move(p: Penguin, *, cell_id: str):
     player.jump(cell)
 
     # CMD_PLAYER_MOVE
-    await p.waddle.send_zm("pm", f'{player.seat_id}-{cell.uid}')
+    await p.waddle.send_zm("pm", f"{player.seat_id}-{cell.uid}")
 
     last_row = p.waddle.board[-1]
     row_id = cell.uid // 10
+
     # -2 because there are always two off-screen rows
     if last_row.uid - 2 == row_id:
         return await p.waddle.gong_game_over(player)
 
 
-@handlers.handler(XTPacket('lz', ext='z'))
+@handlers.handler(XTPacket("lz", ext="z"))
 @handlers.waddle(CardJitsuWaterLogic, WaterSenseiLogic)
 async def handle_leave_match(p: Penguin):
     """Sent by the players if they close the game"""
 
 
-@handlers.handler(XTPacket('zm', ext='z'), match=['121'])
+@handlers.handler(XTPacket("zm", ext="z"), match=["121"])
 @handlers.waddle(CardJitsuWaterLogic, WaterSenseiLogic)
 async def handle_throw_card(p: Penguin, *, cell_id: str):
     """Handle client using/throwing a card on a cell"""
