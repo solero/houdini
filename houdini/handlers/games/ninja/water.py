@@ -552,21 +552,26 @@ class CardJitsuWaterLogic(IWaddle):
             if position is None:
                 position = len(self.players)
             self.players.remove(player)
+
             if penguin.water_ninja_rank < 4:
                 # points obtained from heavy research from youtube videos
-                points = [
-                    [48, 16],
-                    [56, 40, 16],
-                    [64, 48, 40, 0]
-                ][self.player_total - 2][position - 1]
+                points = [[48, 16], [56, 40, 16], [64, 48, 40, 0]][
+                    self.player_total - 2
+                ][position - 1]
 
                 # in original you get ~62.5% of the exp if you fall
                 points = points * 5 // 8 if fell else points
 
-                await penguin.update(water_ninja_progress=penguin.water_ninja_progress + points).apply()
-                if penguin.water_ninja_progress >= get_water_rank_threshold(penguin.water_ninja_rank + 1):
+                await penguin.update(
+                    water_ninja_progress=penguin.water_ninja_progress + points
+                ).apply()
+
+                if penguin.water_ninja_progress >= get_water_rank_threshold(
+                    penguin.water_ninja_rank + 1
+                ):
                     rankup = await self.water_ninja_rank_up(penguin)
                     return int(rankup), penguin.water_ninja_rank
+
         return 0, penguin.water_ninja_rank
 
     async def gong_game_over(self, winner: WaterPlayer):
