@@ -344,11 +344,12 @@ class CardJitsuWaterLogic(IWaddle):
 
     room_id = 995
 
-    AVAILABLE_CARDS = {*
-                       range(1, 114), *
-                       range(201, 261), *
-                       range(301, 428), *
-                       range(501, 596)}
+    AVAILABLE_CARDS = {
+        *range(1, 114),
+        *range(201, 261),
+        *range(301, 428),
+        *range(501, 596),
+    }
     """
     The modern client only accepts these cards, any other ID is displayed as undefined
     """
