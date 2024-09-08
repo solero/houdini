@@ -658,7 +658,6 @@ class CardJitsuWaterLogic(IWaddle):
             for player in players_nearly_slipping:
                 player.two_close += 1
 
-
         # CMD_BOARD_NEWROW
         await self.send_zm("br", self.board[-1].serialize())
 
