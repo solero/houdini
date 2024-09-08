@@ -212,7 +212,7 @@ class Board:
 
     def serialize(self) -> str:
         """Serialize data for the client"""
-        return '|'.join([row.serialize() for row in self.rows])
+        return "|".join([row.serialize() for row in self.rows])
 
 
 @dataclass
