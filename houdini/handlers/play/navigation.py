@@ -34,6 +34,7 @@ WaddleLogicMapping = {
     'sensei': SenseiLogic,
 
     'water': CardJitsuWaterLogic,
+    'watermatch': CardJitsuWaterLogic,
     'watersensei': WaterSenseiLogic,
 
     'fire': FireMatLogic,
