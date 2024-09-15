@@ -336,6 +336,47 @@ class WaterCycleHandler:
         self.period = new_period
 
 
+class Amulet:
+    """Amulet is a value the client uses to know when to award ranks"""
+
+    amulet_state: int
+    """
+    Uses bit operations to know which elements you have mastered for the water gem cutscene
+    
+    This number should not be supplied if someone is a water ninja, otherwise it will assume
+    they are gaining the water gem every game
+
+    Otherwise it does not matter if you give it or not
+    """
+
+    rank_awarded: int
+    """Rank being given, or 0 if did not rank up this match"""
+
+    def __init__(self, penguin: Penguin, is_ranking_up: bool):
+        if is_ranking_up:
+            self.amulet_state = Amulet.get_amulet_state(penguin)
+            self.rank_awarded = penguin.water_ninja_rank
+        else:
+            self.amulet_state = 0
+            self.rank_awarded = 0
+
+    @staticmethod
+    def get_amulet_state(p: Penguin) -> int:
+        """Gets the proper amulet state based on how the client does the operations"""
+        amulet = 0
+        if p.fire_ninja_rank >= 5:
+            amulet += 1
+        if p.water_ninja_rank >= 5:
+            amulet += 2
+        if p.snow_ninja_rank >= 13:
+            amulet += 4
+        return amulet
+
+    def serialize(self) -> str:
+        """Serialize for the client"""
+        return f"{self.amulet_state}{self.rank_awarded}"
+
+
 class CardJitsuWaterLogic(IWaddle):
     """Logic for a Card-Jitsu Water match"""
 
@@ -540,11 +581,9 @@ class CardJitsuWaterLogic(IWaddle):
         player: WaterPlayer,
         fell: bool = False,
         position: int | None = None
-    ) -> tuple[int, int]:
+    ) -> Amulet:
         """
         Update the Card-Jitsu Water progress for a player after they reach the end
-
-        Returns a integer boolean for whether the ninja ranked up, and the final rank
         """
         penguin = player.penguin
         if player in self.players:
@@ -568,10 +607,10 @@ class CardJitsuWaterLogic(IWaddle):
                 if penguin.water_ninja_progress >= get_water_rank_threshold(
                     penguin.water_ninja_rank + 1
                 ):
-                    rankup = await self.water_ninja_rank_up(penguin)
-                    return int(rankup), penguin.water_ninja_rank
+                    await self.water_ninja_rank_up(penguin)
+                    return Amulet(penguin, True)
 
-        return 0, penguin.water_ninja_rank
+        return Amulet(penguin, False)
 
     async def gong_game_over(self, winner: WaterPlayer):
         """When someone hits the gong"""
@@ -579,13 +618,13 @@ class CardJitsuWaterLogic(IWaddle):
 
         # game won needs to be sent first as to force the game to stop for the clients
         # CMD_GAME_WON
-        ranked_up, rank = await self.update_player_progress(winner, position=1)
+        amulet = await self.update_player_progress(winner, position=1)
 
         await self.send_zm(
             "gw",
             winner.seat_id,
             1,
-            f"{ranked_up}{rank if ranked_up == 1 else 0}",
+            amulet.serialize(),
             "false",
         )
 
@@ -616,7 +655,7 @@ class CardJitsuWaterLogic(IWaddle):
 
                 # because winner has already been removed
                 position = len(self.players) + 1
-                ranked_up, rank = await self.update_player_progress(
+                amulet = await self.update_player_progress(
                     player, position=position
                 )
 
@@ -625,7 +664,7 @@ class CardJitsuWaterLogic(IWaddle):
                     "pd",
                     player.seat_id,
                     position,
-                    f"{ranked_up}{rank if ranked_up == 1 else 0}",
+                    amulet.serialize(),
                     "false",
                 )
 
@@ -666,17 +705,16 @@ class CardJitsuWaterLogic(IWaddle):
                     await player.penguin.add_stamp(player.penguin.server.stamps[274])
 
             # CMD_PLAYER_KILL, meant for players who lose from falling
-            await self.send_zm(
-                ":".join(
-                    [
-                        f"pk&{player.seat_id}&{position}&00&false"
-                        for player in players_in_row
-                    ]
-                )
-            )
-
+            player_kill_data = []
             for player in players_in_row:
-                await self.update_player_progress(player, fell=True, position=position)
+                amulet = await self.update_player_progress(
+                    player, fell=True, position=position
+                )
+                player_kill_data.append(
+                    f"pk&{player.seat_id}&{position}&{amulet.serialize()}&false"
+                )
+
+            await self.send_zm(":".join(player_kill_data))
 
         # for Two Close stamp
         # it starts at 8 rows, and then stagnates at 9
@@ -922,16 +960,16 @@ class WaterSenseiLogic(CardJitsuWaterLogic):
         player: WaterPlayer,
         position=None,
         fell: bool = False
-    ) -> tuple[int, int]:
+    ) -> Amulet:
         self.players.remove(player)
         if isinstance(player, WaterSensei):
-            return 0, 0
+            return Amulet(player.penguin, False)
 
         if position == 1 and player.penguin.water_ninja_rank == 4:
             await self.water_ninja_rank_up(player.penguin)
-            return 1, player.penguin.water_ninja_rank
+            return Amulet(player.penguin, True)
 
-        return 0, player.penguin.water_ninja_rank
+        return Amulet(player.penguin, False)
 
 
 def get_water_rank_threshold(rank):
