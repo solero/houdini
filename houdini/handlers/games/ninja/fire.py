@@ -47,7 +47,7 @@ class CardJitsuFireLogic(IWaddle):
     AutoBattleTimeout = 22
 
     ItemAwards = [6025, 4120, 2013, 1086, 3032]
-    StampAwards = {2: FireStamp.FIRE_MIDWAY, 4: FireStamp.FIRE_SUIT}
+    StampAwards = {1: FireStamp.FIRE_MIDWAY, 3: FireStamp.FIRE_SUIT}
 
     def __init__(self, waddle):
         super().__init__(waddle)
