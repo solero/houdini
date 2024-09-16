@@ -469,6 +469,13 @@ class CardJitsuWaterLogic(IWaddle):
         # original)
         self.board = Board(columns=5 if len(waddle.penguins) <= 2 else 7)
 
+    async def remove_penguin(self, p: Penguin):
+        player = self.get_player_by_penguin(p)
+        # this may run twice for the same player
+        if player is not None:
+            self.players[player.seat_id].left = True
+        await super().remove_penguin(p)
+
     async def send_zm(self, *args):
         """Send a "zm" packet, used for various commands, to the clients"""
         await self.send_xt("zm", "&".join(map(str, args)))
@@ -477,9 +484,11 @@ class CardJitsuWaterLogic(IWaddle):
         """Send a "zm" packet, used for various commands, to a specific client"""
         await player.penguin.send_xt("zm", "&".join(map(str, args)))
 
-    def get_player_by_penguin(self, penguin: Penguin) -> WaterPlayer:
+    def get_player_by_penguin(self, penguin: Penguin) -> Union[WaterPlayer, None]:
         """Get the player instance associated with a penguin"""
-        return next(player for player in self.players if player.penguin == penguin)
+        return next(
+            (player for player in self.players if player.penguin == penguin), None
+        )
 
     def get_card_generator(self, p: Penguin) -> Generator[WaterCard, None, None]:
         """Get a generator for a player's cards"""
@@ -650,7 +659,7 @@ class CardJitsuWaterLogic(IWaddle):
                 break
             players_in_row = self.get_players_in_row(row)
             for player in players_in_row:
-                if isinstance(player, WaterSensei):
+                if isinstance(player, WaterSensei) or player.left:
                     continue
 
                 # because winner has already been removed
@@ -700,19 +709,22 @@ class CardJitsuWaterLogic(IWaddle):
             players_in_row = self.get_players_in_row(drop_row)
             position = len(self.players)
             for player in players_in_row:
-                if player.penguin is not None:
+                if not player.left:
                     # Watery Fall stamp
                     await player.penguin.add_stamp(player.penguin.server.stamps[274])
+
 
             # CMD_PLAYER_KILL, meant for players who lose from falling
             player_kill_data = []
             for player in players_in_row:
-                amulet = await self.update_player_progress(
-                    player, fell=True, position=position
-                )
                 player_kill_data.append(
                     f"pk&{player.seat_id}&{position}&{amulet.serialize()}&false"
                 )
+
+                if not player.left:
+                    amulet = await self.update_player_progress(
+                        player, fell=True, position=position
+                    )
 
             await self.send_zm(":".join(player_kill_data))
 
