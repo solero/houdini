@@ -580,7 +580,7 @@ class CardJitsuWaterLogic(IWaddle):
         self,
         player: WaterPlayer,
         fell: bool = False,
-        position: int | None = None
+        position: Union[int, None] = None
     ) -> Amulet:
         """
         Update the Card-Jitsu Water progress for a player after they reach the end
@@ -848,7 +848,7 @@ class CardJitsuWaterLogic(IWaddle):
 class WaterSenseiLogic(CardJitsuWaterLogic):
     """Logic for a Card-Jitsu Water match against Sensei"""
 
-    sensei_loop: asyncio.Task | None = None
+    sensei_loop: Union[asyncio.Task, None] = None
     """Loop that controls Sensei's AI"""
 
     def __init__(self, waddle):
