@@ -738,14 +738,17 @@ class CardJitsuWaterLogic(IWaddle):
             # CMD_PLAYER_KILL, meant for players who lose from falling
             player_kill_data = []
             for player in players_in_row:
-                player_kill_data.append(
-                    f"pk&{player.seat_id}&{position}&{amulet.serialize()}&false"
-                )
-
+                amulet = None
                 if not player.left:
                     amulet = await self.update_player_progress(
                         player, fell=True, position=position
                     )
+                else:
+                    amulet = Amulet(None, False)
+                player_kill_data.append(
+                    f"pk&{player.seat_id}&{position}&{amulet.serialize()}&false"
+                )
+
 
             await self.send_zm(":".join(player_kill_data))
 
