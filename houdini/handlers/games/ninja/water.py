@@ -4,7 +4,7 @@ import enum
 import asyncio
 from dataclasses import dataclass, field
 from random import choice, randint, shuffle
-from typing import List, Generator
+from typing import List, Generator, Union
 from collections import deque
 
 from houdini import IWaddle, handlers
@@ -167,7 +167,7 @@ class Board:
     def __getitem__(self, i):
         return self.rows[i]
 
-    def generate_row(self, empty=False, start=False) -> tuple[bool, None | Row]:
+    def generate_row(self, empty=False, start=False) -> tuple[bool, Union[None, Row]]:
         """Generate a new row, remove extra rows"""
         self.row_cumulative += 1
         row = Row(uid=self.row_cumulative)
@@ -219,7 +219,7 @@ class WaterPlayerHand:
     card_generator: Generator[WaterCard, None, None]
     """Generator that gives the next card when called"""
 
-    chosen_card: WaterCard | None = None
+    chosen_card: Union[WaterCard, None] = None
     """Card the player is ready to throw or None"""
 
     cards: deque[WaterCard] = field(default_factory=deque)
@@ -243,7 +243,7 @@ class WaterPlayer:
 
     ready: bool = False
 
-    cell: Cell | None = None
+    cell: Union[Cell, None] = None
     """Cell this penguin is standing on"""
 
     two_close: int = 0
@@ -434,7 +434,7 @@ class CardJitsuWaterLogic(IWaddle):
     5 matches how many cards you had at the start in original
     """
 
-    countdown_task: asyncio.Task | None = None
+    countdown_task: Union[asyncio.Task, None] = None
     """Task that updates the countdown at the start"""
 
     timer: int = 60
@@ -444,7 +444,7 @@ class CardJitsuWaterLogic(IWaddle):
 
     board: Board
 
-    game_loop: asyncio.Task | None = None
+    game_loop: Union[asyncio.Task, None] = None
     """Loop that handles updating the game"""
 
     players: List[WaterPlayer]
