@@ -380,6 +380,19 @@ class Penguin(Spheniscidae, penguin.Penguin):
 
         self.logger.info(f'{self.username} updated their background to \'{item.name}\' ' if item else
                          f'{self.username} removed their background item')
+
+    async def send_card_jitsu_stamp_info(self):
+        """
+        Send information the client requires to properly display the stamp end screen
+        """
+        stamp_info = await self.get_game_end_stamps_info(False)
+        await self.send_xt("cjsi", *stamp_info)
+
+    async def add_card_jitsu_stamp(self, stamp_id):
+        """Correct way of adding a card-jitsu (Regular, Fire, Water) stamp"""
+        await self.add_stamp(self.server.stamps[stamp_id])
+        await self.send_card_jitsu_stamp_info()
+
     async def get_game_end_stamps_info(
         self, clear_session: bool
     ) -> tuple[str, int, int, int]:

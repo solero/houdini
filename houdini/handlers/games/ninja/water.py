@@ -12,6 +12,17 @@ from houdini.handlers import XTPacket
 from houdini.penguin import Penguin
 from houdini.data.ninja import Card
 
+class WaterStamp(enum.IntEnum):
+    "IDs of Card-Jitsu Water stamps"
+    GONG = 270
+    WATERY_FALL = 274
+    WATER_EXPERT = 276
+    WATER_MIDWAY = 278
+    WATER_SUIT = 282
+    WATER_NINJA = 284
+    TWO_CLOSE = 286
+    SKIPPING_STONES = 288
+
 
 @dataclass
 class WaterCard:
@@ -252,6 +263,13 @@ class WaterPlayer:
     cleared: int = 0
     """Number of stones cleared in the match"""
 
+    left: bool = False
+    """
+    Whether the player has left the game
+    
+    Penguins remain in the board even if the player leaves
+    """
+
     def get_card(self, hand_id: int) -> WaterCard:
         """Get the card given its hand ID"""
         return next((card for card in self.hand.cards if card.hand_id == hand_id), None)
@@ -407,7 +425,11 @@ class CardJitsuWaterLogic(IWaddle):
     ITEM_AWARDS = [6026, 4121, 2025, 1087, 3032]
     """All the items gained from ranking, indexed by their rank"""
 
-    STAMP_AWARDS = {1: 278, 3: 282, 4: 284}
+    STAMP_AWARDS = {
+        1: WaterStamp.WATER_MIDWAY,
+        3: WaterStamp.WATER_SUIT,
+        4: WaterStamp.WATER_NINJA,
+    }
     """Map rank and the stamp you gain from LEAVING the rank"""
 
     board_cycle_handler: WaterCycleHandler
@@ -643,15 +665,12 @@ class CardJitsuWaterLogic(IWaddle):
             ).apply()
 
             if winner.penguin.water_matches_won >= 100:
-                # Water Expert stamp
-                await winner.penguin.add_stamp(winner.penguin.server.stamps[276])
+                await winner.penguin.add_card_jitsu_stamp(WaterStamp.WATER_EXPERT)
 
-            # Gong! stamp
-            await winner.penguin.add_stamp(winner.penguin.server.stamps[270])
+            await winner.penguin.add_card_jitsu_stamp(WaterStamp.GONG)
 
             if winner.two_close >= 2:
-                # Two Close stamp
-                await winner.penguin.add_stamp(winner.penguin.server.stamps[286])
+                await winner.penguin.add_card_jitsu_stamp(WaterStamp.TWO_CLOSE)
 
         # iterate over all players that drowned from the last place order
         for row in self.board.rows:
@@ -693,7 +712,7 @@ class CardJitsuWaterLogic(IWaddle):
                 p.server.items[cls.ITEM_AWARDS[rank]], cost=0, notify=False
             )
             if rank in cls.STAMP_AWARDS:
-                await p.add_stamp(p.server.stamps[cls.STAMP_AWARDS[rank]])
+                await p.add_card_jitsu_stamp(cls.STAMP_AWARDS[rank])
 
         await p.update(water_ninja_rank=p.water_ninja_rank + ranks).apply()
         return True
@@ -713,6 +732,8 @@ class CardJitsuWaterLogic(IWaddle):
                     # Watery Fall stamp
                     await player.penguin.add_stamp(player.penguin.server.stamps[274])
 
+
+                    await player.penguin.add_card_jitsu_stamp(WaterStamp.WATERY_FALL)
 
             # CMD_PLAYER_KILL, meant for players who lose from falling
             player_kill_data = []
@@ -997,11 +1018,14 @@ def get_water_rank_threshold(rank):
 async def handle_get_game(p: Penguin):
     """Handle the client entering the game"""
     seat_id = p.waddle.get_seat_id(p)
-    player = p.waddle.get_player_by_penguin(p)
+    player: WaterPlayer = p.waddle.get_player_by_penguin(p)
 
     # needs to send these or the client dies
     await p.send_xt("gz")
     await p.send_xt("jz")
+
+    # needed to fix client taking a bit to exit game
+    await p.send_card_jitsu_stamp_info()
 
     # CMD_PLAYER_INDEX
     await p.waddle.send_zm_client(player, "po", seat_id)
@@ -1121,8 +1145,7 @@ async def handle_throw_card(p: Penguin, *, cell_id: str):
     )
 
     if player.cleared >= 28:
-        # Skipping Stones stamp
-        await player.penguin.add_stamp(player.penguin.server.stamps[288])
+        await p.add_card_jitsu_stamp(WaterStamp.SKIPPING_STONES)
 
     # CMD_PLAYER_THROW
     await p.waddle.send_zm(

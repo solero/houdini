@@ -78,8 +78,21 @@ async def handle_get_game_over(p, score: int):
     if p.room.id == 996:
         return
 
-    if p.room.game and not p.waddle and not p.table:
+    # card-jitsus except snow have special handling
+    card_jitsu_rooms = [995, 998, 997]
+    is_card_jitsu = p.room.id in card_jitsu_rooms
+
+    # Waddle minigames don't normally need the end screen
+    if p.waddle and not is_card_jitsu:
+        return
+
+    if p.room.game and not p.table:
         coins_earned = determine_coins_earned(p, score)
+
+        if not is_card_jitsu:
+            if await determine_coins_overdose(p, coins_earned):
+                return await cheat_ban(p, p.id, comment="Coins overdose")
+
         stamp_info = "", 0, 0, 0
 
         if p.room.stamp_group:
@@ -88,6 +101,10 @@ async def handle_get_game_over(p, score: int):
             if stamp_info[1] == stamp_info[2]:
                 coins_earned *= 2
 
+        if not is_card_jitsu:
+            await p.update(
+                coins=min(p.coins + coins_earned, p.server.config.max_coins)
+            ).apply()
         await p.send_xt("zo", p.coins, *stamp_info)
 
 
