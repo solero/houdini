@@ -380,7 +380,74 @@ class Penguin(Spheniscidae, penguin.Penguin):
 
         self.logger.info(f'{self.username} updated their background to \'{item.name}\' ' if item else
                          f'{self.username} removed their background item')
+    async def get_game_end_stamps_info(
+        self, clear_session: bool
+    ) -> tuple[str, int, int, int]:
+        """
+        Get the info of the stamps at the end of a game that the client requires
         
+        If clear_session is True, the stamps will be marked off and will no longer
+        show up as new stamps at the end of minigames
+        """
+        (
+            collected_game_stamps_string,
+            total_collected_game_stamps,
+            total_game_stamps,
+            total_stamps,
+        ) = ("", 0, 0, 0)
+
+        game_stamps = [
+            stamp
+            for stamp in self.server.stamps.values()
+            if stamp.group_id == self.room.stamp_group
+        ]
+
+        game_stamps_ids = [stamp.id for stamp in game_stamps]
+
+        recently_collected_game_stamps = [
+            stamp
+            for stamp in self.stamps.values()
+            if (stamp.in_game_session and stamp.stamp_id in game_stamps_ids)
+        ]
+
+        collected_game_stamps = [
+            stamp for stamp in game_stamps if (stamp.id in self.stamps and stamp)
+        ]
+
+        collected_game_stamps_string = "|".join(
+            str(stamp.stamp_id) for stamp in recently_collected_game_stamps
+        )
+
+        total_collected_game_stamps = len(collected_game_stamps)
+
+        total_game_stamps = len(game_stamps)
+
+        total_stamps = len(
+            [
+                stamp
+                for stamp in self.stamps.values()
+                if self.server.stamps[stamp.stamp_id].group_id
+            ]
+        )
+
+        if clear_session:
+            await self.clear_stamps_session()
+
+        return (
+            collected_game_stamps_string,
+            total_collected_game_stamps,
+            total_game_stamps,
+            total_stamps,
+        )
+
+    async def clear_stamps_session(self):
+        """
+        Exits a game session and unmarks all stamps since we are no longer in their session
+        """
+        stamps = [stamp for stamp in self.stamps.values() if stamp.in_game_session]
+        for stamp in stamps:
+            await stamp.update(in_game_session=False).apply()
+
     def __repr__(self):
         if self.id is not None:
             return f'<Penguin ID=\'{self.id}\' Username=\'{self.username}\'>'

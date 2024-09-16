@@ -54,6 +54,7 @@ class PenguinStamp(db.Model):
     stamp_id = db.Column(db.ForeignKey('stamp.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True,
                          nullable=False)
     recent = db.Column(db.Boolean, nullable=False, server_default=db.text("true"))
+    in_game_session = db.Column(db.Boolean, nullable=False, server_default=db.text("true"))
 
 
 class StampCollection(AbstractDataCollection):
