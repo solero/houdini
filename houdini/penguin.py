@@ -244,6 +244,8 @@ class Penguin(Spheniscidae, penguin.Penguin):
         if stamp.id in self.stamps:
             return False
 
+        await self.server.redis.set(self.get_recent_stamp_key(stamp.id), 1)
+
         await self.stamps.insert(stamp_id=stamp.id)
 
         if notify:
@@ -253,6 +255,10 @@ class Penguin(Spheniscidae, penguin.Penguin):
         self.server.cache.delete(f'stamps.{self.id}')
 
         return True
+
+    def get_recent_stamp_key(self, stamp_id):
+        """Get redis key that locates the session recency of a stamp"""
+        return f'{self.id}.{stamp_id}.recentstamp'
 
     async def add_inbox(self, postcard, sender_name="sys", sender_id=None, details=""):
         penguin_postcard = await PenguinPostcard.create(penguin_id=self.id, sender_id=sender_id,
@@ -417,11 +423,15 @@ class Penguin(Spheniscidae, penguin.Penguin):
 
         game_stamps_ids = [stamp.id for stamp in game_stamps]
 
-        recently_collected_game_stamps = [
-            stamp
-            for stamp in self.stamps.values()
-            if (stamp.in_game_session and stamp.stamp_id in game_stamps_ids)
-        ]
+        recently_collected_game_stamps = []
+
+        for stamp in self.stamps.values():
+            if stamp.stamp_id in game_stamps_ids:
+                is_recent = await self.server.redis.get(
+                    self.get_recent_stamp_key(stamp.stamp_id)
+                )
+                if is_recent:
+                    recently_collected_game_stamps.append(stamp)
 
         collected_game_stamps = [
             stamp for stamp in game_stamps if (stamp.id in self.stamps and stamp)
@@ -457,9 +467,8 @@ class Penguin(Spheniscidae, penguin.Penguin):
         """
         Exits a game session and unmarks all stamps since we are no longer in their session
         """
-        stamps = [stamp for stamp in self.stamps.values() if stamp.in_game_session]
-        for stamp in stamps:
-            await stamp.update(in_game_session=False).apply()
+        async for key in self.server.redis.scan_iter(self.get_recent_stamp_key("*")):
+            await self.server.redis.delete(key)
 
     def __repr__(self):
         if self.id is not None:

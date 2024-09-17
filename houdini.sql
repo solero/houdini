@@ -1465,7 +1465,6 @@ CREATE TABLE penguin_stamp (
   penguin_id INT NOT NULL,
   stamp_id INT NOT NULL,
   recent BOOLEAN NOT NULL DEFAULT TRUE,
-  in_game_session BOOLEAN NOT NULL DEFAULT TRUE,
   PRIMARY KEY (penguin_id, stamp_id),
   CONSTRAINT stamp_ibfk_1 FOREIGN KEY (penguin_id) REFERENCES penguin (id) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT stamp_ibfk_2 FOREIGN KEY (stamp_id) REFERENCES stamp (id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1477,7 +1476,6 @@ COMMENT ON COLUMN penguin_stamp.penguin_id IS 'Stamp penguin ID';
 COMMENT ON COLUMN penguin_stamp.stamp_id IS 'Stamp ID';
 COMMENT ON COLUMN penguin_stamp.recent IS 'Is recently earned?';
 COMMENT ON COLUMN penguin_stamp.recent IS 'Is recently earned?';
-COMMENT ON COLUMN penguin_stamp.in_game_session IS 'Still in the minigame session it was earned';
 
 DROP TABLE IF EXISTS penguin_membership;
 CREATE TABLE penguin_membership (
