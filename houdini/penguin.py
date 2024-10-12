@@ -244,6 +244,8 @@ class Penguin(Spheniscidae, penguin.Penguin):
         if stamp.id in self.stamps:
             return False
 
+        await self.server.redis.set(self.get_recent_stamp_key(stamp.id), 1)
+
         await self.stamps.insert(stamp_id=stamp.id)
 
         if notify:
@@ -253,6 +255,10 @@ class Penguin(Spheniscidae, penguin.Penguin):
         self.server.cache.delete(f'stamps.{self.id}')
 
         return True
+
+    def get_recent_stamp_key(self, stamp_id):
+        """Get redis key that locates the session recency of a stamp"""
+        return f'{self.id}.{stamp_id}.recentstamp'
 
     async def add_inbox(self, postcard, sender_name="sys", sender_id=None, details=""):
         penguin_postcard = await PenguinPostcard.create(penguin_id=self.id, sender_id=sender_id,
@@ -380,7 +386,90 @@ class Penguin(Spheniscidae, penguin.Penguin):
 
         self.logger.info(f'{self.username} updated their background to \'{item.name}\' ' if item else
                          f'{self.username} removed their background item')
+
+    async def send_card_jitsu_stamp_info(self):
+        """
+        Send information the client requires to properly display the stamp end screen
+        """
+        stamp_info = await self.get_game_end_stamps_info(False)
+        await self.send_xt("cjsi", *stamp_info)
+
+    async def add_card_jitsu_stamp(self, stamp_id):
+        """Correct way of adding a card-jitsu (Regular, Fire, Water) stamp"""
+        await self.add_stamp(self.server.stamps[stamp_id])
+        await self.send_card_jitsu_stamp_info()
+
+    async def get_game_end_stamps_info(
+        self, clear_session: bool
+    ) -> tuple[str, int, int, int]:
+        """
+        Get the info of the stamps at the end of a game that the client requires
         
+        If clear_session is True, the stamps will be marked off and will no longer
+        show up as new stamps at the end of minigames
+        """
+        (
+            collected_game_stamps_string,
+            total_collected_game_stamps,
+            total_game_stamps,
+            total_stamps,
+        ) = ("", 0, 0, 0)
+
+        game_stamps = [
+            stamp
+            for stamp in self.server.stamps.values()
+            if stamp.group_id == self.room.stamp_group
+        ]
+
+        game_stamps_ids = [stamp.id for stamp in game_stamps]
+
+        recently_collected_game_stamps = []
+
+        for stamp in self.stamps.values():
+            if stamp.stamp_id in game_stamps_ids:
+                is_recent = await self.server.redis.get(
+                    self.get_recent_stamp_key(stamp.stamp_id)
+                )
+                if is_recent:
+                    recently_collected_game_stamps.append(stamp)
+
+        collected_game_stamps = [
+            stamp for stamp in game_stamps if (stamp.id in self.stamps and stamp)
+        ]
+
+        collected_game_stamps_string = "|".join(
+            str(stamp.stamp_id) for stamp in recently_collected_game_stamps
+        )
+
+        total_collected_game_stamps = len(collected_game_stamps)
+
+        total_game_stamps = len(game_stamps)
+
+        total_stamps = len(
+            [
+                stamp
+                for stamp in self.stamps.values()
+                if self.server.stamps[stamp.stamp_id].group_id
+            ]
+        )
+
+        if clear_session:
+            await self.clear_stamps_session()
+
+        return (
+            collected_game_stamps_string,
+            total_collected_game_stamps,
+            total_game_stamps,
+            total_stamps,
+        )
+
+    async def clear_stamps_session(self):
+        """
+        Exits a game session and unmarks all stamps since we are no longer in their session
+        """
+        async for key in self.server.redis.scan_iter(self.get_recent_stamp_key("*")):
+            await self.server.redis.delete(key)
+
     def __repr__(self):
         if self.id is not None:
             return f'<Penguin ID=\'{self.id}\' Username=\'{self.username}\'>'

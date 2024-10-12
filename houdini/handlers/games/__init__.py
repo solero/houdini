@@ -78,30 +78,34 @@ async def handle_get_game_over(p, score: int):
     if p.room.id == 996:
         return
 
-    if p.room.game and not p.waddle and not p.table:
+    # card-jitsus except snow have special handling
+    card_jitsu_rooms = [995, 998, 997]
+    is_card_jitsu = p.room.id in card_jitsu_rooms
+
+    # Waddle minigames don't normally need the end screen
+    if p.waddle and not is_card_jitsu:
+        return
+
+    if p.room.game and not p.table:
         coins_earned = determine_coins_earned(p, score)
-        if await determine_coins_overdose(p, coins_earned):
-            return await cheat_ban(p, p.id, comment='Coins overdose')
 
-        collected_stamps_string, total_collected_stamps, total_game_stamps, total_stamps = '', 0, 0, 0
+        if not is_card_jitsu:
+            if await determine_coins_overdose(p, coins_earned):
+                return await cheat_ban(p, p.id, comment="Coins overdose")
+
+        stamp_info = "", 0, 0, 0
+
         if p.room.stamp_group:
-            game_stamps = [stamp for stamp in p.server.stamps.values() if stamp.group_id == p.room.stamp_group]
-            collected_stamps = [stamp for stamp in game_stamps if stamp.id in p.stamps]
-
-            total_stamps = len([stamp for stamp in p.stamps.values() if p.server.stamps[stamp.stamp_id].group_id])
-            total_collected_stamps = len(collected_stamps)
-            total_game_stamps = len(game_stamps)
-            collected_stamps_string = '|'.join(str(stamp.id) for stamp in collected_stamps)
-
-            if total_collected_stamps == total_game_stamps:
+            stamp_info = await p.get_game_end_stamps_info(True)
+            # has all stamps in game
+            if stamp_info[1] == stamp_info[2]:
                 coins_earned *= 2
 
-        await p.update(coins=min(p.coins + coins_earned, p.server.config.max_coins)).apply()
-        await p.send_xt('zo', p.coins,
-                        collected_stamps_string,
-                        total_collected_stamps,
-                        total_game_stamps,
-                        total_stamps)
+        if not is_card_jitsu:
+            await p.update(
+                coins=min(p.coins + coins_earned, p.server.config.max_coins)
+            ).apply()
+        await p.send_xt("zo", p.coins, *stamp_info)
 
 
 @handlers.handler(XTPacket('ggd', ext='z'), client=ClientType.Vanilla)
@@ -146,3 +150,10 @@ async def handle_game_complete(p, medals: int):
     medals = min(6, medals)
     await p.update(career_medals=p.career_medals + medals,
                    agent_medals=p.agent_medals + medals).apply()
+
+
+@handlers.disconnected
+@handlers.player_attribute(joined_world=True)
+async def clear_stamp_sessions(p):
+    """When disconnected, clear stamps in case any were obtained and not properly handled"""
+    await p.clear_stamps_session()
