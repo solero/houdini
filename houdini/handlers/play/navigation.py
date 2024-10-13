@@ -147,7 +147,7 @@ async def create_temporary_room(p, penguin_id):
     igloo = None
     if penguin_id in p.server.penguins_by_id:
         igloo_owner = p.server.penguins_by_id[penguin_id]
-        igloo = igloo_owner.igloo_rooms[igloo_owner.igloo]
+        igloo = p.server.igloos_by_penguin_id.get(igloo_owner.id, igloo_owner.igloo_rooms[igloo_owner.igloo])
         p.server.igloos_by_penguin_id[penguin_id] = igloo
     elif penguin_id not in p.server.igloos_by_penguin_id:
         igloo = await PenguinIglooRoom.load(parent=Penguin.on(Penguin.igloo == PenguinIglooRoom.id)) \
