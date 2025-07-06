@@ -29,7 +29,7 @@ async def handle_get_ninja_ranks(p, penguin_id: int):
     ninja_rank, fire_ninja_rank, water_ninja_rank, snow_ninja_rank = await Penguin.select(
         'ninja_rank', 'fire_ninja_rank', 'water_ninja_rank', 'snow_ninja_rank'
     ).where(Penguin.id == penguin_id).gino.first()
-    await p.send_xt('gnr', p.id, ninja_rank, fire_ninja_rank, water_ninja_rank, snow_ninja_rank)
+    await p.send_xt('gnr', penguin_id, ninja_rank, fire_ninja_rank, water_ninja_rank, snow_ninja_rank)
 
 @handlers.handler(XTPacket('ni', 'gnl'))
 async def handle_get_ninja_level(p):
