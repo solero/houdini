@@ -10,9 +10,6 @@ from houdini.data.redemption import PenguinRedemptionCode, RedemptionAwardCard, 
     RedemptionAwardFlooring, RedemptionAwardFurniture, RedemptionAwardIgloo, RedemptionAwardItem, \
     RedemptionAwardLocation, RedemptionAwardPuffle, RedemptionAwardPuffleItem, RedemptionCode
 from houdini.handlers import XTPacket
-from houdini.handlers.games.ninja.card import ninja_rank_up
-from houdini.handlers.games.ninja.fire import fire_ninja_rank_up
-from houdini.handlers.games.ninja.water import CardJitsuWaterLogic
 from houdini.penguin import Penguin
 
 
@@ -21,6 +18,16 @@ NinjaRankUpChoice = 1
 FireNinjaRankUpChoice = 3
 WaterNinjaRankUpChoice = 4
 SnowNinjaRankUpChoice = 5
+
+CardRewards = [4025, 4026, 4027, 4028, 4029, 4030, 4031, 4032, 4033, 104, 6077, 4380, 2033, 1271]
+CardPostcards = {0: 177, 4: 178, 8: 179}
+CardStamps = {0: 230, 4: 232, 8: 234, 9: 236}
+
+FireRewards = [6025, 4120, 2013, 1086, 3032]
+FireStamps = {1: 256, 3: 262}
+
+WaterRewards = [6026, 4121, 2025, 1087, 3032]
+WaterStamps = {1: 278, 3: 282, 4: 284}
 
 SnowRewards = {
     0: None,
@@ -50,6 +57,64 @@ SnowRewards = {
     24: 5227  # Water Hammer
 }
 
+# Importing from houdini.handlers.games.ninja does not work due to room stamp groups
+async def ninja_rank_up(p: Penguin, ranks: int = 1) -> bool:
+        """
+        Updates a Card-Jitsu rank for a penguin
+
+        Returns whether or not the player was able to rank up
+        """
+        if p.ninja_rank + ranks > len(CardRewards):
+            return False
+        for rank in range(p.ninja_rank, p.ninja_rank + ranks):
+            await p.add_inventory(
+                p.server.items[CardRewards[rank]], cost=0, notify=False
+            )
+            if rank in CardStamps:
+                await p.add_stamp(p.server.stamps[CardStamps[rank]])
+            if rank in CardPostcards:
+                await p.add_inbox(p.server.postcards[CardPostcards[rank]])
+
+        await p.update(ninja_rank=p.ninja_rank + ranks).apply()
+        return True
+
+async def fire_ninja_rank_up(p: Penguin, ranks: int = 1) -> bool:
+        """
+        Updates a Card-Jitsu Fire rank for a penguin
+
+        Returns whether or not the player was able to rank up
+        """
+        if p.fire_ninja_rank + ranks > len(FireRewards):
+            return False
+        for rank in range(p.fire_ninja_rank, p.fire_ninja_rank + ranks):
+            await p.add_inventory(
+                p.server.items[FireRewards[rank]], cost=0, notify=False
+            )
+            if rank in FireStamps:
+                await p.add_stamp(p.server.stamps[FireStamps[rank]])
+
+        await p.update(fire_ninja_rank=p.fire_ninja_rank + ranks).apply()
+        return True
+
+async def water_ninja_rank_up(p: Penguin, ranks: int = 1) -> bool:
+        """
+        Updates a Card-Jitsu Water rank for a penguin
+
+        Returns whether or not the player was able to rank up
+        """
+        if p.water_ninja_rank + ranks > len(WaterRewards):
+            return False
+        for rank in range(p.water_ninja_rank, p.water_ninja_rank + ranks):
+            await p.add_inventory(
+                p.server.items[WaterRewards[rank]], cost=0, notify=False
+            )
+            if rank in WaterStamps:
+                await p.add_stamp(p.server.stamps[WaterStamps[rank]])
+
+        await p.update(water_ninja_rank=p.water_ninja_rank + ranks).apply()
+        return True
+
+# Does not exist in Houdini
 async def snow_ninja_rank_up(p: Penguin, ranks: int = 1) -> bool:
 
     """
@@ -169,7 +234,7 @@ async def handle_code_vanilla(p, redemption_code: str):
     if code.type == 'GOLDEN':
         p.server.cache.set(f'{p.id}.{code.code}.golden_code', code)
         return await p.send_xt('rsc', 'GOLDEN', p.ninja_rank, p.fire_ninja_rank, p.water_ninja_rank, p.snow_ninja_rank,
-                               int(p.fire_ninja_rank > 0), int(p.water_ninja_rank > 0), p.snow_ninja_rank)
+                               1, 1, 1)
 
     if code.type == 'INNOCENT':
         innocent_redeemed_items = {item for item in p.server.items.innocent if item.id in p.inventory}
@@ -181,7 +246,7 @@ async def handle_code_vanilla(p, redemption_code: str):
 
         innocent_remaining = innocent_items - innocent_redeemed
 
-        choices = random.sample(innocent_remaining, min(len(innocent_remaining), 3))
+        choices = random.sample(list(innocent_remaining), min(len(innocent_remaining), 3))
         if len(innocent_redeemed) + 3 == len(innocent_items):
             choices.append(p.server.igloos[53])
         for item in choices:
@@ -264,7 +329,7 @@ async def handle_golden_choice(p, redemption_code: str, choice: int):
         cards = cards[:4]
         await p.send_xt('rsgc', ','.join(card_ids[:4]) + '|' + str(p.fire_ninja_rank))
     elif choice == WaterNinjaRankUpChoice:
-        await CardJitsuWaterLogic.water_ninja_rank_up(p)
+        await water_ninja_rank_up(p)
         cards = cards[:4]
         await p.send_xt('rsgc', ','.join(card_ids[:4]) + '|' + str(p.water_ninja_rank))
     elif choice == SnowNinjaRankUpChoice:
