@@ -227,9 +227,70 @@ async def handle_code_vanilla(p, redemption_code: str):
         num_redeemed_codes = await PenguinRedemptionCode.join(RedemptionCode).count().where(
             (PenguinRedemptionCode.penguin_id == p.id) & (RedemptionCode.type == 'CATALOG')).gino.scalar()
         owned_ids = ','.join((str(item.id) for item in p.server.items.treasure if item.id in p.inventory))
+        bad_items = 0
 
+        if code.items:
+            for award in code.items:
+                item_allowed = True
+                if award.item_id in p.inventory:
+                    item_allowed = False
+                    bad_items += 1
+                await p.add_inventory(p.server.items[award.item_id], notify=False, cost=0)
+                awards.append(f'item{award.item_id},{int(item_allowed)}')
+        if code.furniture:
+            for award in code.furniture:
+                item_allowed = True
+                if award.furniture_id in p.furniture:
+                    penguin_furniture = p.furniture[award.furniture_id]
+                    if penguin_furniture.quantity >= p.server.furniture[award.furniture_id].max_quantity:
+                        item_allowed = False
+                        bad_items += 1
+                await p.add_furniture(p.server.furniture[award.furniture_id], notify=False, cost=0)
+                awards.append(f'f{award.furniture_id},{int(item_allowed)}')
+        if code.igloos:
+            for award in code.igloos:
+                item_allowed = True
+                if award.igloo_id in p.igloos:
+                    item_allowed = False
+                    bad_items += 1
+                await p.add_igloo(p.server.igloos[award.igloo_id], notify=False, cost=0)
+                awards.append(f'g{award.igloo_id},{int(item_allowed)}')
+        if code.locations:
+            for award in code.locations:
+                item_allowed = True
+                if award.location_id in p.locations:
+                    item_allowed = False
+                    bad_items += 1
+                await p.add_location(p.server.locations[award.location_id], notify=False, cost=0)
+                awards.append(f'loc{award.location_id},{int(item_allowed)}')
+        if code.flooring:
+            for award in code.flooring:
+                item_allowed = True
+                if award.flooring_id in p.flooring:
+                    item_allowed = False
+                    bad_items += 1
+                await p.add_flooring(p.server.flooring[award.flooring_id], notify=False, cost=0)
+                awards.append(f'flr{award.flooring_id},{int(item_allowed)}')
+        if code.puffles:
+            for award in code.puffles:
+                item_allowed = True
+                if len(p.puffles) >= 75:
+                    item_allowed = False
+                    bad_items += 1
+                awards.append(f'p{award.puffle_id},{int(item_allowed)}')
+        if code.puffle_items:
+            for award in code.puffle_items:
+                if award.puffle_item_id in p.puffle_items:
+                    penguin_care_item = p.puffle_items[award.puffle_item_id]
+                    if penguin_care_item.quantity >= 100:
+                        item_allowed = False
+                        bad_items += 1
+                await p.add_puffle_item(p.server.puffle_items[award.puffle_item_id], notify=False, cost=0)
+                awards.append(f'pi{award.puffle_item_id},{int(item_allowed)}')
+
+        p.allowed_redemption_items = TreasureUnlockCount + bad_items
         p.server.cache.set(f'{p.id}.{code.code}.treasure_code', code)
-        return await p.send_xt('rsc', 'treasurebook', TreasureUnlockCount, owned_ids, num_redeemed_codes)
+        return await p.send_xt('rsc', 'treasurebook', p.allowed_redemption_items, owned_ids, num_redeemed_codes, 0, int(len(awards) > 0), '|'.join(awards))
 
     if code.type == 'GOLDEN':
         p.server.cache.set(f'{p.id}.{code.code}.golden_code', code)
@@ -360,8 +421,10 @@ async def handle_send_cart(p, redemption_code: str, choice: str):
     awards = []
     choices = choice.split(',')
 
-    if len(choices) > TreasureUnlockCount:
+    if len(choices) > p.allowed_redemption_items:
         return await p.close()
+
+    p.allowed_redemption_items = 0
 
     for choice in choices:
         if choice.startswith('c'):
