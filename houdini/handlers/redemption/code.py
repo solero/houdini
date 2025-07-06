@@ -12,6 +12,8 @@ from houdini.data.redemption import PenguinRedemptionCode, RedemptionAwardCard, 
 from houdini.handlers import XTPacket
 from houdini.handlers.games.ninja.card import ninja_rank_up
 from houdini.handlers.games.ninja.fire import fire_ninja_rank_up
+from houdini.handlers.games.ninja.water import CardJitsuWaterLogic
+from houdini.penguin import Penguin
 
 
 TreasureUnlockCount = 3
@@ -20,6 +22,56 @@ FireNinjaRankUpChoice = 3
 WaterNinjaRankUpChoice = 4
 SnowNinjaRankUpChoice = 5
 
+SnowRewards = {
+    0: None,
+    1: None,  # Movie 1
+    2: 6163,  # Glacial Sandals
+    3: None,  # Movie 2
+    4: None,  # Movie 3
+    5: 4834,  # Coat of Frost
+    6: None,  # Movie 4
+    7: None,  # Movie 5
+    8: 2119,  # Icy Mask
+    9: None,  # Movie 6
+    10: None, # Movie 7
+    11: 1581, # Blizzard Helmet
+    12: None, # Movie 8
+    13: None, # Snow Gem - NOTE: awarded outside of the game server by a popup within Flash
+    14: 1582, # Black Ice Headband
+    15: 4835, # Frozen Armor
+    16: 5223, # Ice Cap Cuffs
+    17: 4836, # Black Ice Training Plates
+    18: 1583, # The Flurry
+    19: 6164, # Cold Snap Sandals
+    20: 4837, # Snowstorm Gi
+    21: 5224, # Storm Cloud Bracers,
+    22: 5225, # Snow Shuriken
+    23: 5226, # Fire Nunchaku
+    24: 5227  # Water Hammer
+}
+
+async def snow_ninja_rank_up(p: Penguin, ranks: int = 1) -> bool:
+
+    """
+    Updates a Card-Jitsu Snow rank for a penguin
+
+    Returns whether or not the player was able to rank up
+    """
+    if p.snow_ninja_rank + ranks >= 13:
+        # Unlock "Snow Pro" stamp
+        await p.add_stamp(p.server.stamps[487])
+    if p.snow_ninja_rank + ranks > len(SnowRewards):
+        return False
+    for rank in range(p.snow_ninja_rank, p.snow_ninja_rank + ranks):
+        if not (item := SnowRewards.get(rank)):
+            continue
+        await p.add_inventory(
+            p.server.items[item], cost=0, notify=False
+        )
+
+    await p.update(snow_ninja_rank=p.snow_ninja_rank + ranks).apply()
+    return True
+
 
 @handlers.handler(XTPacket('rsc', ext='red'), pre_login=True, client=ClientType.Legacy)
 @handlers.depends_on_packet(XTPacket('rjs', ext='red'))
@@ -27,7 +79,7 @@ async def handle_code_legacy(p, redemption_code: str):
     query = RedemptionCode.distinct(RedemptionCode.id)\
         .load(cards=RedemptionAwardCard.distinct(RedemptionAwardCard.card_id),
               items=RedemptionAwardItem.distinct(RedemptionAwardItem.item_id))\
-        .query.where(RedemptionCode.code == redemption_code)
+        .query.where(RedemptionCode.code == redemption_code.upper())
     codes = await query.gino.all()
     if not codes:
         return await p.send_error(720)
@@ -64,7 +116,7 @@ async def handle_code_legacy(p, redemption_code: str):
         if code.items:
             for award in code.items:
                 awards.append(str(award.item_id))
-                await p.add_inventory(p.server.items[award.item_id], notify=False)
+                await p.add_inventory(p.server.items[award.item_id], notify=False, cost=0)
 
     await PenguinRedemptionCode.create(penguin_id=p.id, code_id=code.id)
     await p.update(coins=p.coins + code.coins).apply()
@@ -83,7 +135,7 @@ async def handle_code_vanilla(p, redemption_code: str):
               locations=RedemptionAwardLocation.distinct(RedemptionAwardLocation.location_id),
               puffles=RedemptionAwardPuffle.distinct(RedemptionAwardPuffle.puffle_id),
               puffle_items=RedemptionAwardPuffleItem.distinct(RedemptionAwardPuffleItem.puffle_item_id))\
-        .query.where(RedemptionCode.code == redemption_code)
+        .query.where(RedemptionCode.code == redemption_code.upper())
     codes = await query.gino.all()
     if not codes:
         return await p.send_error(720)
@@ -116,14 +168,16 @@ async def handle_code_vanilla(p, redemption_code: str):
 
     if code.type == 'GOLDEN':
         p.server.cache.set(f'{p.id}.{code.code}.golden_code', code)
-        return await p.send_xt('rsc', 'GOLDEN', p.ninja_rank, p.fire_ninja_rank, p.water_ninja_rank, 0,
-                               int(p.fire_ninja_rank > 0), int(p.water_ninja_rank > 0), 0)
+        return await p.send_xt('rsc', 'GOLDEN', p.ninja_rank, p.fire_ninja_rank, p.water_ninja_rank, p.snow_ninja_rank,
+                               int(p.fire_ninja_rank > 0), int(p.water_ninja_rank > 0), p.snow_ninja_rank)
 
     if code.type == 'INNOCENT':
         innocent_redeemed_items = {item for item in p.server.items.innocent if item.id in p.inventory}
         innocent_redeemed_furniture = {item for item in p.server.furniture.innocent if item.id in p.furniture}
         innocent_redeemed = innocent_redeemed_items.union(innocent_redeemed_furniture)
-        innocent_items = set(p.server.items.innocent + p.server.furniture.innocent)
+        innocent_clothing = {item for item in p.server.items.innocent}
+        innocent_furniture = {item for item in p.server.furniture.innocent}
+        innocent_items = innocent_clothing.union(innocent_furniture)
 
         innocent_remaining = innocent_items - innocent_redeemed
 
@@ -141,7 +195,7 @@ async def handle_code_vanilla(p, redemption_code: str):
                 awards.append(f'f{item.id}')
                 await p.add_furniture(item, notify=False, cost=0)
 
-        await PenguinRedemptionCode.create(penguin_id=p.id, code_id=code[0].id)
+        await PenguinRedemptionCode.create(penguin_id=p.id, code_id=code.id)
 
         return await p.send_xt('rsc', 'INNOCENT', ','.join(map(str, awards)),
                                len(innocent_redeemed) + len(choices),
@@ -188,13 +242,14 @@ async def handle_code_vanilla(p, redemption_code: str):
 @handlers.handler(XTPacket('rsgc', ext='red'), pre_login=True)
 @handlers.depends_on_packet(XTPacket('rsc', ext='red'))
 async def handle_golden_choice(p, redemption_code: str, choice: int):
-    code_key = f'{p.id}.{redemption_code}.golden_code'
+    code_key = f'{p.id}.{redemption_code.upper()}.golden_code'
     code = p.server.cache.get(code_key)
     p.server.cache.delete(code_key)
     if not code:
         return await p.close()
 
     if len(code.cards) < 6:
+        p.logger.error("Golden card codes must have exactly 6 cards in redemption_award_card!")
         return await p.close()
 
     cards = list(code.cards)
@@ -208,6 +263,14 @@ async def handle_golden_choice(p, redemption_code: str, choice: int):
         await fire_ninja_rank_up(p)
         cards = cards[:4]
         await p.send_xt('rsgc', ','.join(card_ids[:4]) + '|' + str(p.fire_ninja_rank))
+    elif choice == WaterNinjaRankUpChoice:
+        await CardJitsuWaterLogic.water_ninja_rank_up(p)
+        cards = cards[:4]
+        await p.send_xt('rsgc', ','.join(card_ids[:4]) + '|' + str(p.water_ninja_rank))
+    elif choice == SnowNinjaRankUpChoice:
+        await snow_ninja_rank_up(p)
+        cards = cards[:4]
+        await p.send_xt('rsgc', ','.join(card_ids[:4]) + '|' + str(p.snow_ninja_rank))
     else:
         cards = cards[:4] + cards[-2:]
         await p.send_xt('rsgc', ','.join(card_ids[:4]) + '|' + ','.join(card_ids[-2:]))
@@ -221,7 +284,7 @@ async def handle_golden_choice(p, redemption_code: str, choice: int):
 @handlers.handler(XTPacket('rscrt', ext='red'), pre_login=True)
 @handlers.depends_on_packet(XTPacket('rsc', ext='red'))
 async def handle_send_cart(p, redemption_code: str, choice: str):
-    code_key = f'{p.id}.{redemption_code}.treasure_code'
+    code_key = f'{p.id}.{redemption_code.upper()}.treasure_code'
     code = p.server.cache.get(code_key)
     p.server.cache.delete(code_key)
 
@@ -240,12 +303,11 @@ async def handle_send_cart(p, redemption_code: str, choice: str):
             coins += 500
         elif choice.startswith('p'):
             awards.append(choice)
-        elif choice.isdigit():
+        elif choice.isdigit() and p.server.items[int(choice)].treasure:
             awards.append(choice)
             await p.add_inventory(p.server.items[int(choice)], notify=False, cost=0)
 
-    if code.uses is not None:
-        await PenguinRedemptionCode.create(penguin_id=p.id, code_id=code.id)
+    await PenguinRedemptionCode.create(penguin_id=p.id, code_id=code.id)
 
     await p.update(coins=p.coins + coins).apply()
     await p.send_xt('rscrt', ','.join(awards), coins or '')

@@ -74,7 +74,7 @@ async def handle_get_player_stamps(p, player_id: int):
     stamps_string = p.server.cache.get(f'stamps.{player_id}')
     stamps_string = await get_player_stamps_string(p, player_id) if stamps_string is None else stamps_string
     p.server.cache.set(f'stamps.{player_id}', stamps_string)
-    await p.send_xt('gps', p.id, stamps_string)
+    await p.send_xt('gps', player_id, stamps_string)
 
 
 @handlers.handler(XTPacket('st', 'gmres'))
