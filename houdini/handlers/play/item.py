@@ -1,5 +1,5 @@
 import operator
-import time
+import calendar
 
 from houdini import handlers
 from houdini.data.item import Item, ItemCollection, PenguinItemCollection
@@ -20,7 +20,7 @@ async def get_pin_string(p, player_id):
     pins = sorted(free_pins, key=operator.attrgetter('release_date'))
 
     def get_string(pin):
-        unix = int(time.mktime(pin.release_date.timetuple()))
+        unix = int(calendar.timegm(pin.release_date.timetuple())) - 86400
         return f'{pin.id}|{unix}|{int(pin.member)}'
     return '%'.join(get_string(pin) for pin in pins)
 

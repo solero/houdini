@@ -110,7 +110,7 @@ async def handle_buy_epf_item(p, item: Item):
             return await p.send_error(400)
 
         if p.agent_medals < item.cost:
-            return await p.send_error(401)
+            return await p.send_error(405)
 
         await p.add_epf_inventory(item)
 

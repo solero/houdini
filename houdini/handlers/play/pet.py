@@ -65,7 +65,7 @@ async def dig(p, on_command=False):
         treasure_quantity, item_id = 1, 0
 
         if p.can_dig_gold:
-            treasure_types = {0: 'coins', 4: 'golden', None: None}
+            treasure_types = {0: 'coins', 1: 'food', 2: 'furniture', 3: 'clothing', 4: 'golden', None: None}
 
         puffle_age = (datetime.now() - walking_puffle.adoption_date).days
         puffle_health = walking_puffle.food + walking_puffle.play + walking_puffle.rest + walking_puffle.clean
@@ -85,7 +85,8 @@ async def dig(p, on_command=False):
         elif treasure_type == 'food':
             diggable_food_ids = [t.puffle_item_id for t in p.server.puffle_food_treasure
                                  if t.puffle_id == walking_puffle.puffle_id
-                                 and t.puffle_item_id not in p.puffle_items]
+                                 and (p.puffle_items[t.puffle_item_id].quantity < 100 or t.puffle_item_id not in p.puffle_items)]
+
             if diggable_food_ids:
                 item_id = random.choice(diggable_food_ids)
                 await p.add_puffle_item(p.server.puffle_items[item_id], notify=False, cost=0)
@@ -94,7 +95,8 @@ async def dig(p, on_command=False):
         elif treasure_type == 'furniture':
             diggable_furniture_ids = [t.furniture_id for t in p.server.puffle_furniture_treasure
                                       if t.puffle_id == walking_puffle.puffle_id
-                                      and t.furniture_id not in p.furniture]
+                                      and (p.furniture[t.furniture_id].quantity < p.server.furniture[t.furniture_id].max_quantity or t.furniture_id not in p.furniture)]
+
             if diggable_furniture_ids:
                 item_id = random.choice(diggable_furniture_ids)
                 await p.add_furniture(p.server.furniture[item_id], notify=False, cost=0)
@@ -302,16 +304,16 @@ async def handle_adopt_puffle_vanilla(p, type_id: int, name: str, subtype_id: in
     if type_id not in p.server.puffles or not check_name(p, name):
         return await p.send_error(441)
 
+    puffle_id = subtype_id if bool(subtype_id) else type_id
+
     name = name.title()
-    cost = p.server.puffles[type_id].cost
+    cost = p.server.puffles[puffle_id].cost
 
     if p.coins < cost:
         return await p.send_error(401)
 
     if len(p.puffles) >= 75:
         return await p.send_error(440)
-
-    puffle_id = subtype_id if bool(subtype_id) else type_id
 
     if type_id == 10:
         if not p.rainbow_adoptability:
@@ -320,7 +322,8 @@ async def handle_adopt_puffle_vanilla(p, type_id: int, name: str, subtype_id: in
     elif type_id == 11:
         await p.update(nuggets=p.nuggets - 15).apply()
         p.can_dig_gold = False
-    elif subtype_id == 0:
+    
+    if subtype_id == 0:
         await p.add_puffle_item(p.server.puffle_items[3], quantity=5, cost=0)
         await p.add_puffle_item(p.server.puffle_items[79], cost=0)
         await p.add_puffle_item(p.server.puffle_items[p.server.puffles[puffle_id].favourite_toy])
@@ -618,9 +621,22 @@ async def handle_add_puffle_care_item(p, item_id: int):
         return await p.send_error(402)
 
     care_item = p.server.puffle_items[item_id]
+    care_item_id = care_item.parent_id
 
     if care_item.cost > p.coins:
         return await p.send_error(401)
+    
+    if care_item_id in p.puffle_items:
+            penguin_care_item = p.puffle_items[care_item_id]
+
+            if penguin_care_item.play_external == "superplay":
+                return await p.send_error(408)
+
+            if penguin_care_item.quantity >= 100:
+                if penguin_care_item.type == "head":
+                    return await p.send_error(407)
+                else:
+                    return await p.send_error(406)
 
     await p.add_puffle_item(care_item)
 
