@@ -972,7 +972,7 @@ CREATE TABLE penguin_igloo_room (
   CONSTRAINT igloo_room_ibfk_4 FOREIGN KEY (location) REFERENCES location (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-ALTER TABLE penguin ADD CONSTRAINT penguin_ibfk_11 FOREIGN KEY (igloo) REFERENCES penguin_igloo_room (id) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE penguin ADD CONSTRAINT penguin_ibfk_11 FOREIGN KEY (igloo) REFERENCES penguin_igloo_room (id) ON DELETE SET NULL ON UPDATE CASCADE;
 
 COMMENT ON TABLE penguin_igloo_room IS 'Penguin igloo settings';
 
@@ -1241,7 +1241,7 @@ COMMENT ON COLUMN penguin_puffle.hat IS 'Puffle hat item ID';
 COMMENT ON COLUMN penguin_puffle.backyard IS 'Is in backyard?';
 COMMENT ON COLUMN penguin_puffle.has_dug IS 'Has dug?';
 
-ALTER TABLE penguin ADD CONSTRAINT penguin_ibfk_12 FOREIGN KEY (walking) REFERENCES penguin_puffle (id) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE penguin ADD CONSTRAINT penguin_ibfk_12 FOREIGN KEY (walking) REFERENCES penguin_puffle (id) ON DELETE SET NULL ON UPDATE CASCADE;
 
 DROP TABLE IF EXISTS penguin_puffle_item;
 CREATE TABLE penguin_puffle_item (
