@@ -58,7 +58,7 @@ class Penguin(db.Model):
     has_dug = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     puffle_handler = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     nuggets = db.Column(db.SmallInteger, nullable=False, server_default=db.text("0"))
-    walking = db.Column(db.ForeignKey('penguin_puffle.id', ondelete='CASCADE', onupdate='CASCADE'))
+    walking = db.Column(db.ForeignKey('penguin_puffle.id', ondelete='SET NULL', onupdate='CASCADE'))
     opened_playercard = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     special_wave = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     special_dance = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
