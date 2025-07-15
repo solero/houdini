@@ -85,7 +85,7 @@ async def dig(p, on_command=False):
         elif treasure_type == 'food':
             diggable_food_ids = [t.puffle_item_id for t in p.server.puffle_food_treasure
                                  if t.puffle_id == walking_puffle.puffle_id
-                                 and (p.puffle_items[t.puffle_item_id].quantity < 100 or t.puffle_item_id not in p.puffle_items)]
+                                 and (t.puffle_item_id not in p.puffle_items or p.puffle_items[t.puffle_item_id].quantity < 100)]
 
             if diggable_food_ids:
                 item_id = random.choice(diggable_food_ids)
@@ -95,7 +95,7 @@ async def dig(p, on_command=False):
         elif treasure_type == 'furniture':
             diggable_furniture_ids = [t.furniture_id for t in p.server.puffle_furniture_treasure
                                       if t.puffle_id == walking_puffle.puffle_id
-                                      and (p.furniture[t.furniture_id].quantity < p.server.furniture[t.furniture_id].max_quantity or t.furniture_id not in p.furniture)]
+                                      and (t.furniture_id not in p.furniture or p.furniture[t.furniture_id].quantity < p.server.furniture[t.furniture_id].max_quantity)]
 
             if diggable_furniture_ids:
                 item_id = random.choice(diggable_furniture_ids)
