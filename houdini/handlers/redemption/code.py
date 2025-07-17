@@ -288,7 +288,7 @@ async def handle_code_vanilla(p, redemption_code: str):
                 await p.add_puffle_item(p.server.puffle_items[award.puffle_item_id], notify=False, cost=0)
                 awards.append(f'pi{award.puffle_item_id},{int(item_allowed)}')
 
-        p.allowed_redemption_items = TreasureUnlockCount + bad_items
+        p.allowed_redemption_items = TreasureUnlockCount + bad_items + (2 if num_redeemed_codes == 4 else 0)
         p.server.cache.set(f'{p.id}.{code.code}.treasure_code', code)
         return await p.send_xt('rsc', 'treasurebook', p.allowed_redemption_items, owned_ids, num_redeemed_codes, 0, int(len(awards) > 0), '|'.join(awards))
 
