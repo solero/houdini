@@ -629,7 +629,7 @@ async def handle_add_puffle_care_item(p, item_id: int):
     if care_item_id in p.puffle_items:
             penguin_care_item = p.puffle_items[care_item_id]
 
-            if penguin_care_item.play_external == "superplay":
+            if care_item.play_external == "superplay":
                 return await p.send_error(408)
 
             if penguin_care_item.quantity >= 100:
