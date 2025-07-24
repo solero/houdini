@@ -599,16 +599,16 @@ CREATE TABLE penguin (
   rejection_de BOOLEAN NOT NULL DEFAULT FALSE,
   rejection_ru BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (id),
-  CONSTRAINT penguin_ibfk_1 FOREIGN KEY (color) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_2 FOREIGN KEY (head) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_3 FOREIGN KEY (face) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_4 FOREIGN KEY (neck) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_5 FOREIGN KEY (body) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_6 FOREIGN KEY (hand) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_7 FOREIGN KEY (feet) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_8 FOREIGN KEY (photo) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_9 FOREIGN KEY (flag) REFERENCES item (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT penguin_ibfk_10 FOREIGN KEY (character) REFERENCES character (id) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT penguin_ibfk_1 FOREIGN KEY (color) REFERENCES item (id) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_2 FOREIGN KEY (head) REFERENCES item (id) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_3 FOREIGN KEY (face) REFERENCES item (id) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_4 FOREIGN KEY (neck) REFERENCES item (id) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_5 FOREIGN KEY (body) REFERENCES item (id) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_6 FOREIGN KEY (hand) REFERENCES item (id) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_7 FOREIGN KEY (feet) REFERENCES item (id) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_8 FOREIGN KEY (photo) REFERENCES item (id) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_9 FOREIGN KEY (flag) REFERENCES item (id) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT penguin_ibfk_10 FOREIGN KEY (character) REFERENCES character (id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 CREATE INDEX penguin_email ON Penguin(email);
@@ -972,7 +972,7 @@ CREATE TABLE penguin_igloo_room (
   CONSTRAINT igloo_room_ibfk_4 FOREIGN KEY (location) REFERENCES location (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-ALTER TABLE penguin ADD CONSTRAINT penguin_ibfk_11 FOREIGN KEY (igloo) REFERENCES penguin_igloo_room (id) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE penguin ADD CONSTRAINT penguin_ibfk_11 FOREIGN KEY (igloo) REFERENCES penguin_igloo_room (id) ON DELETE SET NULL ON UPDATE CASCADE;
 
 COMMENT ON TABLE penguin_igloo_room IS 'Penguin igloo settings';
 
@@ -1241,7 +1241,7 @@ COMMENT ON COLUMN penguin_puffle.hat IS 'Puffle hat item ID';
 COMMENT ON COLUMN penguin_puffle.backyard IS 'Is in backyard?';
 COMMENT ON COLUMN penguin_puffle.has_dug IS 'Has dug?';
 
-ALTER TABLE penguin ADD CONSTRAINT penguin_ibfk_12 FOREIGN KEY (walking) REFERENCES penguin_puffle (id) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE penguin ADD CONSTRAINT penguin_ibfk_12 FOREIGN KEY (walking) REFERENCES penguin_puffle (id) ON DELETE SET NULL ON UPDATE CASCADE;
 
 DROP TABLE IF EXISTS penguin_puffle_item;
 CREATE TABLE penguin_puffle_item (
@@ -5097,7 +5097,7 @@ INSERT INTO item (id, name, type, cost, member, bait, patched, legacy_inventory,
  (7021, 'Shield', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2010-05-06'),
  (7022, 'Cream Soda Barrel', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2010-05-20'),
  (7023, 'Seashell', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2010-06-03'),
- (7024, 'Ruby', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, now()),
+ (7024, 'Ruby', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2010-06-10'),
  (7025, 'Recycle', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2010-04-22'),
  (7026, 'Light Bulb', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2010-06-17'),
  (7027, 'Toothbrush', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2011-05-19'),
@@ -5135,11 +5135,11 @@ INSERT INTO item (id, name, type, cost, member, bait, patched, legacy_inventory,
  (7059, 'Savanna Tree Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2011-04-20'),
  (7060, 'Medieval Shield', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2011-05-06'),
  (7061, 'Brazier Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2011-05-19'),
- (7062, 'Mermaid Shell Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2013-06-05'),
- (7063, 'Eye Patch Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2011-07-20'),
- (7064, 'Telescope', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, now()),
- (7066, 'Tropical Feather', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2011-07-20'),
- (7067, 'Old Key', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2011-07-20'),
+ (7062, 'Mermaid Shell Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2011-05-20'),
+ (7063, 'Eye Patch Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2011-07-22'),
+ (7064, 'Telescope', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2011-07-22'),
+ (7066, 'Tropical Feather', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2011-07-22'),
+ (7067, 'Old Key', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2011-07-22'),
  (7068, 'Enchanted Feather Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2015-02-04'),
  (7069, 'Red Electric Guitar Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2011-06-02'),
  (7070, 'Stereo Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2011-06-16'),
@@ -5316,7 +5316,7 @@ INSERT INTO item (id, name, type, cost, member, bait, patched, legacy_inventory,
  (7245, 'Royal Scepter Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2015-09-02'),
  (7246, 'Royal Crown Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2015-09-16'),
  (7247, 'Descendants Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2015-09-30'),
- (7248, 'Anniversary Balloons', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, now()),
+ (7248, 'Anniversary Balloons', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2015-10-14'),
  (7249, 'Happy Halloween Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2015-10-28'),
  (7250, 'Mustache Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2015-11-10'),
  (7251, 'Area 501 Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2015-11-25'),
@@ -5372,12 +5372,12 @@ INSERT INTO item (id, name, type, cost, member, bait, patched, legacy_inventory,
  (7301, 'Nutcracker Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2016-12-11'),
  (7302, 'Beard Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2016-12-18'),
  (7303, 'CFC 2016 Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2016-11-30'),
- (7304, 'Holiday Ornament Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, now()),
+ (7304, 'Holiday Ornament Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2016-11-30'),
  (7305, 'Candle Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2016-12-15'),
  (7306, 'Wink Emoji Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2017-01-04'),
  (7307, 'Passport Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2017-01-04'),
  (7308, 'Community Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2017-01-31'),
- (7309, 'Puffle Trivia Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, now()),
+ (7309, 'Puffle Trivia Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2017-01-31'),
  (7310, 'Spy Trivia Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2017-02-03'),
  (7311, 'Party Trivia Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2017-02-04'),
  (7312, 'Items Trivia Pin', 8, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, '2017-02-06'),
@@ -6812,32 +6812,32 @@ INSERT INTO item (id, name, type, cost, member, bait, patched, legacy_inventory,
  (90000, 'Elsa''s Braid', 2, 0, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, now());
 
 INSERT INTO item (id, name, type, cost, member, bait) VALUES
- (115, 'Gary''s Glasses', 2, 0, FALSE, TRUE),
- (442, 'Rockhopper''s Hat', 1, 0, FALSE, TRUE),
- (1000, 'Franky''s Cowboy Hat', 1, 0, FALSE, TRUE),
- (1001, 'G Billy''s Cowboy Hat', 1, 0, FALSE, TRUE),
- (1002, 'Stompin Bob''s Cowboy Hat', 1, 0, FALSE, TRUE),
- (1003, 'Petey K''s Old Cowboy Hat', 1, 0, TRUE, TRUE),
- (1068, 'Sensei''s Hat', 1, 0, FALSE, TRUE),
- (1257, 'Rookies Hat', 1, 0, FALSE, TRUE),
- (1458, 'Rocky''s Hair', 1, 0, FALSE, TRUE),
- (1459, 'CeCe''s Hair', 1, 0, FALSE, TRUE),
- (1460, 'Cadence''s 2012 Hair', 1, 0, FALSE, TRUE),
- (1654, 'Darth Herbert''s Costume', 1, 0, TRUE, TRUE),
- (2000, 'Petey K''s Old Sunglasses', 2, 0, FALSE, TRUE),
- (3130, 'Rocky''s Necklace', 3, 0, FALSE, TRUE),
- (3131, 'CeCe Necklace', 3, 0, FALSE, TRUE),
- (4148, 'Sensei''s Fire Suit', 4, 0, FALSE, TRUE),
- (4281, 'Sensei''s Water Suit', 4, 0, FALSE, TRUE),
- (4690, 'Rocky Outfit', 4, 0, FALSE, TRUE),
- (4691, 'Cece Outfit', 4, 0, FALSE, TRUE),
- (4712, 'Rockhopper''s Belt', 4, 0, FALSE, TRUE),
- (4752, 'Herberts Eyebrows', 2, 0, TRUE, TRUE),
- (5168, 'Rocky''s Bracelet', 5, 0, FALSE, TRUE),
- (5169, 'CeCe''s Bracelet', 5, 0, FALSE, TRUE),
- (6078, 'Petey K''s Shoes', 6, 0, FALSE, TRUE),
- (6127, 'Rocky''s Shoes', 6, 0, FALSE, TRUE),
- (6128, 'CeCe''s Shoes', 6, 0, FALSE, TRUE);
+ (115, 'Gary''s Glasses', 3, 0, FALSE, TRUE),
+ (442, 'Rockhopper''s Hat', 2, 0, FALSE, TRUE),
+ (1000, 'Franky''s Cowboy Hat', 2, 0, FALSE, TRUE),
+ (1001, 'G Billy''s Cowboy Hat', 2, 0, FALSE, TRUE),
+ (1002, 'Stompin Bob''s Cowboy Hat', 2, 0, FALSE, TRUE),
+ (1003, 'Petey K''s Old Cowboy Hat', 2, 0, TRUE, TRUE),
+ (1068, 'Sensei''s Hat', 2, 0, FALSE, TRUE),
+ (1257, 'Rookies Hat', 2, 0, FALSE, TRUE),
+ (1458, 'Rocky''s Hair', 2, 0, FALSE, TRUE),
+ (1459, 'CeCe''s Hair', 2, 0, FALSE, TRUE),
+ (1460, 'Cadence''s 2012 Hair', 2, 0, FALSE, TRUE),
+ (1654, 'Darth Herbert''s Costume', 2, 0, TRUE, TRUE),
+ (2000, 'Petey K''s Old Sunglasses', 3, 0, FALSE, TRUE),
+ (3130, 'Rocky''s Necklace', 4, 0, FALSE, TRUE),
+ (3131, 'CeCe Necklace', 4, 0, FALSE, TRUE),
+ (4148, 'Sensei''s Fire Suit', 5, 0, FALSE, TRUE),
+ (4281, 'Sensei''s Water Suit', 5, 0, FALSE, TRUE),
+ (4690, 'Rocky Outfit', 5, 0, FALSE, TRUE),
+ (4691, 'Cece Outfit', 5, 0, FALSE, TRUE),
+ (4712, 'Rockhopper''s Belt', 5, 0, FALSE, TRUE),
+ (4752, 'Herberts Eyebrows', 3, 0, TRUE, TRUE),
+ (5168, 'Rocky''s Bracelet', 6, 0, FALSE, TRUE),
+ (5169, 'CeCe''s Bracelet', 6, 0, FALSE, TRUE),
+ (6078, 'Petey K''s Shoes', 7, 0, FALSE, TRUE),
+ (6127, 'Rocky''s Shoes', 7, 0, FALSE, TRUE),
+ (6128, 'CeCe''s Shoes', 7, 0, FALSE, TRUE);
  
 INSERT INTO card (id, name, set_id, power_id, element, color, value, description) VALUES
  (1, 'CART SURFER', 1, 0, 'f', 'b', 3, ''),
@@ -9908,6 +9908,10 @@ INSERT INTO room (id, name, member, max_users, required_item, game, blackhole, s
  (867, 'Party17', TRUE, 80, NULL, FALSE, FALSE, FALSE, NULL),
  (868, 'Party18', TRUE, 80, NULL, FALSE, FALSE, FALSE, NULL),
  (869, 'Party19', FALSE, 80, NULL, FALSE, FALSE, FALSE, NULL),
+ (870, 'Party20', FALSE, 80, NULL, FALSE, FALSE, FALSE, NULL),
+ (871, 'Party21', FALSE, 80, NULL, FALSE, FALSE, FALSE, NULL),
+ (872, 'Party22', FALSE, 80, NULL, FALSE, FALSE, FALSE, NULL),
+ (873, 'Party23', FALSE, 80, NULL, FALSE, FALSE, FALSE, NULL),
  (874, 'Party24', FALSE, 80, NULL, FALSE, FALSE, FALSE, NULL),
  (875, 'Party25', FALSE, 80, NULL, FALSE, FALSE, FALSE, NULL),
  (876, 'Party26', FALSE, 80, NULL, FALSE, FALSE, FALSE, NULL),
@@ -9977,7 +9981,7 @@ INSERT INTO quest (id, name) VALUES (3, 'igloo');
 
 INSERT INTO quest_award_item (quest_id, item_id) VALUES (1, 24023);
 INSERT INTO quest_award_furniture (quest_id, furniture_id) VALUES (3, 2166);
-INSERT INTO quest_award_puffle_item (quest_id, puffle_item_id) VALUES (2, 70);
+INSERT INTO quest_award_puffle_item (quest_id, puffle_item_id) VALUES (2, 142);
 
 INSERT INTO quest_task (quest_id, description, room_id) VALUES (1, 'Visit the Clothes Shop', 130);
 INSERT INTO quest_task (quest_id, description, room_id) VALUES (2, 'Visit the Pet Shop', 310);
@@ -11610,46 +11614,47 @@ INSERT INTO character (id, name, gift_id, stamp_id) VALUES
  (18, 'Director', NULL, NULL),
  (19, 'Klutzy', NULL, NULL),
  (25, 'G', 9190, NULL),
- (26, 'Happy77', NULL, NULL),
- (27, 'Billybob', NULL, NULL),
+ (26, 'Rocky', 9156, NULL),
+ (27, 'CeCe', 9156, NULL),
  (28, 'PH', 9193, 448),
  (31, 'Brady', 9211, NULL),
  (32, 'McKenzie', 9211, NULL),
  (33, 'Kermit The Frog', 9252, NULL),
- (35, 'Sam', 9277, NULL);
+ (35, 'Sam', 9277, NULL),
+ (36, 'Merry Walrus', 9286, NULL);
  
-INSERT INTO penguin (id, username, nickname, approval_en, password, email, color, character) VALUES
- (1, 'rockhopper', 'Rockhopper', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 5, 1),
- (2, 'aunt arctic', 'Aunt Arctic', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 2, 2),
- (3, 'cadence', 'Cadence', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 10, 3),
- (4, 'gary', 'Gary', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 4),
- (5, 'franky', 'Franky', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 7, 5),
- (6, 'petey k', 'Petey K', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 2, 6),
- (7, 'g billy', 'G Billy', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 7),
- (8, 'stompin bob', 'Stompin Bob', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 5, 8),
- (9, 'sensei', 'Sensei', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 14, 9),
- (10, 'herbert', 'Herbert P Bear', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 10),
- (11, 'wheel bot', 'Wheel Bot', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 11),
- (12, 'jet bot', 'Jet Bot', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 12),
- (13, 'snow bot', 'Snow Bot', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 13),
- (14, 'protobot', 'Protobot', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 14),
- (15, 'dot', 'Dot', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 15),
- (16, 'rookie', 'Rookie', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 11, 16),
- (17, 'jet pack guy', 'Jet Pack Guy', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 17),
- (18, 'director', 'Director', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 18),
- (19, 'klutzy', 'Klutzy', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 19),
- (20, 'g', 'G', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 25),
- (21, 'ph', 'PH', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 9, 28),
- (22, 'brady', 'Brady', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 7, 31),
- (23, 'mckenzie', 'McKenzie', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 15, 32),
- (24, 'kermit', 'Kermit The Frog', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 2, 33),
- (25, 'sam', 'Sam', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 35),
- (26, 'rocky', 'Rocky', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 15, NULL),
- (27, 'cece', 'CeCe', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 7, NULL),
- (28, 'merry walrus', 'Merry Walrus', TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, NULL);
+INSERT INTO penguin (id, username, nickname, approval_en, approval_pt, approval_fr, approval_es, approval_de, approval_ru, active, password, email, color, character) VALUES
+ (1, 'rockhopper', 'Rockhopper', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 5, 1),
+ (2, 'aunt arctic', 'Aunt Arctic', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 2, 2),
+ (3, 'cadence', 'Cadence', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 10, 3),
+ (4, 'gary', 'Gary', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 4),
+ (5, 'franky', 'Franky', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 7, 5),
+ (6, 'petey k', 'Petey K', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 2, 6),
+ (7, 'g billy', 'G Billy', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 7),
+ (8, 'stompin bob', 'Stompin Bob', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 5, 8),
+ (9, 'sensei', 'Sensei', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 14, 9),
+ (10, 'herbert', 'Herbert P Bear', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 16, 10),
+ (11, 'wheel bot', 'Wheel Bot', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 11),
+ (12, 'jet bot', 'Jet Bot', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 12),
+ (13, 'snow bot', 'Snow Bot', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 13),
+ (14, 'protobot', 'Protobot', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 14),
+ (15, 'dot1', 'Dot', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 17, 15),
+ (16, 'rookie', 'Rookie', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 2, 16),
+ (17, 'jet pack guy', 'Jet Pack Guy', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 2),
+ (18, 'director', 'Director', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 18),
+ (19, 'klutzy', 'Klutzy', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 19),
+ (25, 'g111', 'G', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 1, 25),
+ (26, 'rocky', 'Rocky', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 15, 26),
+ (27, 'cece', 'CeCe', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 7, 27),
+ (28, 'paige', 'PH', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 9, 28),
+ (31, 'brady', 'Brady', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 7, 31),
+ (32, 'mckenzie', 'McKenzie', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 15, 32),
+ (33, 'kermit', 'Kermit The Frog', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 2, 33),
+ (35, 'sasquatch', 'Sam', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 9, 35),
+ (36, 'merry walrus', 'Merry Walrus', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', '', 12, 36);
  
-INSERT INTO penguin (username, nickname, approval_en, active, password, email, color) VALUES
-  ('basil', 'Basil', TRUE, TRUE, '$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', 'basil@solero.me', 1);
+INSERT INTO penguin (username, nickname, approval_en, approval_pt, approval_fr, approval_es, approval_de, approval_ru, active, password, email, color) VALUES
+  ('basil', 'Basil', TRUE, TRUE,  TRUE, TRUE, TRUE, TRUE, TRUE,'$2b$12$CCYijGFRZyymIJWWNpkmP.pysAEN5E1mRwPtrjIDmTR3LnhKdJeBK', 'basil@solero.me', 1);
   
 INSERT INTO penguin_item (penguin_id, item_id) VALUES
   (101, 1);
@@ -11664,14 +11669,14 @@ INSERT INTO penguin_item (penguin_id, item_id) VALUES
  (7, 1), (7, 6080), (7, 5107), (7, 1275), (7, 4384), (7, 1001), (7, 1919), (7, 5000),
  (8, 5), (8, 5025), (8, 4383), (8, 5106), (8, 5105), (8, 1274), (8, 1920), (8, 1002),
  (9, 14), (9, 1622), (9, 4885), (9, 6177), (9, 4148), (9, 1068), (9, 4281), (9, 2009),
- (10, 1), (10, 1654), (10, 1737), (10, 4752),
- (15, 1), (15, 17), (15, 24315), (15, 21032),
- (16, 11), (16, 4969), (16, 1783), (16, 1720), (16, 4366), (16, 1257), (16, 4365), (16, 2030),
- (21, 9), (21, 1384), (21, 4555), (21, 1974), (21, 1947), (21, 1736),
- (22, 7), (22, 1682),
- (23, 15), (23, 1683),
- (24, 2), (24, 1805),
- (25, 1), (25, 1917),
+ (10, 16), (10, 1654), (10, 1737), (10, 4752),
+ (15, 17), (15, 24315), (15, 21032),
+ (16, 2), (16, 4969), (16, 1783), (16, 1720), (16, 4366), (16, 1257), (16, 4365), (16, 2030),
  (26, 15), (26, 5168), (26, 1458), (26, 3130), (26, 4690), (26, 6127),
  (27, 7), (27, 5169), (27, 1459), (27, 3131), (27, 4691), (27, 6128),
- (28, 1), (28, 1964);
+ (28, 9), (28, 1384), (28, 4555), (28, 1974), (28, 1947), (28, 1736),
+ (31, 7), (31, 1682),
+ (32, 15), (32, 1683),
+ (33, 2), (33, 1805),
+ (35, 9), (35, 1917),
+ (36, 12), (36, 1964);

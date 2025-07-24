@@ -206,7 +206,7 @@ async def handle_buy_flooring(p, flooring: Flooring):
 
     if p.is_vanilla_client:
         if flooring.id in p.flooring:
-            return await p.send_error(400)
+            return await p.send_error(501)
 
         if p.coins < flooring.cost:
             return await p.send_error(401)
@@ -231,7 +231,7 @@ async def handle_buy_igloo_location(p, location: Location):
         return await p.send_error(402)
 
     if location.id in p.locations:
-        return await p.send_error(400)
+        return await p.send_error(502)
 
     if p.coins < location.cost:
         return await p.send_error(401)
@@ -245,7 +245,7 @@ async def handle_buy_igloo_type(p, igloo: Igloo):
         return await p.send_error(402)
 
     if igloo.id in p.igloos:
-        return await p.send_error(400)
+        return await p.send_error(500)
 
     if p.coins < igloo.cost:
         return await p.send_error(401)
@@ -260,6 +260,11 @@ async def handle_buy_furniture(p, furniture: Furniture):
 
     if p.coins < furniture.cost:
         return await p.send_error(401)
+    
+    if furniture.id in p.furniture:
+            penguin_furniture = p.furniture[furniture.id]
+            if penguin_furniture.quantity >= furniture.max_quantity:
+                return await p.send_error(403)
 
     await p.add_furniture(furniture)
 
