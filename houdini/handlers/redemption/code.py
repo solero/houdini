@@ -280,6 +280,7 @@ async def handle_code_vanilla(p, redemption_code: str):
                 awards.append(f'p{award.puffle_id},{int(item_allowed)}')
         if code.puffle_items:
             for award in code.puffle_items:
+                item_allowed = True
                 if award.puffle_item_id in p.puffle_items:
                     penguin_care_item = p.puffle_items[award.puffle_item_id]
                     if penguin_care_item.quantity >= 100:
