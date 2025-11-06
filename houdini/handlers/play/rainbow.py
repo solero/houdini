@@ -47,7 +47,7 @@ async def handle_rainbow_quest_cookie(p):
 
     current_datetime = datetime.now()
     task_completion = await p.server.redis.get(f'houdini.rainbow_completion.{p.id}')
-    coins_collected = await p.server.redis.smembers(f'houdini.rainbow_coins.{p.id}')
+    coins_collected = {c.decode() for c in await p.server.redis.smembers(f'houdini.rainbow_coins.{p.id}')}
 
     if task_completion:
         quest_wait = RainbowQuestWaitMember if p.is_member else RainbowQuestWait
