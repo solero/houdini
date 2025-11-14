@@ -144,7 +144,7 @@ async def handle_code_legacy(p, redemption_code: str):
     query = RedemptionCode.distinct(RedemptionCode.id)\
         .load(cards=RedemptionAwardCard.distinct(RedemptionAwardCard.card_id),
               items=RedemptionAwardItem.distinct(RedemptionAwardItem.item_id))\
-        .query.where(RedemptionCode.code.upper() == redemption_code.upper())
+        .query.where(db.func.upper(RedemptionCode.code) == redemption_code.upper())
     codes = await query.gino.all()
     if not codes:
         return await p.send_error(720)
@@ -200,7 +200,7 @@ async def handle_code_vanilla(p, redemption_code: str):
               locations=RedemptionAwardLocation.distinct(RedemptionAwardLocation.location_id),
               puffles=RedemptionAwardPuffle.distinct(RedemptionAwardPuffle.puffle_id),
               puffle_items=RedemptionAwardPuffleItem.distinct(RedemptionAwardPuffleItem.puffle_item_id))\
-        .query.where(RedemptionCode.code.upper() == redemption_code.upper())
+        .query.where(db.func.upper(RedemptionCode.code) == redemption_code.upper())
     codes = await query.gino.all()
     if not codes:
         return await p.send_error(720)
