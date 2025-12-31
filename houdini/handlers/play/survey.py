@@ -1,10 +1,12 @@
 from houdini import handlers
 from houdini.data.penguin import CfcDonation
 from houdini.handlers import XTPacket
-
+from houdini.handlers.play.moderation import cheat_ban
 
 @handlers.handler(XTPacket('e', 'dc'))
 async def handle_donate_to_charity(p, charity: int, coins: int):
+    if coins <= 0:
+        return await cheat_ban(p, p.id, comment="Negative charity donation")
     if p.coins >= coins and 0 <= charity <= 4:
         await p.update(coins=p.coins-coins).apply()
         await CfcDonation.create(penguin_id=p.id, coins=coins, charity=charity)
