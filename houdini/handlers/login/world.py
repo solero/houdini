@@ -59,7 +59,7 @@ async def handle_login(p, credentials: WorldCredentials):
     if login_key != credentials.login_key or confirmation_hash.decode() != credentials.confirmation_hash:
         return await p.close()
 
-    data = await Penguin.get(credentials.id)
+    data = await Penguin.query.where(Penguin.username == credentials.username).gino.first()
 
     p.login_key = login_key
 
