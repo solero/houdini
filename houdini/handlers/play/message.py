@@ -30,12 +30,15 @@ async def handle_send_message(p, penguin_id: int, message: str):
 
         if consequence is not None:
             if consequence.ban:
+                await p.room.send_xt('mm', message, p.id, f=lambda px: px.moderator)
                 await moderator_ban(p, p.id, comment='Inappropriate language', message=message)
                 return
-            if consequence.warn:
+            elif consequence.warn:
+                await p.room.send_xt('mm', message, p.id, f=lambda px: px.moderator)
                 await moderator_kick(p, p.id)
                 return
-            else:
+            elif consequence.filter:
+                await p.room.send_xt('mm', message, p.id, f=lambda px: px.moderator)
                 return
 
     try:
