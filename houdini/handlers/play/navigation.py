@@ -18,6 +18,7 @@ from houdini.handlers.games.ninja.fire import CardJitsuFireLogic, FireMatLogic, 
 from houdini.handlers.games.ninja.water import CardJitsuWaterLogic, WaterSenseiLogic
 from houdini.handlers.games.sled import SledRacingLogic
 from houdini.handlers.games.treasure import TreasureHuntLogic
+from houdini.handlers.play.pet import get_my_player_puffles
 
 TableLogicMapping = {
     'four': ConnectFourLogic,
@@ -77,7 +78,7 @@ async def handle_join_server(p, penguin_id: int, login_key: str):
     if login_key != p.login_key:
         return await p.close()
 
-    await p.send_xt('activefeatures')
+    await p.send_xt('pgu', *get_my_player_puffles(p))
 
     moderator_status = 3 if p.character else 2 if p.stealth_moderator else 1 if p.moderator else 0
 
