@@ -242,8 +242,6 @@ async def load_pet_inventory(p):
     p.puffles = await PenguinPuffleCollection.get_collection(p.id)
     p.puffle_items = await PenguinPuffleItemCollection.get_collection(p.id)
 
-    await p.send_xt('pgu', *get_my_player_puffles(p))
-
 
 @handlers.handler(XTPacket('p', 'getdigcooldown'), pre_login=True)
 async def handle_get_dig_cooldown(p):
