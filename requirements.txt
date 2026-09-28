@@ -1,5 +1,5 @@
 asyncio
-redis>=4.6.0,<=8.10.2
+redis>=4.6.0,<=7.9.0
 cacheout
 gino
 ujson
