@@ -67,7 +67,7 @@ async def handle_login(p, credentials: Credentials):
         preactivation_expiry = data.registration_date + timedelta(days=p.server.config.preactivation_days)
         preactivation_expiry = preactivation_expiry - datetime.now()
         preactivation_hours = preactivation_expiry.total_seconds() // 3600
-        if preactivation_hours <= 0 or p.client_type == ClientType.Legacy:
+        if p.client_type == ClientType.Legacy:
             return await p.send_error_and_disconnect(900)
 
     if data.permaban:
@@ -111,8 +111,11 @@ async def handle_login(p, credentials: Credentials):
     if p.client_type == ClientType.Vanilla:
         raw_login_data = f'{data.id}|{data.id}|{data.username}|{login_key}|houdini|{data.approval}|{data.rejection}'
         if not data.active:
-            await p.send_xt('l', raw_login_data, confirmation_hash, '', world_populations, buddy_presence,
-                            data.email, int(preactivation_hours))
+            if preactivation_hours <= 0:
+                await p.send_xt('loginMustActivate', 0, confirmation_hash, raw_login_data, data.email)
+            else:
+                await p.send_xt('l', raw_login_data, confirmation_hash, '', world_populations, buddy_presence,
+                                data.email, int(preactivation_hours))
         else:
             await p.send_xt('l', raw_login_data, confirmation_hash, '', world_populations, buddy_presence, data.email)
     else:
